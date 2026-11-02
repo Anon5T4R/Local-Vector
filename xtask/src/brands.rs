@@ -374,7 +374,7 @@ line Pantone"; }
         assert_eq!(kind_of("crates/engine/tests/command_sweep.rs"), None);
         assert_eq!(kind_of(SELF), None);
         assert_eq!(kind_of("crates/ui-egui/Cargo.toml"), Some(Kind::Manifest));
-        assert_eq!(kind_of("assets/app-icon/LICENSE.txt"), Some(Kind::Text));
+        assert_eq!(kind_of("packaging/windows/portable.txt"), Some(Kind::Text));
         assert_eq!(kind_of("packaging/linux/nfpm.yaml"), Some(Kind::Text));
         assert_eq!(kind_of(CURSOR_MANIFEST), Some(Kind::Text));
         for vendored in ["libs/egui/src/lib.rs", "libs/craft-libs/crates/ui/Cargo.toml", "libs/winprint.rs/Cargo.toml"] {
