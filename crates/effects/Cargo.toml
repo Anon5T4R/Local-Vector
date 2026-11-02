@@ -1,0 +1,23 @@
+[package]
+name = "localvector-effects"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "LocalVector live effects evaluated to geometry"
+
+[lints]
+workspace = true
+
+[dependencies]
+localvector-geom = { workspace = true }
+localvector-three-d = { workspace = true }
+localvector-doc = { workspace = true }
+localvector-pathops = { workspace = true }
+localvector-text = { workspace = true }
+localvector-plugins = { workspace = true }
+image = { workspace = true }
+kurbo = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+localvector-color = { workspace = true }

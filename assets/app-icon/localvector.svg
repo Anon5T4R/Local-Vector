@@ -1,0 +1,36 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2dd4bf"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- tile teal do LocalVector -->
+  <rect x="32" y="32" width="448" height="448" rx="100" fill="url(#bg)"/>
+  <rect x="32" y="32" width="448" height="256" rx="100" fill="url(#sheen)"/>
+
+  <!-- alças: continuação da tangente para fora dos nós -->
+  <path d="M146 338 L113 393" fill="none" stroke="#ffffff" stroke-width="9"
+        stroke-linecap="round" opacity="0.7"/>
+  <path d="M366 178 L399 123" fill="none" stroke="#ffffff" stroke-width="9"
+        stroke-linecap="round" opacity="0.7"/>
+  <circle cx="113" cy="393" r="12" fill="none" stroke="#ffffff" stroke-width="8" opacity="0.7"/>
+  <circle cx="399" cy="123" r="12" fill="none" stroke="#ffffff" stroke-width="8" opacity="0.7"/>
+
+  <!-- curva-S: simetria de 180 graus em torno de (256, 258) -->
+  <path d="M146 338 C226 206 286 310 366 178" fill="none" stroke="#ffffff"
+        stroke-width="32" stroke-linecap="round"/>
+
+  <!-- nós-âncora -->
+  <circle cx="146" cy="338" r="38" fill="#ffffff"/>
+  <circle cx="366" cy="178" r="38" fill="#ffffff"/>
+
+  <!-- assinatura da marca -->
+  <text x="256" y="460" font-family="Segoe Script, cursive" font-size="40"
+        fill="#ffffff" opacity="0.55" text-anchor="middle">Taylor</text>
+</svg>

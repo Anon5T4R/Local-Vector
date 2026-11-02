@@ -1,0 +1,66 @@
+[package]
+name = "localvector-engine"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "LocalVector engine: sessions, history, selection, the command registry"
+
+[lints]
+workspace = true
+
+[features]
+default = ["bundled-fonts"]
+# The fonts localvector-text bundles (see its `bundled-fonts`). Embedders that supply every font at
+# run time (`localvector_text::FontDb::add_font`) build with `default-features = false`.
+bundled-fonts = ["localvector-text/bundled-fonts"]
+
+[dependencies]
+# Which paths stored in documents may be opened.
+craft-docpath = { workspace = true }
+localvector-geom = { workspace = true }
+localvector-color = { workspace = true }
+localvector-doc = { workspace = true }
+localvector-tools = { workspace = true }
+localvector-text = { workspace = true }
+localvector-render = { workspace = true }
+localvector-pathops = { workspace = true }
+localvector-brush = { workspace = true }
+localvector-trace = { workspace = true }
+localvector-svg = { workspace = true }
+localvector-format = { workspace = true }
+localvector-pdf = { workspace = true }
+localvector-cad = { workspace = true }
+localvector-eps = { workspace = true }
+localvector-metafile = { workspace = true }
+localvector-plugins = { workspace = true }
+localvector-affinity = { workspace = true }
+localvector-scriptcheck = { workspace = true }
+image = { workspace = true }
+hayro-jpeg2000 = { version = "=0.3.5", default-features = false, features = ["std", "simd"] }
+flate2 = { workspace = true }
+chrono = { workspace = true }
+# The XML parts of Word documents placed as type (place/docx.rs).
+roxmltree = "0.21"
+# The compound file that holds a Word 97-2003 document placed as type (place/doc.rs).
+cfb = "0.15"
+kurbo = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+log = { workspace = true }
+
+# Whether a recovery area folder is this account's own (`FolderStore::own_area`). Already in
+# Cargo.lock (tempfile, ui-egui), so this adds no new crate.
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["std", "process"] }
+
+[dev-dependencies]
+localvector-affinity = { workspace = true, features = ["synth"] }
+crc32fast = { workspace = true }
+localvector-testkit = { workspace = true }
+proptest = { workspace = true }
+# A variable font built in code (no font file is committed).
+localvector-text = { workspace = true, features = ["test-fonts"] }
+wat = { workspace = true }
+# Zstandard streams for the Illustrator editing data fuzz tests.
+ruzstd = { workspace = true }

@@ -1,0 +1,826 @@
+use super::art::{element_name, elements, join_and, sane};
+use super::containers::drop_commented_copies;
+use super::ops::appearance_from_art_style;
+use super::types::{FLIP, Kind, MAX_DEPTH};
+use super::{
+    Affine, Arc, Artboard, CANVAS_CENTRE, ColorMode, Document, HashMap, Node, NodeId, NodeKind, Obj, OpacityMask, Paint, Point, Reader, Rect,
+    Structure, Swatch, Unit, V, obj,
+};
+use localvector_doc::{GraphicStyle, Guide, ImageBlob, PatternDef, TextWrap};
+
+/// `%AI5_RulerUnits` → [`Unit`] (Illustrator 7 spec table 3; centimeters is 4; pixels is 6 in later files).
+fn ruler_unit(v: u8) -> Option<Unit> {
+    Some(match v {
+        0 => Unit::Inches,
+        1 => Unit::Millimeters,
+        2 => Unit::Points,
+        3 => Unit::Picas,
+        4 => Unit::Centimeters,
+        6 => Unit::Pixels,
+        _ => return None,
+    })
+}
+
+/// An artboard of the `/Document`'s `ArtboardArray`: its name, its rect in art space and its
+/// display options.
+#[derive(Clone, Debug)]
+pub(super) struct AiArtboard {
+    pub name: String,
+    pub rect: Rect,
+    pub center_mark: bool,
+    pub cross_hairs: bool,
+    pub safe_areas: bool,
+    /// The video ruler's pixel aspect ratio.
+    pub par: f64,
+}
+
+impl AiArtboard {
+    fn new(name: String, rect: Rect) -> Self {
+        Self { name, rect, center_mark: false, cross_hairs: false, safe_areas: false, par: 1.0 }
+    }
+}
+
+/// The number of entry `key` in `o` when it is written as one finite number of the type `ty`
+/// (`/Int`, `/Real`, `/Bool`; a whole number unless `/Real`), else `None`.
+fn typed(o: &Obj, key: &str, ty: &str) -> Option<f64> {
+    match o.get(key)? {
+        [V::Num(v), V::Name(t)] if t == ty && v.is_finite() && (ty == "Real" || v.fract() == 0.0) => Some(*v),
+        _ => None,
+    }
+}
+
+/// The `/Bool` entry `key` of `o`: 0 or 1.
+fn boolean(o: &Obj, key: &str) -> Option<bool> {
+    match typed(o, key, "Bool")? {
+        0.0 => Some(false),
+        1.0 => Some(true),
+        _ => None,
+    }
+}
+
+/// An `ArtboardArray` entry's display options: `DisplayMark` (`/Int`, bits: 1 the center mark,
+/// 2 cross hairs, 4 video safe areas) and `PAR` (`/Real`, the video ruler's pixel aspect ratio,
+/// 0.1 to 10). A value of another type or out of range leaves the option off, or 1.
+fn display_options(ab: &Obj, board: &mut AiArtboard) {
+    if let Some(mark) = typed(ab, "DisplayMark", "Int").filter(|m| (0.0..=f64::from(u32::MAX)).contains(m)) {
+        let mark = mark as u32;
+        (board.center_mark, board.cross_hairs, board.safe_areas) = (mark & 1 != 0, mark & 2 != 0, mark & 4 != 0);
+    }
+    if let Some(par) = typed(ab, "PAR", "Real").filter(|p| (0.1..=10.0).contains(p)) {
+        board.par = par;
+    }
+}
+
+/// The `AI Auto Rasterize` dictionary of the `/Document` (Document Raster Effects Settings) into
+/// `doc`: `dpi.` the resolution (`/Int`, 1 to 2400), `mask`, `alis` and `spot` the clipping mask,
+/// anti-aliasing and Preserve Spot Colors (`/Bool`), `padd` the room added around the object
+/// (`/Real`, points), and `colr` the color model and background (`/Int`: 0 the document's model on
+/// white, 4 the document's model, transparent, 6 grayscale, transparent). A value of another type,
+/// out of range or not one of these leaves the setting as it is.
+fn raster_settings(r: &Obj, doc: &mut Document) {
+    use localvector_doc::rastersettings::{MAX_ADD_AROUND, RasterColorModel};
+    use localvector_doc::setup::Background;
+    if let Some(ppi) = typed(r, "dpi.", "Int").filter(|p| (1.0..=2400.0).contains(p)) {
+        doc.raster_effects_ppi = ppi;
+    }
+    let s = &mut doc.raster_effects;
+    if let Some(on) = boolean(r, "mask") {
+        s.clipping_mask = on;
+    }
+    if let Some(on) = boolean(r, "alis") {
+        s.anti_alias = on;
+    }
+    if let Some(on) = boolean(r, "spot") {
+        s.preserve_spot_colors = on;
+    }
+    if let Some(pad) = typed(r, "padd", "Real").filter(|p| (0.0..=MAX_ADD_AROUND).contains(p)) {
+        s.add_around = pad;
+    }
+    let model = match typed(r, "colr", "Int") {
+        Some(0.0) => Some((RasterColorModel::Document, Background::White)),
+        Some(4.0) => Some((RasterColorModel::Document, Background::Transparent)),
+        Some(6.0) => Some((RasterColorModel::Grayscale, Background::Transparent)),
+        _ => None,
+    };
+    if let Some((model, background)) = model {
+        (s.color_model, s.background) = (model, background);
+    }
+}
+
+/// The name of the empty group that stands for a text object, followed by the number of its
+/// story in the text document when the file says.
+pub(crate) const TEXT_SLOT: &str = "\u{0}text";
+
+/// Is `name` that of a text slot, and which story is it of?
+pub(crate) fn slot_of(name: Option<&str>) -> Option<Option<u32>> {
+    name?.strip_prefix(TEXT_SLOT).map(|rest| rest.split(':').next().and_then(|s| s.parse().ok()))
+}
+
+/// Which of its story's frames a text slot named `name` is (0 when it doesn't say).
+pub(crate) fn slot_frame(name: Option<&str>) -> usize {
+    name.and_then(|n| n.strip_prefix(TEXT_SLOT)).and_then(|rest| rest.split_once(':')).and_then(|(_, f)| f.parse().ok()).unwrap_or(0)
+}
+
+/// The artboards (names, and rects in art space) of the editing data `data` that [`read`] can't
+/// read as a whole, as far as it gets: where to put the pages of its PDF part instead, and what to
+/// call them (#1068).
+pub fn artboards(data: &[u8]) -> Vec<(String, Rect)> {
+    let found = artboards_read(data);
+    if !found.is_empty() {
+        return found;
+    }
+    // Reading can stop before the artboards (art kept in the document's data comes first): read
+    // their array on its own.
+    artboard_array(data).map_or(found, |array| {
+        let mut alone = b"%_/Document :\n%_/Dictionary :\n".to_vec();
+        alone.extend_from_slice(array);
+        alone.extend_from_slice(b"\n%_; /NotRecorded ,\n%_;\n");
+        artboards_read(&alone)
+    })
+}
+
+/// The `ArtboardArray` entry of the editing data `data`, from its `/Array :` to its key: found
+/// from the key back, counting the dictionaries its artboards open and close.
+fn artboard_array(data: &[u8]) -> Option<&[u8]> {
+    const KEY: &[u8] = b"%_; (ArtboardArray) ,";
+    let end = data.windows(KEY.len()).rposition(|w| w == KEY)? + KEY.len();
+    let head = data.get(..end)?;
+    let mut depth = 0usize;
+    let mut line_end = head.len();
+    loop {
+        let line_start = head.get(..line_end)?.iter().rposition(|&b| b == b'\n' || b == b'\r').map_or(0, |at| at + 1);
+        if let Some(text) = head.get(line_start..line_end)?.strip_prefix(b"%_") {
+            if text.starts_with(b";") || text.starts_with(b"/Def ;") {
+                depth += 1;
+            } else if text.starts_with(b"/") && text.windows(2).any(|w| w == b" :") {
+                depth = depth.checked_sub(1)?;
+                if depth == 0 {
+                    return head.get(line_start..);
+                }
+            }
+        }
+        line_end = line_start.checked_sub(1)?;
+    }
+}
+
+/// The palette of a `.ai` file's editing data, as [`palette`] reads it.
+pub struct PaletteSwatches {
+    pub swatches: Vec<Swatch>,
+    pub groups: Vec<localvector_color::swatch::SwatchGroup>,
+    /// The patterns the editing data defines that the given patterns lack and a swatch paints with.
+    pub patterns: Vec<PatternDef>,
+    /// The image blobs the art of `patterns` shows, by key.
+    pub images: std::collections::BTreeMap<String, ImageBlob>,
+}
+
+/// The swatches and color groups of the palette of the editing data `data`, for a file whose
+/// layers aren't read: the swatches its PDF part has are the defaults (#4036). They come as
+/// [`read`] makes them, with pattern swatches only for the patterns in `patterns` and those the
+/// editing data defines; `None` when the palette is empty or reading stops before it.
+pub fn palette(data: &[u8], patterns: &[PatternDef]) -> Option<PaletteSwatches> {
+    let mut r = Reader::new(data);
+    // The palette, the gradients and the patterns it names come before the art, so an error in the
+    // art leaves them read.
+    let _ = r.run();
+    let mut known = patterns.to_vec();
+    let defined = std::mem::take(&mut r.doc.patterns);
+    known.extend(defined.iter().filter(|d| !patterns.iter().any(|p| p.name == d.name)).cloned());
+    let (swatches, groups) = r.palette_swatches(&known)?;
+    let painted = |name: &str| {
+        swatches.iter().chain(groups.iter().flat_map(|g| &g.swatches)).any(|s| matches!(&s.paint, Paint::Pattern { pattern, .. } if pattern == name))
+    };
+    let added: Vec<PatternDef> = defined.into_iter().filter(|d| !patterns.iter().any(|p| p.name == d.name) && painted(&d.name)).collect();
+    let mut shown = Document::new(1.0, 1.0);
+    shown.patterns.clone_from(&added);
+    let mut images = std::collections::BTreeMap::new();
+    shown.visit_images(|_, im| {
+        if let Some(blob) = r.doc.images.get(&im.key) {
+            images.insert(im.key.clone(), blob.clone());
+        }
+    });
+    Some(PaletteSwatches { swatches, groups, patterns: added, images })
+}
+
+/// [`artboards`] as far as reading `data` from its start gets: those read before an error, and
+/// those of a `/Document` still open when it stopped (its art can be what stopped it).
+fn artboards_read(data: &[u8]) -> Vec<(String, Rect)> {
+    let mut r = Reader::new(data);
+    let _ = r.run();
+    let open: Vec<Obj> = r.frames.iter().filter_map(|f| if let Kind::Obj(o) = &f.kind { Some((**o).clone()) } else { None }).collect();
+    for o in &open {
+        if r.artboards.is_empty() {
+            r.document(o);
+        }
+    }
+    r.artboards.into_iter().map(|b| (b.name, b.rect)).collect()
+}
+
+/// How many variables and data sets the variable library of the editing data has: XML nodes
+/// (`/XMLNode`) of the `/Document` dictionary, a `variableSets` element holding `variableSet`s, each
+/// with its `variables` (`variable` elements) and `sampleDataSets` (`sampleDataSet` elements).
+/// LocalVector doesn't read them.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct VariableLibrary {
+    pub variables: usize,
+    pub data_sets: usize,
+}
+
+impl VariableLibrary {
+    /// The import's note that the library wasn't read, when it has a variable or a data set.
+    pub fn note(self) -> Option<String> {
+        let Self { variables, data_sets } = self;
+        // Counts after a colon need no plural, so every language can translate the note whole.
+        (variables + data_sets > 0).then(|| {
+            format!("the file's variables and data sets weren't read (variables: {variables}, data sets: {data_sets}): the Variables panel doesn't list them")
+        })
+    }
+}
+
+/// The variable library of the editing data `data` ([`VariableLibrary`]), for a file whose layers
+/// [`read`] can't read. Data without a `variableSets` element isn't read.
+pub fn variables(data: &[u8]) -> VariableLibrary {
+    if crate::import::ai::find(data, b"variableSets").is_none() {
+        return VariableLibrary::default();
+    }
+    let mut r = Reader::new(data);
+    let _ = r.run();
+    // A `/Document` still open when reading stopped.
+    let open: Vec<Obj> = r.frames.iter().filter_map(|f| if let Kind::Obj(o) = &f.kind { Some((**o).clone()) } else { None }).collect();
+    for o in open.iter().filter(|o| o.ty == "Document") {
+        variable_library(o, 0, &mut r.variables);
+    }
+    if r.variables != VariableLibrary::default() {
+        return r.variables;
+    }
+    // Reading can stop before the library: read its node on its own.
+    variable_sets_node(data).map_or(r.variables, |node| {
+        let mut alone = b"%_/Document :\n%_/Dictionary :\n%_/Array :\n".to_vec();
+        alone.extend_from_slice(node);
+        alone.extend_from_slice(b"\n%_; (xmlnode-children) ,\n%_; /Recorded ,\n%_;\n");
+        let mut r = Reader::new(&alone);
+        let _ = r.run();
+        r.variables
+    })
+}
+
+impl<'a> Reader<'a> {
+    /// Take the author and custom colors that the header of the program `ps` gives (its comment
+    /// lines up to `%%EndComments`), where the editing data's own header gives none: the program of
+    /// an EPS whose editing data is kept apart from it.
+    pub(super) fn program_header(&mut self, ps: &[u8]) {
+        let mut end = 0;
+        for line in ps.split_inclusive(|&b| b == b'\n' || b == b'\r') {
+            if !line.starts_with(b"%") && !line.trim_ascii().is_empty() {
+                break;
+            }
+            end += line.len();
+            if line.trim_ascii_end() == b"%%EndComments" {
+                break;
+            }
+        }
+        let mut outer = Reader::new(ps.get(..end).unwrap_or_default());
+        let _ = outer.run();
+        if self.author.is_none() {
+            self.author = outer.author;
+        }
+        for n in outer.custom_colors {
+            if self.custom_colors.len() < super::directives::MAX_CUSTOM_COLORS && !self.custom_colors.iter().any(|c| c.name == n.name) {
+                self.custom_colors.push(n);
+            }
+        }
+    }
+}
+
+/// The `variableSets` XML node of the editing data `data`, from its `/XMLNode :` line to the line
+/// that closes it: found from its name back, counting the dictionaries and arrays it holds.
+fn variable_sets_node(data: &[u8]) -> Option<&[u8]> {
+    const NAME: &[u8] = b"variableSets) /String (xmlnode-nodename) ,";
+    let at = data.windows(NAME.len()).position(|w| w == NAME)?;
+    let opens = |text: &[u8]| text.starts_with(b"/") && text.windows(2).any(|w| w == b" :");
+    let closes = |text: &[u8]| text.starts_with(b";") || text.starts_with(b"/Def ;");
+    let mut depth = 0usize;
+    let mut line_end = data.get(..at)?.iter().rposition(|&b| b == b'\n' || b == b'\r')?;
+    let start = loop {
+        let line_start = data.get(..line_end)?.iter().rposition(|&b| b == b'\n' || b == b'\r').map_or(0, |at| at + 1);
+        if let Some(text) = data.get(line_start..line_end)?.strip_prefix(b"%_") {
+            if closes(text) {
+                depth += 1;
+            } else if opens(text) {
+                match depth.checked_sub(1) {
+                    Some(d) => depth = d,
+                    None => break line_start,
+                }
+            }
+        }
+        line_end = line_start.checked_sub(1)?;
+    };
+    let mut line_start = start;
+    loop {
+        let rest = data.get(line_start..)?;
+        let line_end = line_start + rest.iter().position(|&b| b == b'\n' || b == b'\r').unwrap_or(rest.len());
+        if let Some(text) = data.get(line_start..line_end)?.strip_prefix(b"%_") {
+            if closes(text) {
+                depth = depth.checked_sub(1)?;
+                if depth == 0 {
+                    return data.get(start..line_end);
+                }
+            } else if opens(text) {
+                depth += 1;
+            }
+        }
+        if line_end >= data.len() {
+            return None;
+        }
+        line_start = line_end + 1;
+    }
+}
+
+/// The text wrap options an object's dictionary gives: its offset in points (`AI11TextWrapOffset`,
+/// times `scale`, the factor that takes the art onto the document) and Invert Wrap
+/// (`AI11TextWrapInvert`). The outline the file may keep with them (`AI11TextWrapPath`) is not
+/// read: the object's own shape gives it. A value that isn't a number is left at its default, and
+/// a dictionary without a readable entry gives none.
+fn text_wrap(o: &Obj, scale: f64) -> Option<TextWrap> {
+    let num = |key: &str| o.get(key).and_then(|v| v.iter().find_map(V::num)).filter(|v| v.is_finite());
+    let offset = num("AI11TextWrapOffset");
+    let invert = num("AI11TextWrapInvert").filter(|v| *v == 0.0 || *v == 1.0);
+    if offset.is_none() && invert.is_none() && o.get("AI11TextWrapPath").is_none() {
+        return None;
+    }
+    let default = TextWrap::default();
+    let offset = offset.map(|v| v * scale).filter(|v| !v.is_nan()).map_or(default.offset, |v| v.clamp(-1000.0, 1000.0));
+    Some(TextWrap { offset, invert: invert == Some(1.0) })
+}
+
+impl<'a> Reader<'a> {
+    /// An object's dictionary: its name (`AIArtName`, or the XML id `AI10_ArtUID`), and the
+    /// opacity mask it may carry.
+    pub(super) fn art_dictionary(&mut self, o: &Obj) {
+        self.constraint_art(o);
+        // A blend's key object or spine.
+        if let Some(kind) = o.text("ShapeBlendPathType")
+            && let Some(id) = self.last_object().map(|n| n.id)
+            && self.blend_roles.len() < 100_000
+        {
+            self.blend_roles.insert(id, (kind, o.text("ShapeBlendPathID")));
+        }
+        // An envelope (a distortion, `AIDeformStyle` / `DeformValue`) is written on `%_` lines as
+        // a group holding the mesh that shapes it (or its contents, while they are being edited);
+        // the distorted art the file's PDF part draws follows on plain lines. That group isn't
+        // art, so it goes (#2405), kept aside for the live envelope ([`Reader::end_envelope`]).
+        if (o.get("AIDeformStyle").is_some() || o.get("DeformValue").is_some()) && self.drop_envelope_art() {
+            return;
+        }
+        if let Some(mask) = o.obj("AI9_Mask").or_else(|| o.obj("Mask")) {
+            if let Some(art) = &mask.art {
+                let on = |key: &str| mask.nums(key).first().copied() == Some(1.0);
+                let value =
+                    OpacityMask { art: art.clone(), clip: on("Clipping"), invert: on("Inverted"), disabled: on("Disabled"), linked: on("Linked") };
+                if let Some(n) = self.last_object().filter(|n| !matches!(n.kind, NodeKind::Layer { .. })) {
+                    n.extras_mut().mask = Some(Box::new(value));
+                } else if !on("Disabled") {
+                    self.unreadable("opacity masks without an owning object", false);
+                }
+                // What the art doesn't read matters only when the mask shapes what shows.
+                for what in &mask.unread {
+                    if on("Disabled") {
+                        self.hidden_unread.insert(what.clone());
+                    } else if let Some(op) = what.strip_prefix('`').and_then(|w| w.strip_suffix('`')) {
+                        self.note_unknown(op, false);
+                    } else {
+                        self.unreadable(what, false);
+                    }
+                }
+            } else if mask.nums("Disabled").first().copied() != Some(1.0) {
+                self.unreadable("opacity masks without readable art", false);
+            }
+        }
+        // Text wrap: area type below the object in its layer flows around it.
+        if let Some(wrap) = text_wrap(o, self.large_canvas.unwrap_or(1.0))
+            && let Some(n) = self.last_object().filter(|n| !matches!(n.kind, NodeKind::Layer { .. }))
+        {
+            n.extras_mut().wrap = Some(wrap);
+        }
+        let name = match o.text("AIArtName") {
+            Some(name) => name,
+            None => match o.obj("AI10_ArtUID").and_then(Obj::content_text) {
+                Some(id) => obj::xml_name(&id),
+                None => return,
+            },
+        };
+        let Some(n) = self.last_object().filter(|n| !matches!(n.kind, NodeKind::Layer { .. }) && !name.is_empty()) else { return };
+        if slot_of(n.name.as_deref()).is_some() {
+            let id = n.id;
+            self.slot_names.insert(id, name);
+        } else {
+            n.name = Some(name);
+        }
+    }
+
+    /// The `/Document` dictionary: the artboards and their display options, Document Raster Effects
+    /// Settings, how many variables and data sets its variable library has, and its Objects on
+    /// Path records.
+    pub(super) fn document(&mut self, o: &Obj) {
+        variable_library(o, 0, &mut self.variables);
+        self.constraint_data(o);
+        if let Some(r) = find_entry(o, "AI Auto Rasterize", 0) {
+            raster_settings(r, &mut self.doc);
+        }
+        let Some(list) = find_entry(o, "ArtboardArray", 0) else { return };
+        for (i, ab) in list.items().enumerate().take(1000) {
+            let (p1, p2) = (ab.nums("PositionPoint1"), ab.nums("PositionPoint2"));
+            let ([x0, y0, ..], [x1, y1, ..]) = (p1.as_slice(), p2.as_slice()) else { continue };
+            let r = Rect::new(*x0, *y0, *x1, *y1).abs();
+            if !sane(r) || r.area() <= 0.0 {
+                continue;
+            }
+            let name = ab.text("Name").unwrap_or_else(|| format!("Artboard {}", i + 1));
+            let mut board = AiArtboard::new(name, r);
+            display_options(ab, &mut board);
+            self.artboards.push(board);
+        }
+    }
+
+    // ---- the document ----------------------------------------------------------------------
+
+    /// The artboard of a file without artboards or crop marks: its size around the template
+    /// box's centre (half a point off the grid).
+    fn sized_board(&self) -> Option<Rect> {
+        let ((w, h), (cx, cy)) = (self.art_size?, self.template_center?);
+        // Rounded out, but not off a whole point the decimals in the file only just miss.
+        let near = |v: f64| (v - v.round()).abs() < 1e-6;
+        let (left, top) = (cx - w / 2.0, cy + h / 2.0);
+        let x0 = if near(left) { left.round() } else { left.floor() };
+        let y1 = if near(top) { top.round() } else { top.ceil() };
+        let r = Rect::new(x0, y1 - h, x0 + w, y1);
+        (sane(r) && w > 0.0 && h > 0.0).then_some(r)
+    }
+
+    /// The first artboard: the `/Document`'s first, else the crop marks, else [`Self::sized_board`].
+    fn first_board(&self) -> Option<Rect> {
+        self.artboards.first().map(|b| b.rect).or(self.cropmarks).or_else(|| self.sized_board())
+    }
+
+    /// The page the art is compared with in the document's space, once the art has started.
+    pub(super) fn page_in_doc(&self) -> Option<Rect> {
+        let board = self.first_board().or_else(|| self.bbox_board())?;
+        Some(self.to_doc?.transform_rect_bbox(board))
+    }
+
+    /// The page of a file that says nothing of its artboard (the legacy format as other apps write
+    /// it): its art's bounding box.
+    fn bbox_board(&self) -> Option<Rect> {
+        let [x0, y0, x1, y1] = self.hires.or(self.bbox)?;
+        Some(Rect::new(x0, y0, x1, y1)).filter(|r| r.width() > 0.0 && r.height() > 0.0)
+    }
+
+    /// Art space → the document (fixed when the art starts, from the artboards read by then). A
+    /// Large Canvas editing copy is written at 1/N scale ([`Self::large_canvas`]): the factor makes
+    /// its art and boxes reach the page's size, which is what the page it is opened beside holds.
+    pub(super) fn ensure_space(&mut self) -> Affine {
+        if let Some(m) = self.to_doc {
+            return m;
+        }
+        let first = self.first_board().or_else(|| self.bbox_board());
+        let top_left = first.map_or(Point::new(0.0, 792.0), |r| Point::new(r.x0, r.y1));
+        let s = self.large_canvas.unwrap_or(1.0);
+        let m = Affine::new([s, 0.0, 0.0, -s, -s * top_left.x, s * top_left.y]);
+        self.to_doc = Some(m);
+        m
+    }
+
+    /// Art space → where the art being read goes: the document, or while a pattern's definition is
+    /// read, the pattern's space (y down).
+    pub(crate) fn space(&mut self) -> Affine {
+        if self.pattern.is_some() { FLIP } else { self.ensure_space() }
+    }
+
+    /// The swatches of the palette, `[None]` first, in its order, and its color groups; a gradient
+    /// swatch only when its gradient was read, and a pattern swatch only for a pattern in
+    /// `patterns`. `None` when the palette is empty.
+    fn palette_swatches(&mut self, patterns: &[PatternDef]) -> Option<(Vec<Swatch>, Vec<localvector_color::swatch::SwatchGroup>)> {
+        if self.palette.is_empty() {
+            return None;
+        }
+        let palette = std::mem::take(&mut self.palette);
+        let swatch = |e: crate::import::ai::palette::Entry| -> Option<Swatch> {
+            use crate::import::ai::palette::Cell;
+            let (paint, global, spot) = match e.cell {
+                Cell::Color { color, global, spot } => (Paint::solid(color), global, spot),
+                Cell::Gradient(g) => {
+                    let mut gp = localvector_color::gradient::GradientPaint::new(self.gradients.get(&g)?.clone());
+                    gp.swatch = Some(e.name.clone());
+                    (Paint::Gradient(Box::new(gp)), false, false)
+                }
+                Cell::Pattern(p) => {
+                    patterns.iter().find(|d| d.name == p)?;
+                    (Paint::Pattern { pattern: p, xf: Affine::IDENTITY }, false, false)
+                }
+            };
+            Some(Swatch { name: e.name, paint, global, spot })
+        };
+        let mut swatches = vec![Swatch { name: "[None]".into(), paint: Paint::None, global: false, spot: false }];
+        swatches.extend(palette.swatches.into_iter().filter_map(swatch));
+        let groups: Vec<_> = palette
+            .groups
+            .into_iter()
+            .map(|(name, s)| localvector_color::swatch::SwatchGroup { name, swatches: s.into_iter().filter_map(swatch).collect() })
+            .collect();
+        Some((swatches, groups))
+    }
+
+    /// The graphic styles of the style list, in its order: each listed name the art styles define with
+    /// an appearance [`appearance_from_art_style`] reads, once (a name listed again, empty or not
+    /// defined is left out), with ids from 1. Also the id of each kept name.
+    fn graphic_styles(&self) -> (Vec<GraphicStyle>, HashMap<String, u32>) {
+        let mut styles: Vec<GraphicStyle> = vec![];
+        let mut ids = HashMap::new();
+        for raw in &self.style_list {
+            let name = obj::text(raw);
+            if name.is_empty() || ids.contains_key(&name) {
+                continue;
+            }
+            let Some(st) = self.styles.get(&name) else { continue };
+            let Some(mut appearance) = appearance_from_art_style(st) else { continue };
+            // A Large Canvas copy's styles are at its art's scale ([`Self::ensure_space`]).
+            if let Some(s) = self.large_canvas.filter(|s| *s != 1.0) {
+                appearance.scale_strokes(s);
+                appearance.scale_effects(s, localvector_effects::scale_effect);
+            }
+            let id = u32::try_from(styles.len() + 1).unwrap_or(u32::MAX);
+            ids.insert(name.clone(), id);
+            let mut style = GraphicStyle { id, ..GraphicStyle::new(name, appearance) };
+            if let Some((opacity, blend, isolate, knockout)) = st.transparency {
+                (style.opacity, style.blend, style.isolate, style.knockout) = (opacity, blend, isolate, knockout);
+            }
+            styles.push(style);
+        }
+        (styles, ids)
+    }
+
+    pub(super) fn finish(mut self) -> Result<Structure, String> {
+        if self.graph.take().is_some() {
+            self.warn(super::types::GRAPH_UNENDED);
+        }
+        // Envelopes whose plugin never closed them keep their drawn art.
+        if !self.envelopes.is_empty() {
+            self.envelopes.clear();
+            self.warn(crate::import::ai::envelope::DRAWN);
+        }
+        if !self.unknown.is_empty() {
+            let ops: Vec<String> = self.unknown.iter().map(|o| format!("`{o}`")).collect();
+            self.unsupported.insert(format!("operators LocalVector doesn't know ({})", ops.join(", ")));
+        }
+        if !self.unsupported.is_empty() {
+            let list: Vec<&str> = self.unsupported.iter().map(String::as_str).collect();
+            return Err(format!("it has {}, which LocalVector doesn't read from it yet", join_and(&list)));
+        }
+        if self.doc.layers.is_empty() {
+            return Err("it has no layers".into());
+        }
+        let to_doc = self.ensure_space();
+        let artboard = self.first_board();
+        drop_commented_copies(&mut self.doc.layers, &self.hidden_ids);
+        super::on_path::apply(&mut self.doc, &self.on_path);
+        let mut doc = std::mem::replace(&mut self.doc, Document::new(1.0, 1.0));
+        let boards: Vec<AiArtboard> = if self.artboards.is_empty() {
+            artboard.or_else(|| self.bbox_board()).map(|r| vec![AiArtboard::new("Artboard 1".to_string(), r)]).unwrap_or_default()
+        } else {
+            std::mem::take(&mut self.artboards)
+        };
+        let board_rects: Vec<Rect> = boards.iter().map(|b| b.rect).collect();
+        doc.artboards = boards
+            .into_iter()
+            .enumerate()
+            .map(|(i, b)| Artboard {
+                id: i as u32 + 1,
+                name: b.name,
+                rect: to_doc.transform_rect_bbox(b.rect),
+                locked: false,
+                show_center_mark: b.center_mark,
+                show_cross_hairs: b.cross_hairs,
+                show_video_safe_areas: b.safe_areas,
+                video_ruler_pixel_aspect_ratio: b.par,
+                color: None,
+            })
+            .collect();
+        if doc.artboards.is_empty() {
+            let rect = doc.art_bounds().filter(|r| sane(*r) && r.area() > 0.0).unwrap_or(Rect::new(0.0, 0.0, 612.0, 792.0));
+            doc.artboards = vec![Artboard {
+                id: 1,
+                name: "Artboard 1".into(),
+                rect,
+                locked: false,
+                show_center_mark: false,
+                show_cross_hairs: false,
+                show_video_safe_areas: false,
+                video_ruler_pixel_aspect_ratio: 1.0,
+                color: None,
+            }];
+        }
+        if !self.ruler_guides.is_empty() {
+            let ids: Vec<u32> = doc.artboards.iter().map(|a| a.id).collect();
+            let (candidates, centre) = (std::mem::take(&mut self.ruler_guides), self.template_center);
+            let pick = |id: NodeId| -> Option<Guide> {
+                let (a, b) = candidates.get(&id)?;
+                let (vertical, board) = ruler_guide(*a, *b, centre, &board_rects)?;
+                let p = to_doc * *a;
+                let artboard = match board {
+                    Some(i) => Some(*ids.get(i)?),
+                    None => None,
+                };
+                let pos = if vertical { p.x } else { p.y };
+                pos.is_finite().then_some(Guide { vertical, pos, artboard, layer: None })
+            };
+            take_ruler_guides(&mut doc.layers, &pick, &mut doc.guides, 0);
+        }
+        if self.color_model.unwrap_or(self.cmyk_colors > self.rgb_colors) {
+            doc.color_mode = ColorMode::Cmyk;
+            let (swatches, groups) = localvector_color::default_swatches(ColorMode::Cmyk.model());
+            (doc.swatches, doc.swatch_groups) = (swatches.into(), groups.into());
+        }
+        if let Some(u) = self.ruler_units.and_then(ruler_unit) {
+            doc.units = u;
+        }
+        // The file's own swatches in place of the defaults, in its order and colour groups.
+        let own_palette = match self.palette_swatches(&doc.patterns) {
+            Some((swatches, groups)) => {
+                (doc.swatches, doc.swatch_groups) = (swatches.into(), groups.into());
+                true
+            }
+            None => false,
+        };
+        // The colour operators' definitions first: a gradient, defined before the art, names a
+        // global process colour as a stop and would otherwise make it an ink (#1771). The header's
+        // custom colors follow. The first definition of a name makes its swatch, and takes the place
+        // of a default swatch of that name when the file has no palette of its own (a reserved name
+        // in brackets, such as `[None]`, keeps its swatch).
+        let mut defined = std::collections::HashSet::new();
+        let colors = self.spots.iter().chain(&self.stop_spots).map(|n| (n, n.spot)).chain(self.custom_colors.iter().map(|n| (n, true)));
+        for (n, spot) in colors {
+            let first = defined.insert(n.name.clone());
+            let swatch = Swatch { name: n.name.clone(), paint: Paint::solid(n.color), global: true, spot };
+            if doc.swatch(&n.name).is_none() {
+                doc.swatches.push(swatch);
+            } else if first
+                && !own_palette
+                && !(n.name.starts_with('[') && n.name.ends_with(']'))
+                && let Some(default) = doc.swatch_mut(&n.name)
+            {
+                *default = swatch;
+            }
+        }
+        if let Some(author) = self.author.take() {
+            doc.metadata.author = author;
+        }
+        for name in doc.patterns.iter().map(|p| p.name.clone()).collect::<Vec<_>>() {
+            if doc.swatch(&name).is_none() {
+                doc.swatches.push(Swatch { paint: Paint::Pattern { pattern: name.clone(), xf: Affine::IDENTITY }, name, global: false, spot: false });
+            }
+        }
+        // The file's graphic styles in place of the defaults, and the objects linked to them.
+        let (styles, ids) = self.graphic_styles();
+        let styles_read = !styles.is_empty();
+        if styles_read {
+            let links: HashMap<NodeId, u32> = self.style_links.iter().filter_map(|(node, name)| Some((*node, *ids.get(name)?))).collect();
+            if !links.is_empty() {
+                link_styles(&mut doc.layers, &links, &styles, 0);
+            }
+            doc.graphic_styles = styles.into();
+        }
+        let mut warnings = self.warnings;
+        if self.drawn_looks > 0 {
+            warnings.push(format!(
+                "objects with several fills or strokes, effects or brushes came in as their drawn look ({}): their appearance isn't editable yet",
+                self.drawn_looks
+            ));
+        }
+        warnings.extend(self.variables.note());
+        Ok(Structure {
+            doc,
+            to_doc,
+            bbox: self.hires.or(self.bbox),
+            artboard,
+            template: self.template,
+            hidden_unread: self.hidden_unread,
+            unread: self.unread,
+            unread_elsewhere: self.unread_elsewhere,
+            slot_names: self.slot_names,
+            restyled: self.restyled,
+            placed_elsewhere: self.placed_elsewhere,
+            envelopes_drawn: self.envelopes_drawn,
+            styles_read,
+            warnings,
+        })
+    }
+}
+
+/// Link the objects of `links` among `nodes` to their graphic style's id, each only when it has its
+/// style's appearance and transparency (`styles`, whose ids are 1, 2, … in order). A path, which
+/// has no contents, takes the style's contents slot.
+fn link_styles(nodes: &mut [Arc<Node>], links: &HashMap<NodeId, u32>, styles: &[GraphicStyle], depth: usize) {
+    if depth > MAX_DEPTH {
+        return;
+    }
+    for n in nodes {
+        if let Some(id) = links.get(&n.id)
+            && let Some(g) = id.checked_sub(1).and_then(|i| styles.get(usize::try_from(i).ok()?)).filter(|g| g.id == *id)
+        {
+            let mut appearance = (*n.appearance).clone();
+            if !n.is_container() && !matches!(n.kind, NodeKind::Text(_) | NodeKind::Image(_)) {
+                appearance.contents_index = g.appearance.contents_index;
+            }
+            if g.transparency_matches(n) && g.appearance_on(n).approx_eq(&appearance) {
+                let n = Arc::make_mut(n);
+                n.appearance = appearance.into();
+                n.extras_mut().graphic_style = Some(*id);
+            }
+        }
+        if n.children().is_some_and(|c| !c.is_empty())
+            && let Some(c) = Arc::make_mut(n).children_mut()
+        {
+            link_styles(c, links, styles, depth + 1);
+        }
+    }
+}
+
+/// The dictionary of entry `key` in `o` or the dictionaries it holds.
+/// How far (points) a ruler guide's ends may lie from the canvas's or an artboard's edges.
+const GUIDE_TOLERANCE: f64 = 0.01;
+
+/// Whether the straight guide path from `a` to `b` (art space) is a ruler guide → whether it is
+/// vertical, and the index in `boards` of the artboard it belongs to (`None`: a canvas guide). A
+/// canvas guide runs across the whole canvas, 16,383 points centred on the template box's
+/// centre `centre`; an artboard guide runs from edge to edge of one artboard of `boards`, inside it.
+fn ruler_guide(a: Point, b: Point, centre: Option<(f64, f64)>, boards: &[Rect]) -> Option<(bool, Option<usize>)> {
+    let near = |u: f64, v: f64| (u - v).abs() <= GUIDE_TOLERANCE;
+    let vertical = match (near(a.x, b.x), near(a.y, b.y)) {
+        (true, false) => true,
+        (false, true) => false,
+        _ => return None,
+    };
+    let (along, across) = if vertical { ((a.y.min(b.y), a.y.max(b.y)), a.x) } else { ((a.x.min(b.x), a.x.max(b.x)), a.y) };
+    if let Some((cx, cy)) = centre {
+        let c = if vertical { cy } else { cx };
+        if near(along.0, c - CANVAS_CENTRE) && near(along.1, c + CANVAS_CENTRE) {
+            return Some((vertical, None));
+        }
+    }
+    let mut on = boards.iter().enumerate().filter(|(_, r)| {
+        let (ends, sides) =
+            if vertical { ((r.min_y(), r.max_y()), (r.min_x(), r.max_x())) } else { ((r.min_x(), r.max_x()), (r.min_y(), r.max_y())) };
+        near(along.0, ends.0) && near(along.1, ends.1) && (sides.0..=sides.1).contains(&across)
+    });
+    match (on.next(), on.next()) {
+        (Some((i, _)), None) => Some((vertical, Some(i))),
+        _ => None,
+    }
+}
+
+/// Moves the children of the layers and sublayers of `nodes` that `pick` makes a guide of into
+/// `guides`, each on its layer.
+fn take_ruler_guides(nodes: &mut [Arc<Node>], pick: &dyn Fn(NodeId) -> Option<Guide>, guides: &mut Vec<Guide>, depth: usize) {
+    if depth > MAX_DEPTH {
+        return;
+    }
+    for n in nodes {
+        if !matches!(n.kind, NodeKind::Layer { .. }) {
+            continue;
+        }
+        let id = n.id;
+        let Some(kids) = Arc::make_mut(n).children_mut() else { continue };
+        kids.retain(|k| match pick(k.id) {
+            Some(g) => {
+                guides.push(Guide { layer: Some(id), ..g });
+                false
+            }
+            None => true,
+        });
+        take_ruler_guides(kids, pick, guides, depth + 1);
+    }
+}
+
+pub(super) fn find_entry<'o>(o: &'o Obj, key: &str, depth: usize) -> Option<&'o Obj> {
+    if depth > 8 {
+        return None;
+    }
+    o.obj(key).or_else(|| o.entries.iter().flat_map(|(_, v)| v.iter()).filter_map(V::obj).find_map(|c| find_entry(c, key, depth + 1)))
+}
+
+/// Add the variables and data sets of the variable libraries in `o` or the dictionaries it holds
+/// (see [`VariableLibrary`]) to `found`.
+fn variable_library(o: &Obj, depth: usize, found: &mut VariableLibrary) {
+    if depth > MAX_DEPTH {
+        return;
+    }
+    if o.ty == "XMLNode" && element_name(o).as_deref() == Some("variableSets") {
+        for set in elements(o, "variableSet") {
+            found.variables += elements(set, "variables").flat_map(|v| elements(v, "variable")).count();
+            found.data_sets += elements(set, "sampleDataSets").flat_map(|d| elements(d, "sampleDataSet")).count();
+        }
+        return;
+    }
+    for c in o.items() {
+        variable_library(c, depth + 1, found);
+    }
+}

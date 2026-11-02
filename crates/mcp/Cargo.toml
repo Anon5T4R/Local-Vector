@@ -1,0 +1,33 @@
+[package]
+name = "localvector-mcp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "LocalVector MCP server: JSON-RPC 2.0 over stdio, driving a running app or a headless session"
+
+[lints]
+workspace = true
+
+[features]
+default = ["bundled-fonts"]
+# The fonts localvector-text bundles for documents, through the engine's `bundled-fonts`, as
+# localvector-ui-egui's. Off, for an embedder that supplies every document font at run time.
+bundled-fonts = ["localvector-engine/bundled-fonts"]
+
+[dependencies]
+localvector-engine = { workspace = true }
+localvector-render = { workspace = true }
+localvector-svg = { workspace = true }
+localvector-format = { workspace = true }
+localvector-tools = { workspace = true }
+localvector-geom = { workspace = true }
+localvector-doc = { workspace = true }
+serde_json = { workspace = true }
+log = { workspace = true }
+
+image = { workspace = true }
+
+[dev-dependencies]
+localvector-testkit = { workspace = true }
+proptest = { workspace = true }
+socket2 = { workspace = true }

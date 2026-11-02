@@ -1,0 +1,26 @@
+[package]
+name = "localvector-cad"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "LocalVector CAD interchange: a hand-written ASCII DXF writer (R12 to 2018)"
+
+[lints]
+workspace = true
+
+[dependencies]
+localvector-geom = { workspace = true }
+localvector-color = { workspace = true }
+localvector-doc = { workspace = true }
+localvector-effects = { workspace = true }
+localvector-brush = { workspace = true }
+localvector-pathops = { workspace = true }
+localvector-text = { workspace = true }
+kurbo = { workspace = true }
+image = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+# The tests lay type out in the bundled fonts (the workspace leaves turning them on to the engine)
+# and in fonts built in code (`localvector_text::test_fonts`).
+localvector-text = { workspace = true, features = ["bundled-fonts", "test-fonts"] }

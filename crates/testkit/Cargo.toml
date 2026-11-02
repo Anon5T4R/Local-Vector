@@ -1,0 +1,25 @@
+[package]
+name = "localvector-testkit"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "LocalVector test helpers: fixtures, generators, render comparison, geometry assertions"
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+localvector-geom = { workspace = true }
+localvector-color = { workspace = true }
+localvector-doc = { workspace = true }
+localvector-engine = { workspace = true, features = ["bundled-fonts"] }
+localvector-render = { workspace = true }
+localvector-format = { workspace = true }
+localvector-svg = { workspace = true }
+kurbo = { workspace = true }
+serde_json = { workspace = true }
+proptest = { workspace = true }
+image = { workspace = true }
+# A Group 4 encoder and the T.4 run codes, to write CCITT Group 3 TIFFs (`tiff::group3`).
+fax = "0.2"

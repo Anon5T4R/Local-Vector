@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  LocalVector MSI (WiX Toolset v5: `dotnet tool install -g wix`, plus its UI and Util extensions:
+  `wix extension add -g WixToolset.UI.wixext/5.0.2` and the same for WixToolset.Util.wixext).
+  Built by package.ps1:
+
+    wix build localvector.wxs -arch x64 -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext
+      -d Version=1.2.3 -d DisplayVersion=1.2.3 -d BinDir=... -d IconPath=... -d LicenseRtf=...
+      -d BannerBmp=... -d DialogBmp=... -d DocsDir=... -o out.msi
+
+  Per-machine install into Program Files\LocalVector, with a Start Menu shortcut and a desktop
+  shortcut, an App Paths entry, and LocalVector's own file types offered under "Open with"
+  (never forced as the default). Files opened with LocalVector arrive on its command line.
+
+  UpgradeCode and the component GUIDs below belong to LocalVector alone. Never copy them from (or
+  into) a sibling app of the suite: Windows Installer treats every package sharing an UpgradeCode
+  as one product, so a shared code makes one app's installer refuse to install ("a newer version
+  is already installed") or silently uninstall the other.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package
+      Name="LocalVector"
+      Manufacturer="Anon5T4R"
+      Version="$(var.Version)"
+      UpgradeCode="216B5108-B5E4-4D14-AD5A-DBFCF7A52D9F"
+      Scope="perMachine"
+      Compressed="yes"
+      Language="1033">
+    <SummaryInformation Description="LocalVector vector illustration app" Manufacturer="Anon5T4R" />
+    <!-- HKLM registrations must never point into a per-user installation: allow removing an
+         existing installation even if an older MSI let it install per-user. -->
+    <Launch Condition="ALLUSERS = 1 OR (Installed AND REMOVE = &quot;ALL&quot;)"
+        Message="LocalVector must be installed for all users. Run setup with administrator privileges and ALLUSERS=1; per-user installation is not supported." />
+    <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other
+         (MSI versions are numeric, so 1.2.3-rc.1 and 1.2.3-rc.2 are both 1.2.3). -->
+    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A newer version of LocalVector is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <!-- Windows Installer caches this icon under its Id's filename, and an icon whose Id carries
+         the target's .exe extension is what the shell expects (ICE50 for advertised shortcuts,
+         and the taskbar cache) even when the source is an ICO. -->
+    <Icon Id="LocalVectorIcon.exe" SourceFile="$(var.IconPath)" />
+    <Property Id="ARPPRODUCTICON" Value="LocalVectorIcon.exe" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/Anon5T4R/Local-Vector" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/Anon5T4R/Local-Vector" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/Anon5T4R/Local-Vector/discussions" />
+
+    <!-- The setup wizard: WixUI_Minimal is welcome + licence, progress, then a finish page with
+         "Launch LocalVector" (ticked by default). Its art is ours, drawn from the app icon by
+         package.ps1, not WiX's stock bitmaps. -->
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
+    <WixVariable Id="WixUIBannerBmp" Value="$(var.BannerBmp)" />
+    <WixVariable Id="WixUIDialogBmp" Value="$(var.DialogBmp)" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="LocalVector $(var.DisplayVersion) is installed. You can start it any time from the Start menu." />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch LocalVector" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <!-- Runs in the wizard's own (elevated) process, so the app starts in the chosen session. -->
+    <Property Id="WixShellExecTarget" Value="[#LocalVectorExe]" />
+    <CustomAction Id="LaunchLocalVector" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)" DllEntry="WixShellExec" Impersonate="yes" Return="ignore" />
+    <!-- The full version (Version is numeric, so it drops a pre-release tag), shown on the wizard's
+         pages through localvector.en-us.wxl. -->
+    <Property Id="LocalVectorVersion" Value="$(var.DisplayVersion)" />
+    <UI>
+      <ui:WixUI Id="WixUI_Minimal" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchLocalVector"
+          Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+    </UI>
+
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="LocalVector" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+    <StandardDirectory Id="DesktopFolder" />
+
+    <Feature Id="Main" Title="LocalVector" Level="1">
+      <ComponentGroupRef Id="Documentation" />
+      <ComponentGroupRef Id="LocalVectorFiles" />
+    </Feature>
+  </Package>
+
+  <Fragment>
+    <ComponentGroup Id="Documentation" Directory="INSTALLFOLDER">
+      <Files Include="$(var.DocsDir)\**" />
+    </ComponentGroup>
+    <ComponentGroup Id="LocalVectorFiles" Directory="INSTALLFOLDER">
+      <Component Id="LocalVectorApp" Guid="08E5063C-BC35-44DA-B356-A5D1EC3F3CBD">
+        <File Id="LocalVectorExe" Source="$(var.BinDir)\localvector.exe" KeyPath="yes" />
+
+        <!-- .vectorcraft: LocalVector's own format; LocalVector is its default app. .drawcraft is
+             the name that format had before the upstream rename and still opens. -->
+        <ProgId Id="LocalVector.Document" Description="LocalVector Document" Icon="LocalVectorExe" IconIndex="0">
+          <Extension Id="vectorcraft" ContentType="application/x-vectorcraft">
+            <Verb Id="open" Command="Open" TargetFile="LocalVectorExe" Argument="&quot;%1&quot;" />
+          </Extension>
+          <Extension Id="drawcraft" ContentType="application/x-vectorcraft">
+            <Verb Id="open" Command="Open" TargetFile="LocalVectorExe" Argument="&quot;%1&quot;" />
+          </Extension>
+        </ProgId>
+        <!-- Everything else File > Open reads: offered under "Open with", never forced as the
+             default (the shared formats belong to other apps). -->
+        <ProgId Id="LocalVector.Template" Description="LocalVector Template" Icon="LocalVectorExe" IconIndex="0" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\LocalVector.Template\shell\open\command" Value="&quot;[#LocalVectorExe]&quot; &quot;%1&quot;" Type="string" />
+        <ProgId Id="LocalVector.Svg" Description="SVG Document" Icon="LocalVectorExe" IconIndex="0" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\LocalVector.Svg\shell\open\command" Value="&quot;[#LocalVectorExe]&quot; &quot;%1&quot;" Type="string" />
+        <ProgId Id="LocalVector.Pdf" Description="PDF Document" Icon="LocalVectorExe" IconIndex="0" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\LocalVector.Pdf\shell\open\command" Value="&quot;[#LocalVectorExe]&quot; &quot;%1&quot;" Type="string" />
+        <ProgId Id="LocalVector.Artwork" Description="PDF-compatible artwork" Icon="LocalVectorExe" IconIndex="0" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\LocalVector.Artwork\shell\open\command" Value="&quot;[#LocalVectorExe]&quot; &quot;%1&quot;" Type="string" />
+        <ProgId Id="LocalVector.Eps" Description="EPS Document" Icon="LocalVectorExe" IconIndex="0" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\LocalVector.Eps\shell\open\command" Value="&quot;[#LocalVectorExe]&quot; &quot;%1&quot;" Type="string" />
+        <ProgId Id="LocalVector.Affinity" Description="Affinity Document" Icon="LocalVectorExe" IconIndex="0" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\LocalVector.Affinity\shell\open\command" Value="&quot;[#LocalVectorExe]&quot; &quot;%1&quot;" Type="string" />
+        <ProgId Id="LocalVector.Dxf" Description="DXF Drawing" Icon="LocalVectorExe" IconIndex="0" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\LocalVector.Dxf\shell\open\command" Value="&quot;[#LocalVectorExe]&quot; &quot;%1&quot;" Type="string" />
+        <ProgId Id="LocalVector.Metafile" Description="EMF/WMF Metafile" Icon="LocalVectorExe" IconIndex="0" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\LocalVector.Metafile\shell\open\command" Value="&quot;[#LocalVectorExe]&quot; &quot;%1&quot;" Type="string" />
+        <ProgId Id="LocalVector.Image" Description="Image" Icon="LocalVectorExe" IconIndex="0" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\LocalVector.Image\shell\open\command" Value="&quot;[#LocalVectorExe]&quot; &quot;%1&quot;" Type="string" />
+
+        <RegistryValue Root="HKMU" Key="Software\Classes\.vctemplate\OpenWithProgids" Name="LocalVector.Template" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.svg\OpenWithProgids" Name="LocalVector.Svg" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.svgz\OpenWithProgids" Name="LocalVector.Svg" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.pdf\OpenWithProgids" Name="LocalVector.Pdf" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.ai\OpenWithProgids" Name="LocalVector.Artwork" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.ait\OpenWithProgids" Name="LocalVector.Artwork" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.eps\OpenWithProgids" Name="LocalVector.Eps" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.af\OpenWithProgids" Name="LocalVector.Affinity" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.afdesign\OpenWithProgids" Name="LocalVector.Affinity" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.afpub\OpenWithProgids" Name="LocalVector.Affinity" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.dxf\OpenWithProgids" Name="LocalVector.Dxf" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.emf\OpenWithProgids" Name="LocalVector.Metafile" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.wmf\OpenWithProgids" Name="LocalVector.Metafile" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.png\OpenWithProgids" Name="LocalVector.Image" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.jpg\OpenWithProgids" Name="LocalVector.Image" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.jpeg\OpenWithProgids" Name="LocalVector.Image" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.gif\OpenWithProgids" Name="LocalVector.Image" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.webp\OpenWithProgids" Name="LocalVector.Image" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.tif\OpenWithProgids" Name="LocalVector.Image" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.tiff\OpenWithProgids" Name="LocalVector.Image" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\.bmp\OpenWithProgids" Name="LocalVector.Image" Value="" Type="string" />
+
+        <!-- "Open with" app list and the Run dialog (Win+R "localvector"). -->
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe" Name="FriendlyAppName" Value="LocalVector" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\shell\open\command" Value="&quot;[#LocalVectorExe]&quot; &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".vectorcraft" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".drawcraft" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".vctemplate" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".svg" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".svgz" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".pdf" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".ai" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".ait" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".eps" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".af" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".afdesign" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".afpub" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".dxf" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".emf" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".wmf" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".png" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".jpg" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".jpeg" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".gif" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".webp" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".tif" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".tiff" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".bmp" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\localvector.exe" Value="[#LocalVectorExe]" Type="string" />
+        <!-- Where this MSI installed the app. The app's own updater reads it (HKLM here) under the
+             suite's key to know this is an MSI install, so it updates with the new MSI rather than
+             the portable zip. -->
+        <RegistryValue Root="HKLM" Key="Software\Anon5T4R\LocalVector" Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" />
+      </Component>
+
+      <!-- Shortcuts are plain links to localvector.exe, not advertised MSI shortcuts: advertised
+           ones point at a Windows Installer descriptor rather than the program, which Windows
+           can't use as a file handler, and Windows Installer caches their icon under its <Icon Id>.
+           Each has its own component with an HKLM key path, so Windows Installer removes it on
+           uninstall; in this per-machine package both folders are the all-users ones (a desktop
+           shortcut for every account, as the suite's installers do). -->
+      <Component Id="LocalVectorStartMenuShortcut" Directory="ProgramMenuFolder" Guid="67F29F9E-FBEA-4C81-86DE-A0F4A9CF6394">
+        <Shortcut Id="StartMenuShortcut" Name="LocalVector" Description="LocalVector vector illustration app"
+            Target="[#LocalVectorExe]" WorkingDirectory="INSTALLFOLDER" Icon="LocalVectorIcon.exe" IconIndex="0" />
+        <RegistryValue Root="HKLM" Key="Software\LocalVector\Shortcuts" Name="StartMenu" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <Component Id="LocalVectorDesktopShortcut" Directory="DesktopFolder" Guid="A39818C9-0B93-4470-AD12-30093F71D554">
+        <Shortcut Id="DesktopShortcut" Name="LocalVector" Description="LocalVector vector illustration app"
+            Target="[#LocalVectorExe]" WorkingDirectory="INSTALLFOLDER" Icon="LocalVectorIcon.exe" IconIndex="0" />
+        <RegistryValue Root="HKLM" Key="Software\LocalVector\Shortcuts" Name="Desktop" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <Component Id="LocalVectorCli" Guid="55CF9C14-906C-4A7C-A473-5FCB2CB104B9">
+        <File Id="LocalVectorCliExe" Source="$(var.BinDir)\localvector-cli.exe" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

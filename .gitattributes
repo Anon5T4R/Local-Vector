@@ -1,0 +1,26 @@
+# Every checkout is byte-identical to the repository: no line-ending conversion, ever.
+# Windows checkouts default to core.autocrlf=true, which rewrote assets whose SHA-256
+# ATTRIBUTION.md records and the patches vendored under libs/.
+* -text
+
+# Not text at all: no textual diffs or merges either.
+*.pdf binary
+*.pfb binary
+*.ttf binary
+*.ttc binary
+*.otf binary
+*.icc binary
+*.icns binary
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.tiff binary
+*.webp binary
+*.ppm binary
+*.atn binary
+*.pat binary
+*.bin binary
+*.wasm binary
+*.gz binary

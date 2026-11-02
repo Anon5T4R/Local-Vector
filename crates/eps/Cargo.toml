@@ -1,0 +1,39 @@
+[package]
+name = "localvector-eps"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "LocalVector Encapsulated PostScript: a hand-written EPS writer (PostScript Level 2 and 3) with TIFF previews"
+
+[lints]
+workspace = true
+
+[dependencies]
+localvector-geom = { workspace = true }
+localvector-color = { workspace = true }
+localvector-doc = { workspace = true }
+localvector-effects = { workspace = true }
+localvector-brush = { workspace = true }
+localvector-text = { workspace = true }
+# Windows metafile previews, opened when a file's PostScript can't be read.
+localvector-metafile = { workspace = true }
+# Non-native art in Illustrator editing data (a placed PDF's content, kept as a PDF).
+localvector-pdf = { workspace = true }
+# The TIFF writer (previews) and PackBits, shared with raster export.
+localvector-render = { workspace = true }
+kurbo = { workspace = true }
+image = { workspace = true }
+flate2 = { workspace = true }
+ruzstd = { workspace = true }
+# Images read through `CCITTFaxDecode`.
+hayro-ccitt = { workspace = true }
+# Live effects' params, as the art styles that name them give them.
+serde_json = { workspace = true }
+# Substring search for PostScript `search`.
+memchr = { workspace = true }
+
+[dev-dependencies]
+localvector-testkit = { workspace = true }
+localvector-text = { workspace = true, features = ["test-fonts"] }
+# Tests: a Group 4 encoder and the T.4 run codes, to write CCITT test images.
+fax = "0.2"

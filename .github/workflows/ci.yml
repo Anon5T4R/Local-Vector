@@ -1,0 +1,104 @@
+name: CI
+
+# Qualidade em todo push para main/master e todo PR: fmt, clippy, build --locked, testes e os
+# gates do app (brands, assets, layers, cursors). Autossuficiente: não chama workflow de outra
+# organização (o gate compartilhado do upstream foi substituído no rebrand).
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Check (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Dependências de build (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxkbcommon-dev libwayland-dev libx11-dev libxcb1-dev \
+            libxcursor-dev libxrandr-dev libxi-dev libfontconfig1-dev libfreetype-dev \
+            libgtk-3-dev pkg-config libgl1-mesa-dev mesa-vulkan-drivers fonts-dejavu-core
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Fontes japonesas vendored
+        shell: bash
+        run: echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/assets/craft-fonts" >> "$GITHUB_ENV"
+      - name: Formatação (nightly; só o nosso código — libs/ e assets/craft-fonts mantêm o estilo de origem)
+        shell: bash
+        # `cargo fmt --all` também formata as dependências de path (libs/winprint.rs, libs/craft-libs),
+        # que são forks vendorizados e não são nossos: o gate é por arquivo, com as árvores vendored
+        # fora. A lista passa por `xargs` porque os ~1.900 `.rs` do app estouram o limite de linha de
+        # comando do runner Windows (a lição do local-paint: gate e validação local no mesmo escopo).
+        run: |
+          set -euo pipefail
+          git ls-files -z '*.rs' | grep -zvE '^(libs|assets/craft-fonts)/' | xargs -0 rustfmt +nightly --edition 2024 --check
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Clippy
+        run: cargo clippy --locked --all-targets -- -D warnings
+      - name: Build --locked
+        run: cargo build --locked
+      - name: Testes
+        env:
+          LOCALVECTOR_REQUIRE_WINRES: ${{ runner.os == 'Windows' && '1' || '' }}
+        run: cargo test --locked
+
+  gates:
+    name: Gates do app (brands, assets, layers, cursors)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: brands — nenhum nome de produto de outro fornecedor no texto visível
+        run: cargo run -q -p xtask -- brands
+      - name: assets — todo asset arquivado tem linha em ASSETS.md
+        run: cargo run -q -p xtask -- assets
+      - name: layers — fronteiras de crate (L0–L6)
+        run: cargo run -q -p xtask -- layers
+      - name: cursors — todo Cursor tem entrada em cursors.toml (só avisa)
+        run: cargo run -q -p xtask -- cursors
+
+  git-sources:
+    name: Sem dependências git remotas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Cargo.lock não pode ter fontes git+
+        run: |
+          set -euo pipefail
+          test -f Cargo.lock || { echo "Cargo.lock is missing"; exit 1; }
+          cargo metadata --locked --format-version 1 > /dev/null
+          python3 - <<'PY'
+          import sys, tomllib
+          lock = tomllib.load(open("Cargo.lock", "rb"))
+          bad = sorted({p["source"] for p in lock.get("package", [])
+                        if p.get("source", "").startswith("git+")})
+          if bad:
+              print("Dependências git encontradas (proibido):", *bad, sep="\n")
+              sys.exit(1)
+          PY
