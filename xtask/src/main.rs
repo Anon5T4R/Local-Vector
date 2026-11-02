@@ -283,6 +283,7 @@ fn cmd_ci() -> Result<(), String> {
                 // only — the same scope as the CI's per-file gate.
                 let members = workspace_packages()?;
                 let mut c = cargo();
+                c.args(["fmt"]);
                 for name in &members {
                     c.args(["-p", name]);
                 }
