@@ -87,14 +87,13 @@
         <File Id="LocalVectorExe" Source="$(var.BinDir)\localvector.exe" KeyPath="yes" />
 
         <!-- .vectorcraft: LocalVector's own format; LocalVector is its default app. .drawcraft is
-             the name that format had before the upstream rename and still opens. -->
+             the name that format had before the upstream rename and still opens: it maps to the
+             same class, whose single open Verb (below, under .vectorcraft) covers both. -->
         <ProgId Id="LocalVector.Document" Description="LocalVector Document" Icon="LocalVectorExe" IconIndex="0">
           <Extension Id="vectorcraft" ContentType="application/x-vectorcraft">
             <Verb Id="open" Command="Open" TargetFile="LocalVectorExe" Argument="&quot;%1&quot;" />
           </Extension>
-          <Extension Id="drawcraft" ContentType="application/x-vectorcraft">
-            <Verb Id="open" Command="Open" TargetFile="LocalVectorExe" Argument="&quot;%1&quot;" />
-          </Extension>
+          <Extension Id="drawcraft" ContentType="application/x-vectorcraft" />
         </ProgId>
         <!-- Everything else File > Open reads: offered under "Open with", never forced as the
              default (the shared formats belong to other apps). -->
