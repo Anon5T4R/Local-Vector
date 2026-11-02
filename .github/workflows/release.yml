@@ -22,7 +22,9 @@ jobs:
       - name: Fontes japonesas vendored
         run: 'echo "CRAFT_FONTS_DIR=$env:GITHUB_WORKSPACE\assets\craft-fonts" >> $env:GITHUB_ENV'
       - name: WiX Toolset
-        run: dotnet tool install --global wix
+        run: dotnet tool install --global wix --version 5.0.2
+      - name: Extensões WiX (UI + Util, pinadas - o MSI usa WixUI_Minimal e a Util; releasing.md)
+        run: wix extension add -g WixToolset.UI.wixext/5.0.2 WixToolset.Util.wixext/5.0.2
       - name: Aceite da EULA WiX (OSMF; fee só para orgs com receita >= US$10k/ano)
         run: wix eula accept wix7
       - name: Build e pacote
