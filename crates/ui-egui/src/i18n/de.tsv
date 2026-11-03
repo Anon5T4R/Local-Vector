@@ -775,7 +775,6 @@ font-technology	Variable	Variabel
 	Discard Empty Type	Leeren Text verwerfen
 	Discard Recovered Documents	Wiederhergestellte Dokumente verwerfen
 	Discard White Overprint in Output	Weißes Überdrucken in der Ausgabe verwerfen
-	Discord	Discord
 	Discretionary Hyphen	Bedingter Trennstrich
 	Discretionary Ligatures	Bedingte Ligaturen
 	Display All Blacks Accurately	Alle Schwarztöne genau anzeigen
@@ -1627,9 +1626,6 @@ file-filter	Templates	Vorlagen
 	Italian	Italienisch
 	Japanese	Japanisch
 	Join	Zusammenfügen
-	Join Our Discord	Unserem Discord beitreten
-	Join our Discord	Unserem Discord beitreten
-	Join the LocalVector community on Discord	Treten Sie der LocalVector-Community auf Discord bei
 	Join the lines of each paragraph	Die Zeilen jedes Absatzes verbinden
 	Join Tool	Zusammenfügen-Werkzeug
 	Justification…	Abstände…

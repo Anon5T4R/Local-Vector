@@ -34,7 +34,6 @@
 	About LocalVector	Tietoja LocalVectorista
 	Align to Path	Tasaa polkuun
 	Cut Path at Selected Anchor Points	Leikkaa polku valituista ankkuripisteistä
-	Join Our Discord	Liity Discordiimme
 	Language	Kieli
 	UI Brightness	Käyttöliittymän kirkkaus
 	Dark	Tumma
@@ -3856,9 +3855,6 @@ effect	Regular	Normaali
 	Vector illustration — fast, open, scriptable.	Vektorikuvitusta – nopea, avoin, skriptattava.
 	Welcome to LocalVector	Tervetuloa LocalVectoriin
 	LocalVector website	LocalVectorin verkkosivusto
-	Discord	Discord
-	Join our Discord	Liity Discordiimme
-	Join the LocalVector community on Discord	Liity LocalVector-yhteisöön Discordissa
 	Source code on GitHub	Lähdekoodi GitHubissa
 	All Tools	Kaikki työkalut
 	Draw	Piirrä

@@ -794,7 +794,6 @@ font-technology	Variable	Вариативные
 	Discard Empty Type	Отменить пустой текст
 	Discard Recovered Documents	Отменить восстановленные документы
 	Discard White Overprint in Output	Отменить наложение белого при выводе
-	Discord	Discord
 	Discretionary Hyphen	Мягкий перенос
 	Discretionary Ligatures	Дискреционные лигатуры
 	Display All Blacks Accurately	Отображать все чёрные точно
@@ -1656,9 +1655,6 @@ file-filter	Templates	Шаблоны
 	Italian	Итальянский
 	Japanese	Японский
 	Join	Соединить
-	Join Our Discord	Присоединяйтесь к нашему Discord
-	Join our Discord	Присоединяйтесь к нашему Discord
-	Join the LocalVector community on Discord	Присоединяйтесь к сообществу LocalVector в Discord
 	Join the lines of each paragraph	Соединять строки каждого абзаца
 	Join Tool	Инструмент «Соединение»
 	Justification…	Выключка…

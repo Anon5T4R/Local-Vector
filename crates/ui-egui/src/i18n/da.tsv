@@ -12,7 +12,6 @@
 	About LocalVector	Om LocalVector
 	Align to Path	Justér til kurve
 	Cut Path at Selected Anchor Points	Klip kurve ved valgte ankerpunkter
-	Join Our Discord	Slut dig til vores Discord
 	Language	Sprog
 	UI Brightness	Lysstyrke i brugerfladen
 	Dark	Mørk
@@ -3657,9 +3656,6 @@ effect	Regular	Regular
 	Vector illustration — fast, open, scriptable.	Vektorillustration — hurtig, åben, scriptbar.
 	Welcome to LocalVector	Velkommen til LocalVector
 	LocalVector website	LocalVector-websted
-	Discord	Discord
-	Join our Discord	Deltag i vores Discord
-	Join the LocalVector community on Discord	Deltag i LocalVector-fællesskabet på Discord
 	Source code on GitHub	Kildekode på GitHub
 	All Tools	Alle værktøjer
 	Draw	Tegn

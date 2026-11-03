@@ -758,7 +758,6 @@ font-technology	Variable	可變
 	Discard Empty Type	捨棄空白文字
 	Discard Recovered Documents	捨棄已復原的文件
 	Discard White Overprint in Output	輸出時捨棄白色疊印
-	Discord	Discord
 	Discretionary Hyphen	選擇性連字號
 	Discretionary Ligatures	任意連字
 	Display All Blacks Accurately	精確顯示所有黑色
@@ -1623,9 +1622,6 @@ file-filter	Templates	範本
 	Italian	義大利文
 	Japanese	日文
 	Join	連接
-	Join Our Discord	加入我們的 Discord
-	Join our Discord	加入我們的 Discord
-	Join the LocalVector community on Discord	加入 Discord 上的 LocalVector 社群
 	Join the lines of each paragraph	合併每個段落的各行
 	Join Tool	連接工具
 	Justification…	對齊設定…

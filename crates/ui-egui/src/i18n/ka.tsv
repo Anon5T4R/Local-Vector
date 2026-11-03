@@ -19,7 +19,6 @@
 	About LocalVector	LocalVector-ის შესახებ
 	Align to Path	ტრაექტორიაზე სწორება
 	Cut Path at Selected Anchor Points	ტრაექტორიის გაჭრა მონიშნულ საყრდენ წერტილებზე
-	Join Our Discord	შემოგვიერთდით Discord-ზე
 	Language	ენა
 	UI Brightness	ინტერფეისის სიკაშკაშე
 	Dark	ბნელი
@@ -3440,9 +3439,6 @@ effect	Regular	ჩვეულებრივი
 	Vector illustration — fast, open, scriptable.	ვექტორული ილუსტრაცია — სწრაფი, ღია, სკრიპტებით მართვადი.
 	Welcome to LocalVector	კეთილი იყოს თქვენი მობრძანება LocalVector-ში
 	LocalVector website	LocalVector-ის ვებსაიტი
-	Discord	Discord
-	Join our Discord	შემოგვიერთდით Discord-ზე
-	Join the LocalVector community on Discord	შემოუერთდით LocalVector-ის საზოგადოებას Discord-ზე
 	Source code on GitHub	საწყისი კოდი GitHub-ზე
 	All Tools	ყველა ხელსაწყო
 	Draw	ხატვა

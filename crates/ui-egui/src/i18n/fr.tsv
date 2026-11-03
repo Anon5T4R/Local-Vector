@@ -799,7 +799,6 @@ font-technology	Variable	Variables
 	Discard Empty Type	Supprimer le texte vide
 	Discard Recovered Documents	Ignorer les documents récupérés
 	Discard White Overprint in Output	Ignorer la surimpression du blanc en sortie
-	Discord	Discord
 	Discretionary Hyphen	Tiret conditionnel
 	Discretionary Ligatures	Ligatures conditionnelles
 	Display All Blacks Accurately	Afficher tous les noirs avec précision
@@ -1626,9 +1625,6 @@ font-technology	Variable	Variables
 	Italian	Italien
 	Japanese	Japonais
 	Join	Joindre
-	Join Our Discord	Rejoignez notre Discord
-	Join our Discord	Rejoignez notre Discord
-	Join the LocalVector community on Discord	Rejoignez la communauté LocalVector sur Discord
 	Join the lines of each paragraph	Joindre les lignes de chaque paragraphe
 	Join Tool	Outil Jonction
 	Justification…	Justification…

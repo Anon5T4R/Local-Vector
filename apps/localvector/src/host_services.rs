@@ -293,7 +293,7 @@ pub(crate) fn services(parent: Parent, ui: egui::Context) -> Services {
         // clipboard holds and macOS asks the pasteboard server, so they check in line.
         // The probe's handle is made on its own thread, from the window (`Send`), not its raw display.
         clipboard_probe: cfg!(target_os = "linux").then(|| Box::new(move || clipboard::system_clipboard(clip_probe)) as ClipboardProbeFactory),
-        // Help → Discord / website / GitHub, the Discord button, About and Home links.
+        // Help → website / GitHub / Report an Issue, the About and Home links.
         open_url: Some(Box::new(|url: &str| {
             let _ = webbrowser::open(url);
         })),
