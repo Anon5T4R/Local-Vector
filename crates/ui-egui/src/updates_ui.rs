@@ -118,7 +118,7 @@ pub(crate) fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
     #[cfg(target_arch = "wasm32")]
     if app.updates_rt.manual_window_open {
         let mut open = true;
-        egui::Window::new(tl!("LocalVector Updates"))
+        egui::Window::new(tl!("Local Vector Updates"))
             .open(&mut open)
             .collapsible(false)
             .resizable(false)
@@ -166,7 +166,7 @@ mod tests {
         let release = craft_update::Release {
             tag: "v99.0.0".into(),
             version: craft_update::parse_version("99.0.0"),
-            name: "LocalVector 99.0.0".into(),
+            name: "Local Vector 99.0.0".into(),
             html_url: "https://github.com/Anon5T4R/Local-Vector/releases/tag/v99.0.0".into(),
             ..Default::default()
         };

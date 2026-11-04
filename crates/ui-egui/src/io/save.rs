@@ -294,14 +294,16 @@ fn acknowledged(p: &Value) -> Value {
 }
 
 /// Writing `path` over the file the active document was read from, when reading it left things
-/// out (hidden text, art or layers LocalVector can't read yet): asks first, and OK runs `command`
+/// out (hidden text, art or layers Local Vector can't read yet): asks first, and OK runs `command`
 /// with `params` and `acknowledgeLoss` → `{pending}` while it asks, `None` when nothing is lost.
 pub(super) fn ask_before_losing(app: &mut LocalvectorApp, path: &str, command: &str, params: &Value) -> Option<Value> {
     let what = fileio::losses_summary(fileio::overwrite_losses(app.session.active()?, path, params)?);
     let name = fileio::file_name(path);
     let message = crate::i18n::fmt(tl!("Replace “{name}”, the file this document was opened from?"), &[("name", &name)]);
     let detail = crate::i18n::fmt(
-        tl!("Opening it left out what LocalVector can't read yet ({what}), so replacing it loses that for good. Save under another name to keep it."),
+        tl!(
+            "Opening it left out what Local Vector can't read yet ({what}), so replacing it loses that for good. Save under another name to keep it."
+        ),
         &[("what", &what)],
     );
     let mut params = acknowledged(params);

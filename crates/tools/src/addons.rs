@@ -1,4 +1,4 @@
-//! The tools of LocalVector's built-in add-ons. They aren't in the toolbars as they ship: the All
+//! The tools of Local Vector's built-in add-ons. They aren't in the toolbars as they ship: the All
 //! Tools drawer lists them (under their add-on's heading) so they can be added, and each add-on's
 //! submenu selects them. Like every tool they only emit commands (`addon.<name>.*`).
 

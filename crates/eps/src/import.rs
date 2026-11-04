@@ -19,7 +19,7 @@
 //! (1998), listed by PRONOM at https://www.nationalarchives.gov.uk/PRONOM/fmt/423. A file in that
 //! format whose program has its layers (`%AI5_BeginLayer`) comes in through them, as `native` reads
 //! an Illustrator EPS's editing copy (#1027), and one without layers (Illustrator 3) comes in
-//! through its art put on one layer, as its page when that can't be read. One LocalVector wrote (its prolog the procedure set
+//! through its art put on one layer, as its page when that can't be read. One Local Vector wrote (its prolog the procedure set
 //! [`crate::legacy_ai::PROCSET`], which prints its gradients flat and leaves its type out) comes in
 //! from those layers alone, without its page.
 //!
@@ -96,7 +96,7 @@ struct Dsc {
     /// In the legacy Illustrator format: its header has `%AI…` comments or names the app as the
     /// creator (see the module docs for the specification).
     illustrator: bool,
-    /// Its prolog is the one LocalVector's legacy `.ai` writer includes
+    /// Its prolog is the one Local Vector's legacy `.ai` writer includes
     /// ([`crate::legacy_ai::PROCSET`] in `%%DocumentSuppliedResources`).
     own_legacy: bool,
 }
@@ -182,7 +182,7 @@ pub const POSTSCRIPT_ERRORS: &[(&str, &str)] = &[
 /// (`fault`).
 fn reason(e: &PsError, fault: Option<&Fault>) -> String {
     let what = match e {
-        PsError::Ps("undefined", at) => format!("it uses `{at}`, which LocalVector's PostScript reader doesn't know"),
+        PsError::Ps("undefined", at) => format!("it uses `{at}`, which Local Vector's PostScript reader doesn't know"),
         PsError::Ps(name, at) => {
             let detail = match fault.and_then(|f| f.op) {
                 Some(op) if at.is_empty() || at == op => format!("{name} in `{op}`"),
@@ -242,7 +242,7 @@ pub fn import_with(bytes: &[u8], editing_data: bool) -> Result<Imported, String>
 pub fn import_trusting(bytes: &[u8], editing_data: bool, trust: bool) -> Result<Imported, String> {
     let ps = program(bytes)?;
     let dsc = Dsc::read(ps);
-    // A legacy `.ai` LocalVector wrote: its prolog prints the art plainly (gradients flat, no
+    // A legacy `.ai` Local Vector wrote: its prolog prints the art plainly (gradients flat, no
     // type), and its program has all of it, which is read as the format (as before the file
     // printed).
     if editing_data
@@ -269,7 +269,7 @@ pub fn import_trusting(bytes: &[u8], editing_data: bool, trust: bool) -> Result<
     let why = match (&result, drew) {
         (Ok(()), true) if editing_data => return Ok(native::layered(ps, finish(out), trust, dsc.illustrator)),
         (Ok(()), true) => return Ok(finish(out)),
-        (Ok(()), false) => "it draws nothing LocalVector's PostScript reader can show".to_string(),
+        (Ok(()), false) => "it draws nothing Local Vector's PostScript reader can show".to_string(),
         (Err(e), _) => reason(e, fault.as_ref()),
     };
     // A file in the legacy Illustrator format whose program can't be run (a `.ai` that names the

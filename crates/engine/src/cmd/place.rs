@@ -14,7 +14,7 @@
 //! - A PDF/.ai/.ait page or a native document's artboard becomes one group, clipped to the page
 //!   (`crop: "crop"`; a PDF page's `art`, `trim`, `bleed` or `media` box too) or bounded by its art
 //!   (`crop: "bounding"`). With Link, a PDF/.ai/.ait page placed from a file becomes a placed
-//!   document instead, as a LocalVector document does (below).
+//!   document instead, as a Local Vector document does (below).
 //! - A text file becomes area type, decoded and cleaned up with the Text Import Options (`text`,
 //!   [`text`]).
 //! - An RTF file becomes area type with its character and paragraph formatting ([`rtf`]).
@@ -22,7 +22,7 @@
 //!   styles and direct formatting give ([`docx`]).
 //! - A Word 97-2003 document (`.doc`) becomes area type the same way, its main text read from its
 //!   compound file, with a warning for each kind of content left out ([`doc`]).
-//! - A LocalVector document placed from a file with Link (the default) becomes a placed document:
+//! - A Local Vector document placed from a file with Link (the default) becomes a placed document:
 //!   one locked object showing the artboard `page`, linked to the file and read again when it
 //!   changes ([`document`]); without Link, an editable copy of its art.
 //!
@@ -66,7 +66,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Place…",
             ["File"],
             Some("Cmd+Shift+P"),
-            "{path | name | dataBase64 (a file's path, or its name with its bytes), link?: true (a raster image keeps its file's path; a LocalVector document at path becomes one locked placed document showing artboard `page`, linked to the file and read again when it changes (links.update; saving it in this app updates it at once), drawn as vectors in every output; so does a PDF/.ai page at path, showing its `crop` box, unless password or textAs: \"outlines\" is given; false: an editable copy of its art, as from dataBase64; other files are embedded), text?: {characterSet?: \"unicode\" (UTF-8, or UTF-16 with a byte-order mark; other bytes as the platform's 8-bit set) | \"ansi\" (the platform's 8-bit set), platform?: \"windows\" (Windows-1252) | \"mac\" (Mac Roman), removeLineReturns?: false (each block of lines becomes one paragraph; blank lines end paragraphs), removeParagraphReturns?: false (drop blank lines), replaceSpaces?: n (runs of n ≥ 2 spaces become a tab)} (a .txt file, placed as area type filling rect, the replaced object's bounds, or else the artboard less a 36 pt margin), template?: false (onto a new locked template layer below the current layer), replace?: false (swap the one selected object, keeping its stacking place and transform; no at/rect), at?: [x, y] centre (default: the first artboard's centre), rect?: [x, y, width, height] fit inside; aspect kept (wins over at), page?: 1 (PDF/.ai page, or a native document's artboard), crop?: \"crop\" (clipped to that page or artboard, default; an SVG, only when given: framed and clipped by its viewBox, else by its art's bounds) | \"bounding\" (the bounds of the art that shows, with its strokes and effects, as an export measures them: hidden objects and guides left out) | \"art\" | \"trim\" | \"bleed\" | \"media\" (a PDF page's boxes), password? (an encrypted PDF), dxf?: {…the DXF options of document.open} (a .dxf drawing: fit fills the artboard under at, else the first; fitted or uncentred art lands with its drawing's artboard on that artboard, else it is centred on at)} → {ids, name, format, linked, width, height, warnings}. Raster images come in at 100% of their physical size (the file's ppi, else 72); SVG, DXF, PDF/.ai, EMF/WMF (clipped to the picture's frame), EPS (clipped to its bounding box; as document.open reads it), a .ai saved without PDF compatibility (from its editing data, as document.open reads it: the art of the layers that show on artboard `page`, clipped to that artboard unless crop is \"bounding\") and native documents as one group, with the images, symbols, patterns and swatches they use. One undo step; selects what it placed (unless on a template layer); never touches the clipboard. A PNG, JPEG, GIF or WebP image whose pixels can't be read (a file cut short) is an error, and nothing is placed",
+            "{path | name | dataBase64 (a file's path, or its name with its bytes), link?: true (a raster image keeps its file's path; a Local Vector document at path becomes one locked placed document showing artboard `page`, linked to the file and read again when it changes (links.update; saving it in this app updates it at once), drawn as vectors in every output; so does a PDF/.ai page at path, showing its `crop` box, unless password or textAs: \"outlines\" is given; false: an editable copy of its art, as from dataBase64; other files are embedded), text?: {characterSet?: \"unicode\" (UTF-8, or UTF-16 with a byte-order mark; other bytes as the platform's 8-bit set) | \"ansi\" (the platform's 8-bit set), platform?: \"windows\" (Windows-1252) | \"mac\" (Mac Roman), removeLineReturns?: false (each block of lines becomes one paragraph; blank lines end paragraphs), removeParagraphReturns?: false (drop blank lines), replaceSpaces?: n (runs of n ≥ 2 spaces become a tab)} (a .txt file, placed as area type filling rect, the replaced object's bounds, or else the artboard less a 36 pt margin), template?: false (onto a new locked template layer below the current layer), replace?: false (swap the one selected object, keeping its stacking place and transform; no at/rect), at?: [x, y] centre (default: the first artboard's centre), rect?: [x, y, width, height] fit inside; aspect kept (wins over at), page?: 1 (PDF/.ai page, or a native document's artboard), crop?: \"crop\" (clipped to that page or artboard, default; an SVG, only when given: framed and clipped by its viewBox, else by its art's bounds) | \"bounding\" (the bounds of the art that shows, with its strokes and effects, as an export measures them: hidden objects and guides left out) | \"art\" | \"trim\" | \"bleed\" | \"media\" (a PDF page's boxes), password? (an encrypted PDF), dxf?: {…the DXF options of document.open} (a .dxf drawing: fit fills the artboard under at, else the first; fitted or uncentred art lands with its drawing's artboard on that artboard, else it is centred on at)} → {ids, name, format, linked, width, height, warnings}. Raster images come in at 100% of their physical size (the file's ppi, else 72); SVG, DXF, PDF/.ai, EMF/WMF (clipped to the picture's frame), EPS (clipped to its bounding box; as document.open reads it), a .ai saved without PDF compatibility (from its editing data, as document.open reads it: the art of the layers that show on artboard `page`, clipped to that artboard unless crop is \"bounding\") and native documents as one group, with the images, symbols, patterns and swatches they use. One undo step; selects what it placed (unless on a template layer); never touches the clipboard. A PNG, JPEG, GIF or WebP image whose pixels can't be read (a file cut short) is an error, and nothing is placed",
             has_doc,
             place
         ),
@@ -108,7 +108,7 @@ enum Art {
     /// A text file's, an RTF file's or a Word document's text, placed as area type filling the
     /// natural box.
     Text(text::Story),
-    /// A LocalVector document or a PDF/.ai page placed linked: the file read, the link, and
+    /// A Local Vector document or a PDF/.ai page placed linked: the file read, the link, and
     /// whether the art's bounds (not the artboard or page) are shown.
     Document(document::Source, LinkInfo, bool),
     Vector {
@@ -182,7 +182,7 @@ fn load(p: &Value, cmd: &str, board: Option<Rect>, link_pdf: bool) -> Result<Loa
         return Ok(Loaded { name, format: &doc::FORMAT, art: Art::Text(story), natural: TEXT_FRAME, warnings, link: None, board: None });
     }
     let format = fileio::detect(src.name, &src.bytes)
-        .ok_or_else(|| bad(cmd, format!("can't place `{name}`: not a format LocalVector reads (see document.formats)")))?;
+        .ok_or_else(|| bad(cmd, format!("can't place `{name}`: not a format Local Vector reads (see document.formats)")))?;
     let page = match p.get("page") {
         None => 1,
         Some(v) => v.as_u64().filter(|n| (1..=100_000).contains(n)).ok_or_else(|| bad(cmd, "page must be a whole number from 1"))? as usize,
@@ -202,7 +202,7 @@ fn load(p: &Value, cmd: &str, board: Option<Rect>, link_pdf: bool) -> Result<Loa
         ));
     }
     let crop = opts.crop != CropTo::Bounding;
-    // A LocalVector document: placed linked from its file, else as an editable copy.
+    // A Local Vector document: placed linked from its file, else as an editable copy.
     if matches!(format.id, "vectorcraft" | "template") {
         let page = page as u32;
         if let Some(path) = src.path.filter(|_| bool_or(p, "link", true)) {
@@ -224,7 +224,7 @@ fn load(p: &Value, cmd: &str, board: Option<Rect>, link_pdf: bool) -> Result<Loa
         return Ok(Loaded { name, format, art: Art::Image(img), natural, warnings, link, board: None });
     }
     if pdf {
-        // Linked: placed like a LocalVector document, read again with the page's box only. A page
+        // Linked: placed like a Local Vector document, read again with the page's box only. A page
         // asked for with a password or with its text as outlines is embedded.
         let linked = link_pdf && bool_or(p, "link", true) && opts.password.is_none() && opts.text_as == localvector_pdf::TextAs::Text;
         if let Some(path) = src.path.filter(|_| linked) {

@@ -68,7 +68,7 @@ pub(super) fn master_prefix(index: usize) -> String {
 /// A table cell's text `w` × `h` at the origin, placed as Affinity places it. Affinity aligns the
 /// block from the first line's capitals' tops to the last baseline in the cell, and draws it even
 /// where it doesn't fit (centred cells measured on a document's thumbnail: two lines in a cell
-/// shorter than them reach out of it at both ends). LocalVector aligns the block down to the last
+/// shorter than them reach out of it at both ends). Local Vector aligns the block down to the last
 /// line's descenders and keeps lines inside the frame: the frame moves by what this returns (down
 /// the cell) and grows where the lines need more room.
 pub(super) fn place_cell(obj: &mut TextObject, w: f64, h: f64) -> f64 {
@@ -89,12 +89,12 @@ pub(super) fn place_cell(obj: &mut TextObject, w: f64, h: f64) -> f64 {
     // (A little more than the lines need, for the rounding of the layout.)
     let frame = h.max(baseline + descent + 0.05);
     obj.kind = TextKind::Area { frame: shapes::rectangle(Rect::new(0.0, 0.0, w, frame)) };
-    // Where Affinity has the block's top, less where LocalVector puts it in the frame.
+    // Where Affinity has the block's top, less where Local Vector puts it in the frame.
     (h - baseline) * share - (frame - baseline - descent) * share
 }
 
 /// Area type `w` × `h` at the origin whose lines don't all fit. Affinity shows each line whose
-/// baseline is inside the frame, its descenders hanging out of it; LocalVector's area type leaves
+/// baseline is inside the frame, its descenders hanging out of it; Local Vector's area type leaves
 /// such a line out. The frame is made taller, from its top, by what those lines need. Whether it was.
 pub(super) fn fit_lines(obj: &mut TextObject, w: f64, h: f64) -> bool {
     let db = localvector_text::FontDb::global();
@@ -148,7 +148,7 @@ fn share(j: Justify) -> f64 {
 
 /// Artistic text whose paragraphs are aligned differently. Affinity aligns each line within the
 /// width of the longest, and places that block at the anchor by the text's own alignment (its
-/// first paragraph's); LocalVector's point type aligns each line on the anchor. Indents move the
+/// first paragraph's); Local Vector's point type aligns each line on the anchor. Indents move the
 /// lines to where Affinity has them and keep their alignment: a centred line centres between its
 /// indents and a right-aligned one ends at its right indent, whatever its width.
 pub(super) fn align_lines(obj: &mut TextObject) {
@@ -191,7 +191,7 @@ pub(super) fn justify(a: AfAlign) -> Justify {
     }
 }
 
-/// A font's line gap in em, as LocalVector will set it (the installed face, or the fallback for
+/// A font's line gap in em, as Local Vector will set it (the installed face, or the fallback for
 /// a missing one); 0 when no font is loaded.
 pub(super) fn line_gap(family: &str, style: &str) -> f64 {
     let defaults = CharStyle::default();

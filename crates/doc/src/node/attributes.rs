@@ -24,12 +24,12 @@ pub struct ObjectAttributes {
     pub data: Vec<(String, String)>,
     /// Window › SVG Interactivity: the JavaScript each event runs, in the panel's order
     /// (`("onclick", "alert(1)")`, one entry per event of [`SVG_EVENTS`]). SVG export writes them as
-    /// the element's event attributes; nothing in LocalVector runs them.
+    /// the element's event attributes; nothing in Local Vector runs them.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub events: Vec<(String, String)>,
     /// Attributes in other applications' XML namespaces, in order, kept from SVG import to SVG
     /// export: what another tool notes on an object (a plotter's pen, a cutter's passes) survives
-    /// a round trip through LocalVector. Nothing in LocalVector reads them. They are the object's,
+    /// a round trip through Local Vector. Nothing in Local Vector reads them. They are the object's,
     /// as `data` is, so copies, duplicates and pastes keep them and a deleted object takes them
     /// with it.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]

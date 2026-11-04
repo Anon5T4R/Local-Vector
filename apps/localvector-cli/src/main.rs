@@ -1,4 +1,4 @@
-//! `localvector-cli`: LocalVector from the command line.
+//! `localvector-cli`: Local Vector from the command line.
 //!
 //! ```text
 //! localvector-cli mcp [--connect 127.0.0.1:7979 | --headless] [--automation-read-root DIR]... [--automation-write-root DIR]...
@@ -69,7 +69,7 @@ fn stdout_failed(e: std::io::Error) -> ! {
 }
 
 const USAGE: &str = "\
-localvector-cli — LocalVector automation
+localvector-cli — Local Vector automation
 
 USAGE:
   localvector-cli mcp [--connect ADDR | --headless] [--automation-read-root DIR]... [--automation-write-root DIR]...
@@ -353,7 +353,7 @@ fn convert(args: &[String]) -> Result<(), String> {
         let skipped = localvector_engine::cmd::fileio::pdf::EDITING_NEEDS_EVERY_ARTBOARD;
         let embedded = !obj.get("warnings").and_then(Value::as_array).is_some_and(|w| w.iter().any(|w| w.as_str() == Some(skipped)));
         if embedded {
-            let note = "The PDF embeds the native LocalVector document as an attachment (preserveEditing).";
+            let note = "The PDF embeds the native Local Vector document as an attachment (preserveEditing).";
             if let Some(Value::Array(w)) = obj.get_mut("warnings") {
                 if !w.iter().any(|w| w.as_str() == Some(note)) {
                     w.push(json!(note));

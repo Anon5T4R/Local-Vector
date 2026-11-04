@@ -1,4 +1,4 @@
-# LocalVector — instruções para agentes
+# Local Vector — instruções para agentes
 
 Fork independente do vectorcraft (ArtCraft), rebrandado para a suíte Local do João.
 Rust puro + egui. Sem conta, sem telemetria, sem dependência de servidores de terceiros.
@@ -60,7 +60,7 @@ programa para recriá-lo. Então:
 - Nunca adicionar, copiar, vetorizar a partir de, ou embarcar ícone, imagem, arte, cursor, preset,
   biblioteca de swatch/brush/symbol/pattern/style, perfil ICC ou captura de tela de produto da
   Adobe nem de fonte cuja licença não permita.
-- Todo asset é: trabalho original para o LocalVector (licenciado MIT OR Apache-2.0), open source
+- Todo asset é: trabalho original para o Local Vector (licenciado MIT OR Apache-2.0), open source
   OSI, domínio público / CC0, ou Creative Commons com redistribuição permitida.
 - **Todo arquivo de asset tem linha em [`ASSETS.md`](ASSETS.md)** (caminho, autor, fonte, licença,
   notas). Texto de licença fica ao lado do asset (`assets/fonts/OFL-*.txt`) e é resumido no

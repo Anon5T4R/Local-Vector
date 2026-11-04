@@ -1,6 +1,6 @@
 //! Affinity documents (`.af`, `.afdesign`, `.afphoto`, `.afpub`): the native layers, curves,
 //! shapes, artboards, text, tables, master pages, layer effects and images that
-//! `localvector-affinity` reads, mapped to editable LocalVector art. Whatever the reader could not map is listed in the warnings. A file whose
+//! `localvector-affinity` reads, mapped to editable Local Vector art. Whatever the reader could not map is listed in the warnings. A file whose
 //! native document can't be read opens as its embedded preview instead, with a warning that says
 //! why, and can't be placed.
 

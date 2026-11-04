@@ -71,7 +71,7 @@ const SVG_NS: &str = "http://www.w3.org/2000/svg";
 /// passes the positivity guard — and the multiply overflows: a debug or overflow-checks build
 /// panics while opening the file. A release build wraps instead, and with a one-entry
 /// `kernelMatrix` the wrapped product passes usvg's length check, leaving a filter that claims a
-/// 2147483647×2147483647 kernel (which LocalVector then drops as an unsupported filter primitive,
+/// 2147483647×2147483647 kernel (which Local Vector then drops as an unsupported filter primitive,
 /// so nothing reaches the document). Any order usvg can multiply — however large — keeps
 /// importing exactly as before: a missing, unparseable or non-positive `order` falls back to 3,
 /// and a `kernelMatrix` that fails to parse or match the order leaves the filter empty, which

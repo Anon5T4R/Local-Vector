@@ -425,7 +425,7 @@ impl<'p> Builder<'p> {
         true
     }
 
-    /// Convert a hayro paint to a LocalVector paint and opacity (`stroke`: for a stroke; `walked`:
+    /// Convert a hayro paint to a Local Vector paint and opacity (`stroke`: for a stroke; `walked`:
     /// what it paints in the page's walk, which names its ink).
     pub(super) fn paint(&mut self, p: &craft_pdf::interpret::Paint<'_>, stroke: bool, walked: Option<Walked>) -> (Paint, f32) {
         let pattern = matches!(p, craft_pdf::interpret::Paint::Pattern(_));

@@ -10,7 +10,7 @@ use crate::{
 };
 
 /// The built-in preset every PDF export starts from.
-pub const DEFAULT_PRESET: &str = "LocalVector Default";
+pub const DEFAULT_PRESET: &str = "Local Vector Default";
 
 /// A named set of PDF settings: a built-in preset or one the user saved.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -58,7 +58,7 @@ pub fn builtin_presets() -> Vec<PdfPreset> {
     vec![
         preset(
             DEFAULT_PRESET,
-            "Keeps the document editable: LocalVector reopens the PDF with nothing lost. For files you'll edit again.",
+            "Keeps the document editable: Local Vector reopens the PDF with nothing lost. For files you'll edit again.",
             PdfSettings { preserve_editing: true, ..Default::default() },
         ),
         preset("High Quality Print", "For desktop printers and proofs: images stay at print resolution.", print(ImageCodec::Auto, false)),
@@ -103,9 +103,14 @@ pub fn builtin_presets() -> Vec<PdfPreset> {
     ]
 }
 
-/// The built-in preset `name` names (any case; `default` is the app default).
+/// The built-in preset `name` names (any case; `default` is the app default). Names built-in
+/// presets had before the app's rename are accepted too.
 pub fn builtin_preset(name: &str) -> Option<PdfPreset> {
     let name = name.trim();
     let name = if name.eq_ignore_ascii_case("default") { DEFAULT_PRESET } else { name };
+    let name = LEGACY_NAMES.iter().find(|(old, _)| old.eq_ignore_ascii_case(name)).map_or(name, |(_, new)| *new);
     builtin_presets().into_iter().find(|p| p.name.eq_ignore_ascii_case(name))
 }
+
+/// Names the built-in presets had before the app's rename, and the ones they go by now.
+const LEGACY_NAMES: &[(&str, &str)] = &[("LocalVector Default", DEFAULT_PRESET)];

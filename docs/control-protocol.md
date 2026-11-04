@@ -83,7 +83,7 @@ and window captures. The person at the keyboard is not: files opened from the co
 file dialog, and everything done with the mouse and keyboard, work as usual. The preferences that move
 folders the app reads or writes on its own (Additional Fonts Folder, Additional Plug-ins Folder, Data
 Recovery's folder, the Templates folder) can only be pointed inside the roots by automation. The app's own folders
-(preferences, Data Recovery, the library folders, LocalVector's Fonts folder) are not confined, since no
+(preferences, Data Recovery, the library folders, Local Vector's Fonts folder) are not confined, since no
 agent names a path there. A path is checked, then opened: another program that swaps in a link between
 the two can still win that race.
 
@@ -148,7 +148,7 @@ fill or stroke (fields as in `swatchOptions` plus `group`; a gradient or pattern
 
 The Color Picker is a dialog too: `engine.execute {command: "ui.colorPicker", params: {stroke?, color?}}` opens it for the fill (or stroke) proxy; `ui.dialog.set {field: "hex", value: "00FF00"}` (or `color`, `channel`, `webOnly`, `swatches`) then `ui.dialog.confirm` applies the colour through `paint.setFill` / `paint.setStroke`.
 
-Sample Color from Screen: `ui.sampleScreenColor {stroke?, picker?}` shows the system's color sampler (macOS, and browsers with an EyeDropper) and returns `null` at once. When the person at the computer clicks a color anywhere on the screen, it runs `paint.setFill` (or `paint.setStroke`) with that color as one undo step, or with `picker: true` sets the open Color Picker's `color`; Escape cancels it and the colors stay as they were. The sampled display sRGB color is converted into the working RGB space. `ui.inspect` reports `screenSampler: true` until the sampler answers. Without a sampler (Windows, Linux, other browsers) the call returns an error. To read a color from LocalVector's own window without a person, call `ui.screenshot`.
+Sample Color from Screen: `ui.sampleScreenColor {stroke?, picker?}` shows the system's color sampler (macOS, and browsers with an EyeDropper) and returns `null` at once. When the person at the computer clicks a color anywhere on the screen, it runs `paint.setFill` (or `paint.setStroke`) with that color as one undo step, or with `picker: true` sets the open Color Picker's `color`; Escape cancels it and the colors stay as they were. The sampled display sRGB color is converted into the working RGB space. `ui.inspect` reports `screenSampler: true` until the sampler answers. Without a sampler (Windows, Linux, other browsers) the call returns an error. To read a color from Local Vector's own window without a person, call `ui.screenshot`.
 
 Graphic styles: `ui.graphicStyleOptions {name}` opens the `graphicStyleOptions` dialog (field `name`) for a style and
 `ui.dialog.confirm` renames it with `graphicStyle.rename` (a name another style has returns an error and keeps the
@@ -296,7 +296,7 @@ Symbol libraries open in the same panels: `window.symbolLibrary {library}` (`lib
 null` closes them). Clicking a symbol there runs `symbol.addFromLibrary {library, name}`, adding it to the document's
 Symbols in one undo step; Shift/Cmd-clicks select symbols for Add to Symbols, and a symbol dragged onto the canvas runs
 it with `place: true` and the drop point as `x`, `y`. `window.symbolLibrary.other {path?}` loads the symbols of any
-document LocalVector opens (a saved symbol library is a `.vectorcraft` document) and opens them there. The User
+document Local Vector opens (a saved symbol library is a `.vectorcraft` document) and opens them there. The User
 Defined libraries are `window.userSymbolLibrary1`…`10` in Window → Symbol Libraries. `ui.saveSymbolLibrary {names?}`
 (Save Symbols…, the Symbols panel's Save Symbol Library…) opens the `saveSymbolLibrary` dialog (fields `name`, `user`:
 save to the user library folder, `selectedOnly` with `names`); `ui.dialog.confirm` runs `symbol.saveLibrary` (to a
@@ -308,7 +308,7 @@ Brushes in one undo step, with `apply: true` when paths are selected (they take 
 Apply Brush when the document has the brush already and the click only applies it);
 Shift/Cmd-clicks select brushes for Add to Brushes. A brush dragged onto a path runs it with `apply: true` and that
 path as `ids`, and one dragged onto the Brushes panel runs it without. `window.brushLibrary.other {path?}` loads the
-brushes of any document LocalVector opens (a saved brush library is a `.vectorcraft` document) and opens them there.
+brushes of any document Local Vector opens (a saved brush library is a `.vectorcraft` document) and opens them there.
 The User Defined libraries are `window.userBrushLibrary1`…`10` in Window → Brush Libraries. `ui.saveBrushLibrary
 {names?}` (Save Brushes…, the Brushes panel's Save Brush Library…) opens the `saveBrushLibrary` dialog (fields
 `name`, `user`: save to the user library folder, `selectedOnly` with `names`); `ui.dialog.confirm` runs
@@ -323,7 +323,7 @@ caption buttons (Minimize, Maximize/Restore, Close) sit at the bar's right end, 
 not commands, so drive them with `ui.click` if needed. Close runs `app.quit` (the same `saveChanges` questions for
 modified documents), and empty bar space and the 5 pt window edges move and resize the window. Preferences › User
 Interface › System Title Bar (`systemTitleBar`, read when the app starts) gives the window its OS decorations back
-instead: the OS title then shows the active document (`*name — LocalVector` with unsaved changes) and the app bar
+instead: the OS title then shows the active document (`*name — Local Vector` with unsaved changes) and the app bar
 drops its brand mark. On macOS the window buttons are centred on the app bar; the web build is unchanged.
 
 Fill/Stroke chips and panel shortcuts: the Control bar's and Properties' Fill and Stroke chips bring their proxy
@@ -703,7 +703,7 @@ for the next launch. While copies are written in the background `ui.inspect` lis
 ("Saving recovery data for <name>").
 
 Native save options: File → Save As to a native or `.ai` file opens the `saveOptions` dialog after the save panel
-(heading "LocalVector Options" or "PDF-compatible .ai Options"). Fields: `separateArtboards`, `all` (true: every
+(heading "Local Vector Options" or "PDF-compatible .ai Options"). Fields: `separateArtboards`, `all` (true: every
 artboard; false: `range`, such as "1-3, 5"), `includeLinked`, `embedProfiles`, `pdfCompatible`, `compress`, and for
 native files `version` and `preview`. A bad range keeps the dialog open; `ui.dialog.confirm` writes the file and the
 artboards' files. A `.ai` file's `aiVersion` comes first: `"pdf"` (the default) or `"7"` (legacy, heading "Legacy .ai
@@ -915,7 +915,7 @@ Commands (`panel` and every panel parameter take a panel id in any case or its d
 | `window.panel.iconic` | `{panel, iconic?}` | collapses the panel's dock column to icons, or expands it |
 | `window.panel.layout`, `ui.dock` | `{action}` | one craft-ui `Action`, externally tagged, e.g. `{"MoveFloating":{"panel":"swatches","rect":[44,66,360,450]}}` or `{"ResizeSplit":{"path":[],"size":{"Ratio":0.35}}}`; `ui.dock` also takes craft-ui's `{operation, …}` |
 
-Parameters from LocalVector's own docking, on `window.panel.float` and `window.panel.dock`:
+Parameters from Local Vector's own docking, on `window.panel.float` and `window.panel.dock`:
 
 - `onto`: as a tab of the group holding that panel. On `float` that group must float; on `dock` it is `anchor`.
 - `above`, `below`: as a group of its own above or below the group holding that panel, in its floating window or
@@ -963,7 +963,7 @@ main window's shortcuts; modal dialogs block them.
 ## In the browser: `window.localvector`
 
 The web build has no TCP server (a page can't listen on a socket), so it offers the same methods to the
-page itself, as promises on `window.localvector` (`apps/localvector-web/src/api.rs`). An agent driving LocalVector in a
+page itself, as promises on `window.localvector` (`apps/localvector-web/src/api.rs`). An agent driving Local Vector in a
 browser tab, or a host app showing it in an `<iframe>`, uses the commands it would send to the desktop
 app:
 

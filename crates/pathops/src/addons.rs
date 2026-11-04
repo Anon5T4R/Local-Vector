@@ -1,4 +1,4 @@
-//! Geometry for LocalVector's built-in add-ons, one module per add-on, with the kernels they share.
+//! Geometry for Local Vector's built-in add-ons, one module per add-on, with the kernels they share.
 //!
 //! - [`keep_shape`]: remove anchors while refitting their neighbours' handles, so the outline keeps
 //!   its shape within a tolerance (shared by every add-on that takes anchors away).

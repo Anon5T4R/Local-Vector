@@ -2,20 +2,20 @@
 
 > **Last reviewed:** 2026-10-10 · **Last updated:** 2026-11-01 · **Change:** patch (Linux: on a Wayland session with a pen attached, Automatic opens the window through XWayland, where the pen draws, #4967) · **Target:** Adobe Illustrator 2026 (30.x)
 
-What hardware Illustrator uses, per platform, against LocalVector. Illustrator's side is from its public
+What hardware Illustrator uses, per platform, against Local Vector. Illustrator's side is from its public
 documentation (GPU Performance, touch workspace, pen pressure pages); ours from the code
 (`crates/ui-egui/src/canvas.rs`, `touch.rs`, `graphics.rs`, `crates/render`). Part of
 [target-app-parity.md](target-app-parity.md).
 
 ## Summary
 
-**~35% (estimated), 25–45 h.** LocalVector rasterizes the canvas on the CPU (multithreaded `vello_cpu`) and uses
+**~35% (estimated), 25–45 h.** Local Vector rasterizes the canvas on the CPU (multithreaded `vello_cpu`) and uses
 the GPU only to composite, so any GPU that can show a window works, at the cost of GPU-accelerated preview
-on huge documents. LocalVector reads pen pressure on Windows, on the web, on macOS, and on Linux under X11 and XWayland, and it
+on huge documents. Local Vector reads pen pressure on Windows, on the web, on macOS, and on Linux under X11 and XWayland, and it
 reads the pen's eraser end on Windows, on macOS, on Linux under X11 and XWayland, and on the web when it presses.
 It reads the pen's tilt and barrel rotation on macOS and on Linux under X11 and XWayland.
 
-| Feature | Illustrator | LocalVector macOS | Windows | Linux | Web | Status / hours |
+| Feature | Illustrator | Local Vector macOS | Windows | Linux | Web | Status / hours |
 |---|---|---|---|---|---|---|
 | GPU-accelerated canvas (GPU Performance, GPU Preview, GPU anti-aliasing) | Metal, DirectX | CPU raster, GPU composite (wgpu/Metal) | CPU raster, GPU composite (DX12, OpenGL fallback) | CPU raster, GPU composite (Vulkan/GL) | WebGPU, WebGL2 fallback | partial; a GPU renderer spike is pending (M5): 15–25 h |
 | Multithreaded rendering off the UI thread | partial | yes | yes | yes | single-threaded | beyond Illustrator |

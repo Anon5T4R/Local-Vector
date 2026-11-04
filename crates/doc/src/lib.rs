@@ -1,4 +1,4 @@
-//! LocalVector document model: artboards, layers and objects, appearance, swatches (pure data + serde).
+//! Local Vector document model: artboards, layers and objects, appearance, swatches (pure data + serde).
 //!
 //! Documents are persistent trees: children are `Arc<Node>`, and edits go through
 //! [`Document::node_mut`], which clones only the nodes on the path from the root to the edited node.

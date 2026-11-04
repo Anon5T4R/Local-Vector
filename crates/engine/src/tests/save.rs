@@ -99,7 +99,7 @@ fn save_as_takes_on_path_format_and_options() {
     let _ = std::fs::remove_dir_all(d);
 }
 
-/// #4523: a new document's LocalVector Options start as the last native save used them (not its
+/// #4523: a new document's Local Vector Options start as the last native save used them (not its
 /// artboard range, nor Use Compression, which its preference decides).
 #[test]
 fn a_new_document_offers_the_native_options_used_last() {

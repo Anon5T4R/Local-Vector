@@ -29,7 +29,7 @@
 //! Behaviour from the public descriptions only:
 //! <https://helpx.adobe.com/illustrator/using/trapping.html> and
 //! <https://helpx.adobe.com/illustrator/using/pathfinder-panel-overview.html> (feature names and
-//! option ranges; the defaults of 0.25 pt, 100% and 40% are LocalVector's own choices, the pages
+//! option ranges; the defaults of 0.25 pt, 100% and 40% are Local Vector's own choices, the pages
 //! give none).
 
 use localvector_doc::color::{Color, Paint};

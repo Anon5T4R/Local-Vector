@@ -3,7 +3,7 @@ name = "localvector-text"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "LocalVector text: font database, shaping, layout, glyph outlines"
+description = "Local Vector text: font database, shaping, layout, glyph outlines"
 
 [lints]
 workspace = true

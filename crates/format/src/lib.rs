@@ -3,7 +3,7 @@
 //! A `.vectorcraft` file is UTF-8 JSON, gzip-compressed when saved with Use Compression (told apart
 //! by its magic bytes on open, whatever the version):
 //! ```json
-//! { "format": "vectorcraft", "version": 3, "generator": "LocalVector 0.1.0",
+//! { "format": "vectorcraft", "version": 3, "generator": "Local Vector 0.1.0",
 //!   "preview": { "mime": "image/png", "data": "<base64>" },
 //!   "profiles": { "<profile name>": { "mime": "application/vnd.iccprofile", "data": "<base64>" } },
 //!   "pdf": { "mime": "application/pdf", "data": "<base64>" },
@@ -56,7 +56,7 @@ use stream::{Gz, Indent, KeyScan, Out};
 
 /// Most bytes the JSON of a compressed file may unpack to (a guard against decompression bombs,
 /// as are [`MAX_BLOB`] and [`MAX_BLOBS`]). A compressed save refuses a document past any of them,
-/// so every file LocalVector writes reads back. On wasm32 the cap is a quarter of the native
+/// so every file Local Vector writes reads back. On wasm32 the cap is a quarter of the native
 /// one: the JSON is deserialized into a document several times its size, and the 4 GiB address
 /// space also holds the file, the JSON, the document and the app (#3587).
 pub const MAX_JSON: u64 = if cfg!(target_arch = "wasm32") { 256 << 20 } else { 1 << 30 };
@@ -67,7 +67,7 @@ pub const MAX_BLOB: u64 = craft_vectorcraft_format::MAX_ENTRY;
 /// build, whose 4 GiB address space also holds the JSON, the document and the app, so 4 GiB of
 /// entries failed to allocate rather than being refused.
 pub const MAX_BLOBS: u64 = if cfg!(target_arch = "wasm32") { 1 << 30 } else { 4 << 30 };
-/// Most bytes a compressed file whose JSON isn't followed by the marker where LocalVector puts it
+/// Most bytes a compressed file whose JSON isn't followed by the marker where Local Vector puts it
 /// (hand-made or damaged files) may unpack to: it is unpacked whole.
 const MAX_UNPACKED: u64 = 512 << 20;
 
@@ -83,17 +83,17 @@ pub fn is_native_name(name: &str) -> bool {
 
 #[derive(Debug, thiserror::Error)]
 pub enum FormatError {
-    #[error("not a LocalVector file: {0}")]
+    #[error("not a Local Vector file: {0}")]
     NotVectorcraft(String),
-    #[error("file version {0} is newer than this LocalVector supports ({VERSION})")]
+    #[error("file version {0} is newer than this Local Vector supports ({VERSION})")]
     TooNew(u32),
     #[error("invalid image data for `{0}`")]
     BadImage(String),
-    #[error("can't save version {0}: LocalVector writes versions {MIN_VERSION} to {VERSION}")]
+    #[error("can't save version {0}: Local Vector writes versions {MIN_VERSION} to {VERSION}")]
     BadVersion(u32),
     #[error("version {0} files can't be compressed: only version {COMPRESSED_SINCE} and later open compressed files")]
     CompressedTooOld(u32),
-    #[error("the compressed file unpacks to more than LocalVector reads ({} MB of document, {} MB per image)", MAX_JSON >> 20, MAX_BLOB >> 20)]
+    #[error("the compressed file unpacks to more than Local Vector reads ({} MB of document, {} MB per image)", MAX_JSON >> 20, MAX_BLOB >> 20)]
     TooBig,
     #[error("the document is too large to save compressed ({0}): save it with Use Compression off")]
     TooBigToCompress(String),
@@ -292,7 +292,7 @@ pub fn save_to(doc: &Document, o: &SaveOptions, w: impl Write) -> Result<(), For
     // Older apps only know the name from before the rename.
     env.field(&mut out, "format", &if o.version < 3 { LEGACY_EXTENSION } else { EXTENSION })?;
     env.field(&mut out, "version", &o.version)?;
-    env.field(&mut out, "generator", &format!("LocalVector {}", env!("CARGO_PKG_VERSION")))?;
+    env.field(&mut out, "generator", &format!("Local Vector {}", env!("CARGO_PKG_VERSION")))?;
     if let Some(png) = &o.preview {
         env.field(&mut out, "preview", &Image::inline("image/png", png))?;
     }
@@ -606,7 +606,7 @@ mod tests {
         assert!(load_info(v1.as_bytes()).unwrap().1.is_old());
     }
 
-    /// A file is native when its top-level `format` member names LocalVector, read as JSON reads
+    /// A file is native when its top-level `format` member names Local Vector, read as JSON reads
     /// it; the word elsewhere in the head does not count.
     #[test]
     fn sniff_reads_the_format_member() {
@@ -617,7 +617,7 @@ mod tests {
         assert!(!sniff(br#"{"names":["vectorcraft"],"format":"svg"}"#));
     }
 
-    /// Every layout LocalVector has written puts `format` first: the version 1 and 2 files from
+    /// Every layout Local Vector has written puts `format` first: the version 1 and 2 files from
     /// before the rename (a struct of `format`, `version`, `generator`, `document` and `images`,
     /// compact or pretty), and each version `save_with` writes, compact, pretty and compressed.
     #[test]
@@ -649,7 +649,7 @@ mod tests {
         assert!(matches!(e, FormatError::NotVectorcraft(_)), "{e}");
         assert!(e.to_string().contains(&craft_vectorcraft_format::Error::TooBig.to_string()), "{e}");
         let e = FormatError::from(craft_vectorcraft_format::Error::Format("x".into()));
-        assert_eq!(e.to_string(), "not a LocalVector file: format is `x`");
+        assert_eq!(e.to_string(), "not a Local Vector file: format is `x`");
         assert!(matches!(FormatError::from(craft_vectorcraft_format::Error::TooNew(9)), FormatError::TooNew(9)));
     }
 
@@ -706,7 +706,7 @@ mod tests {
                     let mut file = craft_vectorcraft_format::File::new(Written(&b));
                     file.format = if version < 3 { LEGACY_EXTENSION } else { EXTENSION }.into();
                     file.version = version;
-                    file.generator = Some(format!("LocalVector {}", env!("CARGO_PKG_VERSION")));
+                    file.generator = Some(format!("Local Vector {}", env!("CARGO_PKG_VERSION")));
                     file.preview = o.preview.as_deref().map(|p| Image::inline("image/png", p));
                     // The images come first in the data after the JSON, then the profiles and the PDF.
                     let mut tail = file.tail();
@@ -735,7 +735,7 @@ mod tests {
         assert_eq!(checked, 20);
     }
 
-    /// Files are read through the crate's `Contents` with the messages LocalVector gave before,
+    /// Files are read through the crate's `Contents` with the messages Local Vector gave before,
     /// and a top-level array holds the format, version, document, images and profiles in that
     /// order.
     #[test]
@@ -743,19 +743,19 @@ mod tests {
         let message = |json: &str| load(json.as_bytes()).err().map(|e| e.to_string());
         assert_eq!(
             message(r#""x""#).as_deref(),
-            Some(r#"not a LocalVector file: invalid type: string "x", expected struct File at line 1 column 3"#)
+            Some(r#"not a Local Vector file: invalid type: string "x", expected struct File at line 1 column 3"#)
         );
         assert!(
-            message(r#"{"format":"vectorcraft","version":4}"#).is_some_and(|m| m.starts_with("not a LocalVector file: missing field `document`"))
+            message(r#"{"format":"vectorcraft","version":4}"#).is_some_and(|m| m.starts_with("not a Local Vector file: missing field `document`"))
         );
         let v: serde_json::Value = serde_json::from_slice(&save(&Document::new(10.0, 10.0), false)).unwrap();
         let doc = v["document"].to_string();
         let file = |format: &str, version: u32| format!(r#"{{"format":"{format}","version":{version},"document":{doc}}}"#);
-        assert_eq!(message(&file("svg", 4)).as_deref(), Some("not a LocalVector file: format is `svg`"));
-        assert_eq!(message(&file("vectorcraft", 9)).as_deref(), Some("file version 9 is newer than this LocalVector supports (4)"));
+        assert_eq!(message(&file("svg", 4)).as_deref(), Some("not a Local Vector file: format is `svg`"));
+        assert_eq!(message(&file("vectorcraft", 9)).as_deref(), Some("file version 9 is newer than this Local Vector supports (4)"));
         // A document that does not read is reported first, as before.
         assert!(
-            message(r#"{"format":"vectorcraft","version":9,"document":7}"#).is_some_and(|m| m.starts_with("not a LocalVector file: invalid type"))
+            message(r#"{"format":"vectorcraft","version":9,"document":7}"#).is_some_and(|m| m.starts_with("not a Local Vector file: invalid type"))
         );
         for json in [format!(r#"["vectorcraft",3,{doc},{{}},{{}}]"#), format!(r#"["vectorcraft",3,{doc}]"#)] {
             assert_eq!(load(json.as_bytes()).map(|d| d.artboards.len()).ok(), Some(1), "{json}");

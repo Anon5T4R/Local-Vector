@@ -3,7 +3,7 @@ name = "localvector-trace"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "LocalVector Image Trace: raster to vector tracing (quantize, boundary follow, polygon, Bezier fit)"
+description = "Local Vector Image Trace: raster to vector tracing (quantize, boundary follow, polygon, Bezier fit)"
 
 [lints]
 workspace = true

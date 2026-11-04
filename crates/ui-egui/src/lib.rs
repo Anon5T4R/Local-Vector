@@ -1,11 +1,11 @@
-//! LocalVector's egui frontend: an Illustrator-style UI over `localvector-engine`.
+//! Local Vector's egui frontend: an Illustrator-style UI over `localvector-engine`.
 //!
 //! The UI is thin: every action goes through [`LocalvectorApp::run`], which dispatches UI commands
 //! (view/window) here and everything else to the engine. The same entry point serves menus,
 //! shortcuts, the ⌘K palette and the control channel ([`control`]).
 #![forbid(unsafe_code)]
 
-/// LocalVector as craft-update knows it, with its 128 px icon and accent colour: the update
+/// Local Vector as craft-update knows it, with its 128 px icon and accent colour: the update
 /// prompt shows both, and an AppImage's menu entry gets the icon.
 #[cfg(not(target_arch = "wasm32"))]
 pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {

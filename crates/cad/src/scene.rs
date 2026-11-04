@@ -59,7 +59,7 @@ struct Sub {
     closed: bool,
 }
 
-/// A subpath close enough to a circle to preserve as a native DXF CIRCLE/ARC. LocalVector's
+/// A subpath close enough to a circle to preserve as a native DXF CIRCLE/ARC. Local Vector's
 /// ellipse helper uses the standard four-cubic circle approximation, so recognition needs a small
 /// relative tolerance rather than exact control-point tests.
 struct CircularSub {

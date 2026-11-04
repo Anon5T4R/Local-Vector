@@ -222,7 +222,7 @@ fn a_replaced_extension_asks_before_replacing_a_file_there() {
 }
 
 /// Save As to the type picked asks for that format's options: the .ai options (Version first),
-/// not LocalVector's.
+/// not Local Vector's.
 #[test]
 fn save_as_asks_for_the_options_of_the_file_type_picked() {
     let (mut app, shown, written) = portal_app();
@@ -231,7 +231,7 @@ fn save_as_asks_for_the_options_of_the_file_type_picked() {
     assert_eq!((d.kind.as_str(), d.str("format")), (dialogs::save_options::KIND, "ai".to_string()));
 }
 
-/// A document saved as .ai lists .ai first: LocalVector picked with a bare name or with the
+/// A document saved as .ai lists .ai first: Local Vector picked with a bare name or with the
 /// suggested name saves a native file. Save a Copy and Save as Template follow the type picked too.
 #[test]
 fn a_document_in_another_format_saves_as_the_type_picked() {

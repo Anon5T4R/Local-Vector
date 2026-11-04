@@ -164,7 +164,7 @@ fn targa_files_open_and_place() {
     use crate::cmd::clipboard::{PASTE_ORDER, file_flavour};
     let mut s = session();
     let b64 = localvector_format::base64_encode;
-    // LocalVector's own exports: the transparent corner stays transparent at 16 and 32 bits (24
+    // Local Vector's own exports: the transparent corner stays transparent at 16 and 32 bits (24
     // bits are flattened on white) and the black rectangle stays black.
     for depth in [16, 24, 32] {
         let tga = export(&mut s, json!({"format": "tga", "depth": depth}));

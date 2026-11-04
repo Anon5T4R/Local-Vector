@@ -29,7 +29,7 @@ pub struct NamedStep {
     pub template: &'static str,
     /// The name in the placeholder, as the document holds it (a style's name).
     pub name: String,
-    /// The name is one LocalVector gives (`[Normal Character Style]`), not one the user typed.
+    /// The name is one Local Vector gives (`[Normal Character Style]`), not one the user typed.
     pub built_in: bool,
 }
 

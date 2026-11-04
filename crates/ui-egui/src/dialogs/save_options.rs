@@ -5,10 +5,10 @@
 //!
 //! Fields: `__action` (the save command it finishes), `__pick` (file name and format
 //! editable), `path`, `format`, and one field per option (agents set them with `ui.dialog.set`).
-//! Native and `.ai` files show their save options (LocalVector Options after Save As): each
+//! Native and `.ai` files show their save options (Local Vector Options after Save As): each
 //! artboard to a separate file, with `all` (true: every artboard) or `range`, Include Linked Files,
 //! Embed ICC Profiles, Create PDF-Compatible File and Use Compression. A native file's Version is a
-//! menu of the versions LocalVector writes (`version`, named by the releases that read each). A
+//! menu of the versions Local Vector writes (`version`, named by the releases that read each). A
 //! `.ai` file's Version comes first: PDF-compatible, or legacy version 7 (`aiVersion: "7"`, a file
 //! per artboard), which takes only Transparent Images (`transparentImages`), Hidden Objects
 //! (`hiddenObjects`: a hidden layer, omitted or made visible), Text (`outlineText`: editable or
@@ -419,11 +419,11 @@ fn option_row(app: &LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, o: &Forma
     ui.end_row();
 }
 
-/// The native versions LocalVector writes, newest first, each with the first release that reads
+/// The native versions Local Vector writes, newest first, each with the first release that reads
 /// it (the format version each release tag writes: 2 in 0.1, 3 from 0.2, 4 from 0.8).
 const NATIVE_VERSIONS: [(u32, &str); 4] = [(4, "0.8"), (3, "0.2"), (2, "0.1"), (1, "0.1")];
 
-/// A native file's Version (#4931): a menu of the versions LocalVector writes, named by the
+/// A native file's Version (#4931): a menu of the versions Local Vector writes, named by the
 /// releases that read them, so a version it can't write can't be chosen. A version without
 /// compression turns Use Compression off.
 fn native_version(ui: &mut egui::Ui, d: &mut Dialog, o: &FormatOption) {
@@ -431,7 +431,7 @@ fn native_version(ui: &mut egui::Ui, d: &mut Dialog, o: &FormatOption) {
     ui.label(egui::RichText::new(tl!("Version:")).color(t.text_dim)).on_hover_text(o.description);
     let names: Vec<String> = NATIVE_VERSIONS
         .iter()
-        .map(|(n, release)| crate::i18n::fmt(tl!("LocalVector {release} and later (version {n})"), &[("release", release), ("n", &n.to_string())]))
+        .map(|(n, release)| crate::i18n::fmt(tl!("Local Vector {release} and later (version {n})"), &[("release", release), ("n", &n.to_string())]))
         .collect();
     let names: Vec<&str> = names.iter().map(String::as_str).collect();
     let at = NATIVE_VERSIONS.iter().position(|(n, _)| *n == native_version_of(d)).unwrap_or(0);

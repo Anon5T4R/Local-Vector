@@ -124,7 +124,7 @@ cognitive_complexity = "deny"
 too_many_arguments = "deny"
 wildcard_imports = "deny"
 dbg_macro = "warn"
-# LocalVector never crashes: shipped code returns `Result`/`Option` instead of panicking (see
+# Local Vector never crashes: shipped code returns `Result`/`Option` instead of panicking (see
 # AGENTS.md › Robustness). Tests may unwrap (clippy.toml).
 unwrap_used = "deny"
 expect_used = "deny"

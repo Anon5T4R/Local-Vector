@@ -1290,11 +1290,11 @@ fn images_with_alpha_channels() {
     assert!(art(&r.doc).is_empty() && r.warnings.iter().any(|w| w.contains("cut short")));
 }
 
-/// Editing data `data` opens without its one image and with the warning "an image LocalVector can't read was left out" once.
+/// Editing data `data` opens without its one image and with the warning "an image Local Vector can't read was left out" once.
 fn image_left_out_with_a_warning(data: &[u8]) {
     let r = read(data).unwrap();
     assert!(art(&r.doc).is_empty(), "{:#?}", art(&r.doc));
-    let left_out = r.warnings.iter().filter(|w| *w == "an image LocalVector can't read was left out").count();
+    let left_out = r.warnings.iter().filter(|w| *w == "an image Local Vector can't read was left out").count();
     assert_eq!(left_out, 1, "{:?}", r.warnings);
 }
 
@@ -2429,7 +2429,7 @@ fn an_undefined_highlight_is_a_gradient_without_one() {
 #[test]
 fn an_undefined_number_anywhere_else_is_still_an_operator_the_reader_doesnt_know() {
     let err = read(stream(&layer(&format!("{RED}-- 5 m\n0 10 L\n10 10 L\nf\n"))).as_bytes()).unwrap_err();
-    assert!(err.contains("operators LocalVector doesn't know (`--`)"), "{err}");
+    assert!(err.contains("operators Local Vector doesn't know (`--`)"), "{err}");
 }
 
 #[test]
@@ -3066,7 +3066,7 @@ fn envelope_content() -> String {
 }
 
 /// What envelope `kind` draws of [`envelope_content`]: the rectangle's edges, many points to a
-/// side, mapped as LocalVector maps them, as a red path in art space.
+/// side, mapped as Local Vector maps them, as a red path in art space.
 fn drawn_content(kind: &localvector_doc::live::EnvelopeKind) -> String {
     let rect = Rect::new(40.0, 20.0, 160.0, 80.0);
     let map = localvector_doc::live::envelope_mapper(kind, rect);
@@ -4365,7 +4365,7 @@ fn a_graphs_settings_paint_nothing_and_its_drawn_art_paints_as_usual() {
 fn graph_operators_outside_a_graph_are_unknown() {
     for stray in ["Gs\n", "Go\n", "1 2 Gc\n"] {
         let err = read(stream7(&layer7("L", &format!("{}{stray}", rect_path(0.0, 0.0, 5.0, 5.0)))).as_bytes()).unwrap_err();
-        assert!(err.contains("operators LocalVector doesn't know"), "{stray}: {err}");
+        assert!(err.contains("operators Local Vector doesn't know"), "{stray}: {err}");
     }
     for (stray, op) in [("%_2 0 0 0 Go\n", "`Go`"), ("%_GS\n", "`GS`"), ("%_1 2 Gc\n", "`Gc`")] {
         let r = read(stream7(&layer7("L", &format!("{}f\n{stray}", rect_path(0.0, 0.0, 5.0, 5.0)))).as_bytes()).unwrap();

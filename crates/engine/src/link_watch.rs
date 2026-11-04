@@ -1,5 +1,5 @@
 //! Linked files that change while their document is open (another app saved them: PhotoCraft,
-//! LightCraft, Photoshop, a placed LocalVector document): Preferences › File Handling › Update
+//! LightCraft, Photoshop, a placed Local Vector document): Preferences › File Handling › Update
 //! Links decides, as it does when a document opens. Automatically reads them again
 //! (`links.update`, an undo step), Ask When Modified offers to, Manually leaves them modified in
 //! the Links panel.

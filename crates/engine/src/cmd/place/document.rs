@@ -1,4 +1,4 @@
-//! Placed documents (`file.place` of a LocalVector document, a PDF or a `.ai` file from a file,
+//! Placed documents (`file.place` of a Local Vector document, a PDF or a `.ai` file from a file,
 //! with `link`): one locked object showing an artboard of the document or a page of the PDF, a
 //! [`PlacedDocument`].
 //!
@@ -29,12 +29,12 @@ use super::super::{EngineError, NodeId, Result, bad};
 
 /// The largest file placed (bytes).
 pub(crate) const MAX_FILE: usize = 256 << 20;
-/// The format ids of LocalVector documents.
+/// The format ids of Local Vector documents.
 const NATIVE: [&str; 2] = ["vectorcraft", "template"];
-/// The type a placed LocalVector document's bytes are stored with (a PDF's: its format's).
+/// The type a placed Local Vector document's bytes are stored with (a PDF's: its format's).
 const MIME: &str = "application/json";
 
-/// Is `name` with `bytes` a LocalVector document?
+/// Is `name` with `bytes` a Local Vector document?
 pub(crate) fn is_native(name: &str, bytes: &[u8]) -> bool {
     fileio::detect(name, bytes).is_some_and(|f| NATIVE.contains(&f.id))
 }
@@ -89,7 +89,7 @@ fn crop_to(b: PageBox) -> CropTo {
     }
 }
 
-/// An artboard of a LocalVector document, or a page of a PDF or `.ai` file, read as art to place.
+/// An artboard of a Local Vector document, or a page of a PDF or `.ai` file, read as art to place.
 pub(crate) struct DocumentArt {
     /// The document, its layers taken: the art's resources.
     pub doc: Document,
@@ -102,7 +102,7 @@ pub(crate) struct DocumentArt {
     pub warnings: Vec<String>,
 }
 
-/// Artboard `page` (1-based) of the LocalVector document `name` (`bytes`, read from `path` when
+/// Artboard `page` (1-based) of the Local Vector document `name` (`bytes`, read from `path` when
 /// there is one, so its linked images are found), clipped to the artboard unless `bounding`; or
 /// page `page` of the PDF or `.ai` file `name`, clipped to its box `page_box` unless `bounding`
 /// ([`super::pdf_art`]).
@@ -118,7 +118,7 @@ pub(crate) fn document_art(
     let file = fileio::file_name(name);
     let pdf = is_pdf(name, bytes);
     if !pdf && !is_native(name, bytes) {
-        return Err(bad(cmd, format!("`{file}` isn't a LocalVector document, a PDF or a PDF-compatible .ai file")));
+        return Err(bad(cmd, format!("`{file}` isn't a Local Vector document, a PDF or a PDF-compatible .ai file")));
     }
     if bytes.len() > MAX_FILE {
         return Err(bad(cmd, format!("`{file}` is over {} MB", MAX_FILE >> 20)));
@@ -209,7 +209,7 @@ pub(crate) fn read_file_again(p: &PlacedDocument) -> Option<Vec<u8>> {
     Some(bytes)
 }
 
-/// A LocalVector document, or a PDF or `.ai` file, read for placing linked.
+/// A Local Vector document, or a PDF or `.ai` file, read for placing linked.
 #[derive(Clone)]
 pub(crate) struct Source {
     /// The file's bytes, with their preview.
@@ -223,7 +223,7 @@ pub(crate) struct Source {
     pub warnings: Vec<String>,
 }
 
-/// The LocalVector document `name` (`bytes`, from `path` when there is one) read for showing
+/// The Local Vector document `name` (`bytes`, from `path` when there is one) read for showing
 /// artboard `page`, or the PDF or `.ai` file for showing page `page` clipped to its box
 /// `page_box` (its art's bounds when `bounding`).
 pub(crate) fn source(name: &str, bytes: &[u8], path: Option<&str>, page: u32, bounding: bool, page_box: PageBox, cmd: &str) -> Result<Source> {

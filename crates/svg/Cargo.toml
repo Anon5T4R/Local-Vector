@@ -3,7 +3,7 @@ name = "localvector-svg"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "LocalVector SVG import and export"
+description = "Local Vector SVG import and export"
 
 [lints]
 workspace = true

@@ -284,7 +284,7 @@ fn apply(layout: &mut Layout<String>, action: Action<String>) -> Result<Vec<Stri
     layout.apply_with_permissions(action, model_permissions).map_err(|e| e.to_string())
 }
 
-/// The docking commands LocalVector handles here: `window.panel` (the Window menu), its own
+/// The docking commands Local Vector handles here: `window.panel` (the Window menu), its own
 /// `window.panel.collapse` and `window.collapseDock`, the Tools panel's float and dock
 /// ([`crate::tools_float`]) and craft-ui's shared ids. Workspaces stay [`crate::workspaces`]'.
 pub(crate) fn command(app: &mut LocalvectorApp, id: &str, params: &Value) -> Option<Result<Value, String>> {
@@ -421,7 +421,7 @@ pub(crate) fn collapse_dock(app: &mut LocalvectorApp, collapsed: Option<bool>) -
     Ok(json!(iconic))
 }
 
-/// Where `window.panel.float` and `window.panel.dock` put a panel by the parameters LocalVector
+/// Where `window.panel.float` and `window.panel.dock` put a panel by the parameters Local Vector
 /// gave them before its panels moved to craft-ui's layout.
 enum Legacy {
     /// `onto` (a tab of the group holding `anchor`, which floats unless the panel docks), `above`
@@ -504,7 +504,7 @@ fn take_legacy(id: &str, fields: &mut serde_json::Map<String, Value>) -> Result<
     Ok((legacy, minimized))
 }
 
-/// `window.panel.float` and `window.panel.dock`: craft-ui's commands, with LocalVector's own
+/// `window.panel.float` and `window.panel.dock`: craft-ui's commands, with Local Vector's own
 /// parameters ([`Legacy`], `collapsed`) done in the same transaction.
 fn float_or_dock(app: &mut LocalvectorApp, id: &str, params: &Value) -> Result<Value, String> {
     let mut params = if params.is_null() { json!({}) } else { params.clone() };
@@ -667,7 +667,7 @@ impl Legacy {
     }
 }
 
-/// Command params with LocalVector's panel names resolved (a panel id or English name, in any
+/// Command params with Local Vector's panel names resolved (a panel id or English name, in any
 /// case).
 fn resolve_panels(params: &Value) -> Result<Value, String> {
     let mut params = if params.is_null() { json!({}) } else { params.clone() };
@@ -684,7 +684,7 @@ fn resolve_panels(params: &Value) -> Result<Value, String> {
 }
 
 /// A shared docking command (`window.panel.*`, `ui.dock`) on the layout in use, all or nothing.
-/// craft-ui's `DockCommand` parses it and makes the layout actions; LocalVector resolves panel
+/// craft-ui's `DockCommand` parses it and makes the layout actions; Local Vector resolves panel
 /// names, shows a hidden panel before moving, floating or docking it, floats a panel the layout
 /// has no place for, and returns a floated panel to its dock place on Dock Panel.
 fn shared_command(app: &mut LocalvectorApp, id: &str, params: &Value) -> Result<Value, String> {
@@ -704,11 +704,11 @@ fn shared_command_with(app: &mut LocalvectorApp, id: &str, params: &Value, legac
         DockCommand::NewWorkspace { name } => return app.run("window.workspace.new", json!({"name": name})),
         DockCommand::DeleteWorkspace { name } => return app.run("window.workspace.delete", json!({"name": name})),
         DockCommand::ResetWorkspace {} => return app.run("window.workspace.reset", json!({})),
-        DockCommand::Lock { .. } => return Err("Lock Workspace is not available in LocalVector".into()),
+        DockCommand::Lock { .. } => return Err("Lock Workspace is not available in Local Vector".into()),
         DockCommand::Window { .. } => return Err("Move Panel to New Window is not available: floating panels stay in the main window".into()),
         _ => {}
     }
-    // LocalVector's docks are columns beside the canvas, so a dock at a window edge is a `side`,
+    // Local Vector's docks are columns beside the canvas, so a dock at a window edge is a `side`,
     // not a frame on the outer edge (craft-ui's `Placement::Edge`).
     if let DockCommand::Dock { anchor: None, side: None, zone: Some(_), .. } = &command {
         return Err("zone needs an anchor: dock beside a panel with anchor, or in a new dock column with side (Start or End)".into());
@@ -1067,7 +1067,7 @@ fn known(action: &Action<String>) -> bool {
         | Action::ResizeIconic { panel, .. }
         | Action::SetNative { panel, .. }
         | Action::SetMonitor { panel, .. } => registered(panel),
-        // Actions newer than this list are rejected until LocalVector checks them.
+        // Actions newer than this list are rejected until Local Vector checks them.
         _ => false,
     }
 }
@@ -1203,7 +1203,7 @@ fn keep_field_ending_keys(ui: &egui::Ui) {
     ui.input_mut(|i| i.events.retain(|e| !matches!(e, egui::Event::Key { key: egui::Key::Enter | egui::Key::Escape, pressed: true, .. })));
 }
 
-/// LocalVector's look and wording of craft-ui's docking.
+/// Local Vector's look and wording of craft-ui's docking.
 fn dock_style(ui: &egui::Ui) -> craft_ui::docking::DockStyle {
     let t = crate::theme::Tokens::get(ui.ctx());
     let mut style = craft_ui::docking::DockStyle::from_ui(ui);
@@ -1224,7 +1224,7 @@ fn dock_style(ui: &egui::Ui) -> craft_ui::docking::DockStyle {
     style.localized(|key| DOCK_LABELS.iter().find(|(k, _)| *k == key).map(|(_, english)| tl!(english).to_owned()))
 }
 
-/// LocalVector's wording of craft-ui's docking labels, translated through `tl!`.
+/// Local Vector's wording of craft-ui's docking labels, translated through `tl!`.
 const DOCK_LABELS: &[(&str, &str)] = &[
     ("dock.float", "Float Panel"),
     ("dock.close", "Close Panel"),

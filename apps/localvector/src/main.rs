@@ -1,9 +1,9 @@
-//! LocalVector desktop app.
+//! Local Vector desktop app.
 //!
 //! Usage: `localvector [--control <port> [--automation-read-root <dir>]... [--automation-write-root <dir>]...]
 //! [--in-window-menus] [--new-instance] [files…]`, `localvector --version`, `localvector --help` (or `-h`)
 //!
-//! Files given while LocalVector already runs open in that window, unless `--new-instance` is given
+//! Files given while Local Vector already runs open in that window, unless `--new-instance` is given
 //! (Windows and Linux; `single_instance`).
 //!
 //! `--in-window-menus` (or `LOCALVECTOR_IN_WINDOW_MENUS=1`) keeps the menus inside the window on
@@ -116,7 +116,7 @@ struct App {
 const USAGE: &str = "\
 Usage: localvector [options] [files…]
 
-Opens the LocalVector desktop app with the given files.
+Opens the Local Vector desktop app with the given files.
 
 Options:
   --control <port>               Start the localhost JSON-lines control server on <port>
@@ -127,7 +127,7 @@ Options:
                                  (may be given more than once)
   --in-window-menus              Keep the menus inside the window on macOS
                                  (or LOCALVECTOR_IN_WINDOW_MENUS=1)
-  --new-instance                 Open the files in a new window even when LocalVector
+  --new-instance                 Open the files in a new window even when Local Vector
                                  already runs (Windows and Linux)
   --version                     Print the version and exit
   -h, --help                     Print this help and exit
@@ -196,7 +196,7 @@ fn main() -> std::process::ExitCode {
     };
     // Before desktop services, so every start-up warning is recorded (`logging`).
     let logger = logging::install();
-    // Files opened from the file manager while LocalVector runs open in its window (#4892). Before
+    // Files opened from the file manager while Local Vector runs open in its window (#4892). Before
     // the log file is attached: a launch that hands its files over leaves the running app's log be.
     #[cfg(not(target_os = "macos"))]
     let instance = match single_instance::start(control_port.is_some(), new_instance, &files) {
@@ -214,7 +214,7 @@ fn main() -> std::process::ExitCode {
     system_fonts::install();
     #[cfg(target_os = "macos")]
     mac_fonts::install();
-    // LocalVector's own Fonts folder, which text.addFontFiles copies fonts into.
+    // Local Vector's own Fonts folder, which text.addFontFiles copies fonts into.
     prefs_dir::install_fonts();
     // The log file lives in the settings directory, next to the preferences; opened after the
     // arguments, so `--version` leaves no file behind. Records logged until now are written to it
@@ -223,7 +223,7 @@ fn main() -> std::process::ExitCode {
     if let Some(logger) = logger {
         match log_dir().filter(|_| prefs_enabled()) {
             Some(dir) => match logger.attach_dir(&dir) {
-                Ok(path) => log::info!("LocalVector {}, log file {}", env!("CARGO_PKG_VERSION"), path.display()),
+                Ok(path) => log::info!("Local Vector {}, log file {}", env!("CARGO_PKG_VERSION"), path.display()),
                 // Standard error only by now (`attach_dir` gave up on the file); unlike `eprintln!`, never panics.
                 Err(e) => log::warn!("no log file: {e}"),
             },
@@ -373,11 +373,11 @@ fn main() -> std::process::ExitCode {
     let run = |options: eframe::NativeOptions, app_creator: eframe::AppCreator<'_>| {
         #[cfg(target_os = "linux")]
         {
-            linux_stylus::run_native("LocalVector", options, app_creator)
+            linux_stylus::run_native("Local Vector", options, app_creator)
         }
         #[cfg(not(target_os = "linux"))]
         {
-            eframe::run_native("LocalVector", options, app_creator)
+            eframe::run_native("Local Vector", options, app_creator)
         }
     };
     let outcome = localvector_engine::guard::catch_panic(|| {
@@ -442,15 +442,15 @@ fn main() -> std::process::ExitCode {
                             ""
                         };
                         app.status(format!(
-                            "The graphics processor tried first couldn't show the window, so LocalVector started again on {summary}{hint}"
+                            "The graphics processor tried first couldn't show the window, so Local Vector started again on {summary}{hint}"
                         ));
                     } else if let Some(crash) = &crash {
                         app.status(match crash {
                             gpu::Crash::Adapter { name, .. } => format!(
-                                "The last start of LocalVector ended on {name} before its window appeared, so it started on {summary}. To try that graphics processor again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set"
+                                "The last start of Local Vector ended on {name} before its window appeared, so it started on {summary}. To try that graphics processor again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set"
                             ),
                             gpu::Crash::Listing => format!(
-                                "The last start of LocalVector ended while it listed the graphics processors, so it started on {summary} with OpenGL alone. To try the other graphics backends again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set"
+                                "The last start of Local Vector ended while it listed the graphics processors, so it started on {summary} with OpenGL alone. To try the other graphics backends again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set"
                             ),
                         });
                     }
@@ -514,7 +514,7 @@ fn main() -> std::process::ExitCode {
     match outcome {
         Ok(()) => std::process::ExitCode::SUCCESS,
         Err(e) => {
-            log::error!("LocalVector stopped: {e}");
+            log::error!("Local Vector stopped: {e}");
             std::process::ExitCode::FAILURE
         }
     }

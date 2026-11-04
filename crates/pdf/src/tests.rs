@@ -111,8 +111,16 @@ fn metadata_creator_and_title() {
     let mut d = doc(100.0, 100.0);
     d.title = "Poster".into();
     let s = uncompressed(&d);
-    assert!(s.contains("LocalVector"));
+    assert!(s.contains("Local Vector"));
     assert!(s.contains("Poster"));
+}
+
+#[test]
+fn the_default_preset_answers_to_the_name_it_had_before_the_rename() {
+    assert_eq!(DEFAULT_PRESET, "Local Vector Default");
+    for name in ["Local Vector Default", "local vector default", "LocalVector Default", "default"] {
+        assert_eq!(builtin_preset(name).map(|p| p.name), Some(DEFAULT_PRESET.to_string()), "{name}");
+    }
 }
 
 #[test]

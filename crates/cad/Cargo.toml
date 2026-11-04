@@ -3,7 +3,7 @@ name = "localvector-cad"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "LocalVector CAD interchange: a hand-written ASCII DXF writer (R12 to 2018)"
+description = "Local Vector CAD interchange: a hand-written ASCII DXF writer (R12 to 2018)"
 
 [lints]
 workspace = true

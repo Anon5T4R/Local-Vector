@@ -1,4 +1,4 @@
-//! Placed documents: a LocalVector document placed linked (`file.place`'s default for one read
+//! Placed documents: a Local Vector document placed linked (`file.place`'s default for one read
 //! from a file), drawn and output as vectors, saved with its preview, checked, updated and
 //! relinked when the file changes, and turned into an editable copy (Break Link, Expand). A PDF
 //! or `.ai` page places the same way.
@@ -11,7 +11,7 @@ use serde_json::{Value, json};
 use crate::tests_links::{BLUE, Folder, RED, centre_colour, near, open, save, session, write};
 use crate::*;
 
-/// A LocalVector document at `path`: one `w`×`h` artboard filled with `rgb` (and `extra` more
+/// A Local Vector document at `path`: one `w`×`h` artboard filled with `rgb` (and `extra` more
 /// rectangles, which change the file's size).
 fn source(path: &str, w: f64, h: f64, rgb: [u8; 3], extra: usize) {
     let mut d = Document::new(w, h);
@@ -76,7 +76,7 @@ fn decode(v: &Value) -> Vec<u8> {
 
 /// Images and paths in `bytes`, a PDF, read back.
 fn pdf_contents(bytes: &[u8]) -> (usize, usize) {
-    // The page as drawn (not the LocalVector document the PDF carries).
+    // The page as drawn (not the Local Vector document the PDF carries).
     let (doc, _) = crate::cmd::fileio::page_document(bytes, 0, &Default::default()).unwrap();
     let (mut images, mut paths) = (0, 0);
     doc.walk(|n| match n.kind {
@@ -386,7 +386,7 @@ fn a_changed_file_is_modified_and_update_links_reads_it_again() {
     assert_eq!((c["modified"].as_u64(), c["links"][0]["status"].as_str()), (Some(0), Some("ok")), "{c}");
     let list = s.execute("links.list", &json!({})).unwrap();
     let row = &list["links"][0];
-    assert_eq!((row["format"].as_str(), row["document"].as_bool(), row["status"].as_str()), (Some("LocalVector"), Some(true), Some("ok")), "{row}");
+    assert_eq!((row["format"].as_str(), row["document"].as_bool(), row["status"].as_str()), (Some("Local Vector"), Some(true), Some("ok")), "{row}");
     // A blue document, wider, and a different file size.
     source(&src, 200.0, 50.0, BLUE, 1);
     assert_eq!(s.execute("links.check", &json!({})).unwrap()["links"][0]["status"], "modified");
@@ -526,7 +526,7 @@ fn a_changed_pdf_is_modified_and_update_links_reads_it_again() {
     let notes = dir.file("notes.txt");
     write(&notes, b"not a page");
     let e = s.execute("links.relink", &json!({"ids": [id.0], "path": notes})).unwrap_err().to_string();
-    assert!(e.contains("isn't a LocalVector document, a PDF or a PDF-compatible .ai file"), "{e}");
+    assert!(e.contains("isn't a Local Vector document, a PDF or a PDF-compatible .ai file"), "{e}");
     assert_eq!(placed(&s, id).link.path, other);
 }
 

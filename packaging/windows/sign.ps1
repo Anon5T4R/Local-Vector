@@ -55,7 +55,7 @@ if (-not $haveCert -and -not $haveAzure) {
 }
 
 $script:SignTool = Find-SignTool
-$common = @('sign', '/v', '/fd', 'SHA256', '/td', 'SHA256', '/d', 'LocalVector', '/du', 'https://github.com/Anon5T4R/Local-Vector')
+$common = @('sign', '/v', '/fd', 'SHA256', '/td', 'SHA256', '/d', 'Local Vector', '/du', 'https://github.com/Anon5T4R/Local-Vector')
 $tmp = Join-Path ([IO.Path]::GetTempPath()) "localvector-sign-$([IO.Path]::GetRandomFileName())"
 New-Item -ItemType Directory -Path $tmp | Out-Null
 

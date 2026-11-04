@@ -176,7 +176,7 @@ pub(super) fn color(c: &Color) -> krilla::color::Color {
         Color::Rgb { r, g, b } => rgb::Color::new(q(r), q(g), q(b)).into(),
         // Inks and grey keep their values: C75 is written as 0.75, not 191/255.
         Color::Cmyk { c, m, y, k } => cmyk::Color::new_f32(c, m, y, k).into(),
-        // LocalVector grey is ink coverage (0 = white); PDF DeviceGray is lightness.
+        // Local Vector grey is ink coverage (0 = white); PDF DeviceGray is lightness.
         Color::Gray { k } => luma::Color::new_f32(1.0 - k).into(),
         Color::Lab { .. } => {
             let [r, g, b] = c.to_rgb();

@@ -3,14 +3,14 @@
 ## Overview
 
 Use tiled printing to spread a large poster, sign or sewing pattern across several sheets of A4,
-Letter or other paper. LocalVector divides the drawing into numbered tiles at the scale you choose.
+Letter or other paper. Local Vector divides the drawing into numbered tiles at the scale you choose.
 Overlap repeats part of the drawing on adjacent sheets to help you align them after printing.
 
 ## Print a poster on multiple sheets
 
-1. Open your drawing in LocalVector. For a full-size pattern, check that the drawing has the intended
+1. Open your drawing in Local Vector. For a full-size pattern, check that the drawing has the intended
    dimensions before printing.
-2. Choose **File → Print…** to open LocalVector's **Print** dialog. In **Printer**, select your printer
+2. Choose **File → Print…** to open Local Vector's **Print** dialog. In **Printer**, select your printer
    or **PDF File** to save the tiled job as a PDF.
 3. In **General**, under **Artboards**, choose **All** or **Range:** to select the artboards to print.
    For example, use **Range:** `1` for the first artboard. Choose **Ignore Artboards (all the art as
@@ -19,8 +19,8 @@ Overlap repeats part of the drawing on adjacent sheets to help you align them af
    Choose **Custom** to enter **Width** and **Height**. **Auto-Rotate (turn the paper to each artboard)**
    is on by default; turn it off to choose a fixed **Orientation**, such as **Portrait** or **Landscape**.
 5. In **Advanced**, set **Unprintable margin** to allow for the edges your printer cannot print.
-   LocalVector uses one value for all four edges; use a value that covers the printer's largest
-   required margin. The default is zero, and LocalVector does not read this value from the printer.
+   Local Vector uses one value for all four edges; use a value that covers the printer's largest
+   required margin. The default is zero, and Local Vector does not read this value from the printer.
 6. Return to **General**. Under **Options**, set **Scaling** to **Tile Imageable Areas** or
    **Tile Full Pages** (see [Choose a tiling mode](#choose-a-tiling-mode)). Set **Scale**, both **W**
    and **H**, to `100%` to keep the drawing's size. Use the same percentage in both fields to keep
@@ -33,14 +33,14 @@ Overlap repeats part of the drawing on adjacent sheets to help you align them af
    shows the paper size and scale. Check **Summary** for warnings or invalid settings.
 9. Keep **Tile Range** empty to print every tile, or enter a range such as `1-3, 5` to print a subset.
    Check the preview again after changing the range.
-10. Click **Print**. With a printer selected, LocalVector sends the laid-out job to the system's print
+10. Click **Print**. With a printer selected, Local Vector sends the laid-out job to the system's print
     service. With **PDF File** selected, it asks where to save the PDF, with one page per printed
     tile for each copy in composite output. **Done** keeps the print settings with the document
     without printing; save the document to retain them for next time.
 
-The tiling controls belong to LocalVector's **Print** dialog on Windows, macOS and Linux.
+The tiling controls belong to Local Vector's **Print** dialog on Windows, macOS and Linux.
 **Setup…**, beside **Printer**, opens the system's printer settings, whose interface varies by
-platform. Set tiling in LocalVector's **Scaling** list. Keep the printer's paper settings consistent
+platform. Set tiling in Local Vector's **Scaling** list. Keep the printer's paper settings consistent
 with **Media**. In the web app, printing goes through the browser's print dialog; **PDF File**
 downloads the PDF.
 

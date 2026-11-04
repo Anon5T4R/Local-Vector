@@ -60,13 +60,13 @@ impl Builder {
             Blend::Color => BlendMode::Color,
             Blend::Luminosity => BlendMode::Luminosity,
             _ => {
-                self.warn("blend modes LocalVector doesn't have (Add, Linear Light, Vivid Light, Pin Light, Hard Mix, Subtract, Darker/Lighter Colour, Average, Negation, Reflect, Glow, Erase) import as Normal");
+                self.warn("blend modes Local Vector doesn't have (Add, Linear Light, Vivid Light, Pin Light, Hard Mix, Subtract, Darker/Lighter Colour, Average, Negation, Reflect, Glow, Erase) import as Normal");
                 BlendMode::Normal
             }
         }
     }
 
-    /// `n` with its colour and gradient overlays baked into its paint and pixels (LocalVector has
+    /// `n` with its colour and gradient overlays baked into its paint and pixels (Local Vector has
     /// no overlay effect).
     fn overlaid<'n>(&mut self, n: &'n af::Node) -> std::borrow::Cow<'n, af::Node> {
         // Each kind of message once, however often it is heard.
@@ -84,7 +84,7 @@ impl Builder {
         out
     }
 
-    /// One Affinity node (and its subtree) as LocalVector art; `to_doc` maps document pixels to
+    /// One Affinity node (and its subtree) as Local Vector art; `to_doc` maps document pixels to
     /// points. `layer_level`: the node is directly in a spread or a layer, so a layer stays a layer.
     pub(super) fn node(
         &mut self,
@@ -98,12 +98,12 @@ impl Builder {
             self.warn("objects nested too deeply (left out)");
             return None;
         }
-        // LocalVector documents stay within `MAX_COORD` of the origin (renderers and exports rely
+        // Local Vector documents stay within `MAX_COORD` of the origin (renderers and exports rely
         // on it): objects reaching beyond it are left out.
         if let Some(b) = af::kind_bounds(&n.kind) {
             let r = to_doc.transform_rect_bbox(rect_of(b));
             if ![r.x0, r.y0, r.x1, r.y1].iter().all(|v| v.is_finite() && v.abs() <= crate::MAX_COORD) {
-                self.warn("objects beyond the document range LocalVector supports (left out)");
+                self.warn("objects beyond the document range Local Vector supports (left out)");
                 return None;
             }
         }
@@ -149,7 +149,7 @@ impl Builder {
                     p.appearance = appearance.into();
                     p
                 } else {
-                    // A shape clips its children: LocalVector's clipping path keeps its paint, its
+                    // A shape clips its children: Local Vector's clipping path keeps its paint, its
                     // fill behind the clipped art and its stroke over it, as Affinity draws it.
                     let mut clip = Node::new(self.doc.alloc_id(), NodeKind::Path { path: data, rule, live: None, clipping: true, guide: false });
                     clip.appearance = appearance.into();

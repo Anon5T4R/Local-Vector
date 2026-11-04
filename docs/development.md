@@ -78,7 +78,7 @@ The canvas is rasterized on the CPU (`localvector-render`, vello_cpu); the GPU (
   - `WGPU_POWER_PREF`: `low`, `high` or `none` (the system's order).
   - `WGPU_ADAPTER_NAME`: part of an adapter's name, any case (`WGPU_ADAPTER_NAME=nvidia`, `=radv`, `=intel`); the names are in the log.
   - `WGPU_BACKEND`: the backends to use, such as `vulkan`, `dx12`, `metal` or `gl`.
-  - `WGPU_VALIDATION_INDIRECT_CALL=1`: turns wgpu's check of indirect draw arguments back on. LocalVector draws nothing indirectly and turns it off, since the compute shader it needs fails to compile on some drivers (#651).
+  - `WGPU_VALIDATION_INDIRECT_CALL=1`: turns wgpu's check of indirect draw arguments back on. Local Vector draws nothing indirectly and turns it off, since the compute shader it needs fails to compile on some drivers (#651).
   - On Linux with Mesa, `MESA_VK_DEVICE_SELECT=10de:2f04!` (vendor:device as `vulkaninfo --summary` or `lspci -nn` show it) leaves only that GPU to Vulkan, and `DRI_PRIME=1` picks the other GPU.
 - Help › About and the control channel's `ui.inspect` (`graphicsAdapter`) show the adapter in use, and the app logs it at startup.
 
@@ -86,7 +86,7 @@ The canvas is rasterized on the CPU (`localvector-render`, vello_cpu); the GPU (
 
 The desktop app writes its `log` records to standard error and to `logs/localvector.log` next to the preferences (Linux `$XDG_CONFIG_HOME/localvector/logs/`, by default `~/.config/localvector/logs/`; macOS `~/Library/Application Support/LocalVector/logs/`; Windows `%APPDATA%\LocalVector\logs\`). A start launched from a desktop menu or the Dock has no terminal, so this file is what to attach to a bug report: the graphics adapter in use, a lost graphics device, panics the engine's guard recovered from and clipboard formats that couldn't be made land there. Each launch moves the previous log to `localvector.1.log` (and that one to `localvector.2.log`), so the log of a run that crashed survives the next start. The file stops growing at 16 MiB. `--version` writes no file, and runs with `LOCALVECTOR_NO_PREFS` log to standard error only.
 
-By default LocalVector's own crates log at `info` and everything else at `warn`. `RUST_LOG` replaces that with env_logger-style directives, for example `RUST_LOG=debug`, `RUST_LOG=warn,localvector_render=trace` or `RUST_LOG=info,wgpu_core=warn`; a directive ending in `*` covers every target starting with it (`localvector*=debug`). The logger is `apps/localvector/src/logging.rs`. `localvector-cli mcp` has its own logger, which sends records to the MCP client (`docs/mcp.md`).
+By default Local Vector's own crates log at `info` and everything else at `warn`. `RUST_LOG` replaces that with env_logger-style directives, for example `RUST_LOG=debug`, `RUST_LOG=warn,localvector_render=trace` or `RUST_LOG=info,wgpu_core=warn`; a directive ending in `*` covers every target starting with it (`localvector*=debug`). The logger is `apps/localvector/src/logging.rs`. `localvector-cli mcp` has its own logger, which sends records to the MCP client (`docs/mcp.md`).
 
 ## Environment variables (desktop app)
 
@@ -106,14 +106,14 @@ By default LocalVector's own crates log at `info` and everything else at `warn`.
 
 On macOS the menus live in the system menu bar, not in the window's app bar (which keeps the brand mark, Home, the search icon and the workspace switcher next to the traffic lights, centred on the bar by `apps/localvector/src/mac_window.rs`). `--in-window-menus` or `LOCALVECTOR_IN_WINDOW_MENUS=1` keeps them in the window, as on Windows, Linux and the web; so does a menu bar AppKit refuses to build (logged). `ui.inspect` says which with `nativeMenuBar`.
 
-- **One menu model.** `crates/ui-egui/src/native_menu.rs` (platform-free, tested on every platform) builds the menu bar from the in-window menus (`menus::menu_tree`, each item through `menus::entry`, which the in-window menus draw too) and lays it out the Mac way: the LocalVector menu holds About, Settings ▸ (one item per Preferences page, General… ⌘K), Language ▸, Appearance ▸ (UI brightness), Services, Hide LocalVector ⌃⌘H (⌘H stays View › Hide Edges), Hide Others ⌥⌘H, Show All and Quit ⌘Q (the app's own `app.quit`, so unsaved documents are asked about); those leave Edit and Help. The in-window bar itself never shows the LocalVector menu (it starts at File, as in Illustrator, on every platform): Language and Appearance have no in-window menu and are synthesized in `mac_layout`, and Quit is File › Exit in the window, relabelled to Quit in the App menu. Window starts with Minimize ⌃⌘M and Zoom and ends with Bring All to Front, and Help is the system's Help menu (its search field). A system key a command (or a user's shortcut) already has stays the command's, and the log says so.
+- **One menu model.** `crates/ui-egui/src/native_menu.rs` (platform-free, tested on every platform) builds the menu bar from the in-window menus (`menus::menu_tree`, each item through `menus::entry`, which the in-window menus draw too) and lays it out the Mac way: the Local Vector menu holds About, Settings ▸ (one item per Preferences page, General… ⌘K), Language ▸, Appearance ▸ (UI brightness), Services, Hide Local Vector ⌃⌘H (⌘H stays View › Hide Edges), Hide Others ⌥⌘H, Show All and Quit ⌘Q (the app's own `app.quit`, so unsaved documents are asked about); those leave Edit and Help. The in-window bar itself never shows the Local Vector menu (it starts at File, as in Illustrator, on every platform): Language and Appearance have no in-window menu and are synthesized in `mac_layout`, and Quit is File › Exit in the window, relabelled to Quit in the App menu. Window starts with Minimize ⌃⌘M and Zoom and ends with Bring All to Front, and Help is the system's Help menu (its search field). A system key a command (or a user's shortcut) already has stays the command's, and the log says so.
 - **The native side** is `apps/localvector/src/mac_menu.rs`: muda (`=0.21.1`, default features off, macOS only, no `unsafe`) builds the `NSMenu`s. Labels, enabled and checked are updated in place when anything they show may have changed (a command ran, the document, its history or selection changed, a click or a key press); a change of structure (a recent file, the language, a shortcut) rebuilds the menus. While an interaction is open (for example a move, scale or shape drag, a dialog's preview or the font menu's preview), the app updates them for the document's changes only when the interaction begins and when it ends.
 - **Keys stay with egui.** AppKit runs a menu's key equivalents before the window sees the key, so the item's key goes back to egui as the key press it was (⌘X/⌘C/⌘V as egui's Cut/Copy/Paste events), through `raw_input_hook`: `shortcuts::handle` runs it once, user shortcuts apply, and a focused text field keeps ⌘A, ⌘C, ⌘V and ⌘Z. A click runs the item like an in-window click. Bare keys and ⌥/⇧ chords are never key equivalents (they type).
 - Built and clippy-checked for `aarch64-apple-darwin` and `x86_64-apple-darwin` from any host: `cargo clippy -p localvector --target aarch64-apple-darwin --all-targets -- -D warnings`.
 
 ## Files opened while the app runs (Windows and Linux)
 
-A file opened from the file manager (double-click, Open With, a drop on the executable) or given on the command line while LocalVector already runs opens as a new document tab in that window, which comes to the front; the second launch exits (#4892). `apps/localvector/src/single_instance.rs`: the running app listens on a loopback port and records the port and two random tokens in `instance.json` next to the preferences (owner-only on Unix). A launch with files reads it, connects, checks the app's greeting, sends the token and the absolute paths as one JSON line and waits for the acknowledgement; the app keeps only existing files (at most 256, 64 KiB per message). A stale file (no listener, a wrong greeting) is ignored and replaced; the app removes its file when its window closes. Launches with `--control` or `LOCALVECTOR_NO_PREFS` neither hand files over nor listen, so tests and agents start as many apps as before; `--new-instance` opens a launch's files in a window of its own. macOS hands Finder's files to the running app as open-document events (`open_documents.rs`).
+A file opened from the file manager (double-click, Open With, a drop on the executable) or given on the command line while Local Vector already runs opens as a new document tab in that window, which comes to the front; the second launch exits (#4892). `apps/localvector/src/single_instance.rs`: the running app listens on a loopback port and records the port and two random tokens in `instance.json` next to the preferences (owner-only on Unix). A launch with files reads it, connects, checks the app's greeting, sends the token and the absolute paths as one JSON line and waits for the acknowledgement; the app keeps only existing files (at most 256, 64 KiB per message). A stale file (no listener, a wrong greeting) is ignored and replaced; the app removes its file when its window closes. Launches with `--control` or `LOCALVECTOR_NO_PREFS` neither hand files over nor listen, so tests and agents start as many apps as before; `--new-instance` opens a launch's files in a window of its own. macOS hands Finder's files to the running app as open-document events (`open_documents.rs`).
 
 ## Linux: Wayland and X11
 
@@ -137,7 +137,7 @@ releases need no network for fonts. To add or update a font, change it upstream 
 checkout; never add a font file anywhere else (the Latin fonts in `assets/fonts/` predate the rule
 and stay).
 
-LocalVector builds, tests and runs without craft-fonts. To embed its Japanese fonts (BIZ UDPGothic
+Local Vector builds, tests and runs without craft-fonts. To embed its Japanese fonts (BIZ UDPGothic
 for UI text, Shippori Mincho and BIZ UDMincho for document text), point the `CRAFT_FONTS_DIR` build
 option at a checkout:
 
@@ -261,7 +261,7 @@ other `sv-*` locale resolve to it), Georgian (`ka`, complete; `ka-GE` and `ka_GE
 - The shared widgets (`widgets::check`, `dropdown`, `menu_item`, the buttons, `label_row`, tooltips of
   `icon_button`…), the menus, the dock, the toolbar, the dialog frame and `panels::empty_state` translate
   the text they are given, so a panel mostly needs its literals wrapped in `tl!` to be covered by the tests.
-- The language is Edit › Preferences › User Interface › Language or, on macOS, LocalVector › Language (the
+- The language is Edit › Preferences › User Interface › Language or, on macOS, Local Vector › Language (the
   `app.language` UI command, `{lang: auto|<code>}`); both set the `interfaceLanguage` preference (`auto` or a language
   code; `auto` follows the system locale: `LOCALVECTOR_LOCALE`, then `LC_ALL`/`LC_MESSAGES`/`LANG`/`LANGUAGE`,
   the macOS preferred languages, the Windows user locale; on the web, `?lang=<code>` in the address, then
@@ -335,7 +335,7 @@ other `sv-*` locale resolve to it), Georgian (`ka`, complete; `ka-GE` and `ka_GE
   so panics and backtraces still name file and line, and dependencies without debug info. For a
   debugger session, `CARGO_PROFILE_DEV_DEBUG=true cargo build` gives full debug info.
 
-## Robustness: LocalVector never crashes
+## Robustness: Local Vector never crashes
 
 A crash takes the user's unsaved work with it, and much of what the app reads is untrusted: SVG,
 PDF, `.ai` and `.vectorcraft` files, pasted data, MCP and control-channel messages, command

@@ -110,7 +110,7 @@ pub fn app_bar(app: &mut LocalvectorApp, ui: &mut Ui) {
                 }
             }
             if app.services.native_menu.is_some() {
-                let title = ui.painter().layout_no_wrap("LocalVector".into(), egui::FontId::proportional(13.5), t.text);
+                let title = ui.painter().layout_no_wrap("Local Vector".into(), egui::FontId::proportional(13.5), t.text);
                 let title_rect = egui::Rect::from_center_size(full.center(), title.size());
                 // Keep the title centered only while the interactive groups leave room for it.
                 if title_rect.left() >= menus_end + 8.0 && title_rect.right() <= ui.min_rect().left() - 8.0 {
@@ -139,8 +139,8 @@ pub fn system_title_bar(app: &LocalvectorApp) -> bool {
 pub fn window_title(app: &LocalvectorApp) -> String {
     app.session
         .active()
-        .map(|d| format!("{}{} \u{2014} LocalVector", if d.is_dirty() { "*" } else { "" }, d.title()))
-        .unwrap_or_else(|| "LocalVector".into())
+        .map(|d| format!("{}{} \u{2014} Local Vector", if d.is_dirty() { "*" } else { "" }, d.title()))
+        .unwrap_or_else(|| "Local Vector".into())
 }
 
 /// Keep the OS window title (and the taskbar / Alt-Tab entry) on the active file. Sends
@@ -279,12 +279,12 @@ mod visual_regressions {
                             _ => None,
                         })
                         .collect();
-                    let title = texts.iter().find(|text| text.galley.job.text == "LocalVector");
+                    let title = texts.iter().find(|text| text.galley.job.text == "Local Vector");
                     if width >= 1280.0 {
                         assert!(title.is_some(), "the title remains visible when the header has room");
                     }
                     if let Some(title) = title {
-                        for text in texts.iter().filter(|text| text.galley.job.text != "LocalVector") {
+                        for text in texts.iter().filter(|text| text.galley.job.text != "Local Vector") {
                             assert!(
                                 !title.visual_bounding_rect().intersects(text.visual_bounding_rect()),
                                 "{width}: title overlaps {:?}",

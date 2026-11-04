@@ -1,4 +1,4 @@
-//! LocalVector's built-in add-ons: extra tools beyond the standard menus, each a module of its own
+//! Local Vector's built-in add-ons: extra tools beyond the standard menus, each a module of its own
 //! with commands under `addon.<name>.*` (see `docs/mcp.md`).
 
 mod arrange;

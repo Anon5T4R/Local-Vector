@@ -1,8 +1,8 @@
-LocalVector app icon (localvector.svg, localvector-small.svg and every file derived from them in this
+Local Vector app icon (localvector.svg, localvector-small.svg and every file derived from them in this
 directory: localvector-1024.png, localvector-macos-512.png, localvector.icns, localvector.ico, hicolor/).
 
 Original artwork made for the Local suite (a flat gradient tile with a bezier-curve mark and the
-suite's "Taylor" signature; no third-party material). Licensed like the rest of LocalVector, under
+suite's "Taylor" signature; no third-party material). Licensed like the rest of Local Vector, under
 either of
 
   * Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)

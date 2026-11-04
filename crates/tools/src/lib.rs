@@ -1,4 +1,4 @@
-//! LocalVector tools: pointer events in → commands and overlays out.
+//! Local Vector tools: pointer events in → commands and overlays out.
 //!
 //! Tools never mutate the document directly. They emit [`Action`]s that the engine executes:
 //! `Begin` snapshots the document, each `Preview` re-applies one command on top of that snapshot

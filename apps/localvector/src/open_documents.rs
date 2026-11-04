@@ -3,7 +3,7 @@
 //!
 //! macOS doesn't pass these on the command line: AppKit hands them to the application delegate's
 //! `application:openURLs:`, and when the delegate has no such method it asks `NSDocumentController`,
-//! which fails with "LocalVector cannot open files in the … format" because LocalVector isn't an
+//! which fails with "Local Vector cannot open files in the … format" because Local Vector isn't an
 //! `NSDocument` app. winit 0.30's delegate doesn't implement the method, so [`install`] adds it to
 //! the delegate's class when the app is about to finish launching: after winit set the delegate and
 //! before AppKit delivers the files the app was launched with. The handler queues the paths and

@@ -1,6 +1,6 @@
 [package]
 name = "localvector-web"
-description = "LocalVector in the browser (eframe web runner, WebGPU with WebGL2 fallback)"
+description = "Local Vector in the browser (eframe web runner, WebGPU with WebGL2 fallback)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

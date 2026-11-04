@@ -1,4 +1,4 @@
-//! Placed documents: another LocalVector file, or a page of a PDF or `.ai` file, placed linked
+//! Placed documents: another Local Vector file, or a page of a PDF or `.ai` file, placed linked
 //! ([`PlacedDocument`]).
 //!
 //! The object keeps the link to the file and the file's bytes, stored like image data in
@@ -27,7 +27,7 @@ use localvector_color::Paint;
 
 use crate::{AppearanceItem, Document, ImageBlob, ImageObject, LinkInfo, Node, NodeKind, PatternDef, PlacementOptions, Symbol};
 
-/// A placed document: an artboard of another LocalVector file, or a page of a PDF or `.ai` file,
+/// A placed document: an artboard of another Local Vector file, or a page of a PDF or `.ai` file,
 /// shown as one locked object.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PlacedDocument {
@@ -39,7 +39,7 @@ pub struct PlacedDocument {
     #[serde(default, skip_serializing_if = "crate::skip::is_default")]
     pub bounding: bool,
     /// The box of a PDF or `.ai` page shown when not `bounding` (File › Place's `crop`); a
-    /// LocalVector document shows its artboard whatever this says.
+    /// Local Vector document shows its artboard whatever this says.
     #[serde(default, skip_serializing_if = "crate::skip::is_default")]
     pub page_box: PageBox,
     /// The artboard's size (or the art's) at 100% (pt).

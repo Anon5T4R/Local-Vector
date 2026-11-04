@@ -1,4 +1,4 @@
-//! Help → About LocalVector.
+//! Help → About Local Vector.
 
 use crate::LocalvectorApp;
 use crate::theme;
@@ -9,7 +9,7 @@ pub(super) fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
         return;
     }
     let mut open = true;
-    egui::Window::new(tl!("About LocalVector"))
+    egui::Window::new(tl!("About Local Vector"))
         .collapsible(false)
         .resizable(false)
         .open(&mut open)
@@ -52,7 +52,7 @@ fn about_tab(app: &mut LocalvectorApp, ui: &mut egui::Ui) {
         let (r, _) = ui.allocate_exact_size(egui::vec2(44.0, 44.0), egui::Sense::hover());
         crate::brand::paint_mark(ui, r);
         ui.vertical(|ui| {
-            ui.label(egui::RichText::new("LocalVector").font(theme::semibold(22.0)));
+            ui.label(egui::RichText::new("Local Vector").font(theme::semibold(22.0)));
             ui.label(crate::i18n::fmt(
                 tl!("Version {version} — open-source vector illustration in pure Rust."),
                 &[("version", env!("CARGO_PKG_VERSION"))],
@@ -63,7 +63,7 @@ fn about_tab(app: &mut LocalvectorApp, ui: &mut egui::Ui) {
     crate::community::links(app, ui);
     ui.add_space(12.0);
     ui.label(
-        egui::RichText::new(tl!("MIT OR Apache-2.0. Fonts: Source Sans 3, Inter, JetBrains Mono (OFL). Icons: Lucide (ISC) + LocalVector."))
+        egui::RichText::new(tl!("MIT OR Apache-2.0. Fonts: Source Sans 3, Inter, JetBrains Mono (OFL). Icons: Lucide (ISC) + Local Vector."))
             .size(11.0),
     );
     // The GPU the window renders with, for bug reports (Preferences › Performance picks it).

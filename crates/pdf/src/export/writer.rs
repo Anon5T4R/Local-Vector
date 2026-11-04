@@ -91,8 +91,8 @@ impl Writer {
         let info = &doc.metadata;
         let given = |s: &str| Some(s.trim()).filter(|s| !s.is_empty()).map(str::to_string);
         let metadata = Metadata {
-            creator: "LocalVector".into(),
-            producer: "LocalVector".into(),
+            creator: "Local Vector".into(),
+            producer: "Local Vector".into(),
             title: Some(title.to_owned()),
             authors: given(&info.author).into_iter().collect(),
             description: given(&info.description),

@@ -13,5 +13,5 @@ for name in ("com.localvector.app.yml", "com.localvector.app.bundle.yml"):
     manifests.append(manifest)
 for key in ("runtime", "runtime-version", "sdk", "finish-args"):
     assert manifests[0][key] == manifests[1][key], f"Flatpak manifests disagree on {key}"
-print("LocalVector package identity ok")
+print("Local Vector package identity ok")
 PYEOF

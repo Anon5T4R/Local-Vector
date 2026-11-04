@@ -13,10 +13,10 @@ fn main() -> Result<(), String> {
     }
     let mut res = winresource::WindowsResource::new();
     res.set_icon("../../assets/app-icon/localvector.ico")
-        .set("ProductName", "LocalVector")
-        .set("FileDescription", "LocalVector vector illustration editor")
+        .set("ProductName", "Local Vector")
+        .set("FileDescription", "Local Vector vector illustration editor")
         .set("CompanyName", "Learning Machines LLC")
-        .set("LegalCopyright", "Copyright (c) the LocalVector authors. MIT OR Apache-2.0.")
+        .set("LegalCopyright", "Copyright (c) the Local Vector authors. MIT OR Apache-2.0.")
         .set("OriginalFilename", "localvector.exe")
         .set("InternalName", "localvector");
     if let Err(e) = res.compile() {

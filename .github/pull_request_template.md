@@ -1,5 +1,5 @@
 <!--
-Thanks for contributing to LocalVector.
+Thanks for contributing to Local Vector.
 
 Base the PR on `main`, the only integration branch. Delete the sections that do not apply.
 -->

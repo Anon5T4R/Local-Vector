@@ -21,9 +21,9 @@ use std::sync::OnceLock;
 
 /// The app's own settings folder names: `name` where a platform names folders (macOS, Windows),
 /// `lower` where it asks for a lower-case one (Linux and BSD).
-pub const APP_DIR: (&str, &str) = ("LocalVector", "localvector");
+pub const APP_DIR: (&str, &str) = ("Local Vector", "localvector");
 /// Files in the install folder that switch on portable mode (either one; contents are ignored).
-/// `VectorCraft.portable` is the marker of the name before LocalVector, which keeps working.
+/// `VectorCraft.portable` is the marker of the name before Local Vector, which keeps working.
 pub const PORTABLE_MARKERS: [&str; 3] = ["portable.txt", "LocalVector.portable", "VectorCraft.portable"];
 /// The settings folder created in the install folder in portable mode.
 pub const PORTABLE_DATA_DIR: &str = "LocalVectorData";

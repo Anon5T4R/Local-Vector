@@ -31,7 +31,7 @@ pub const EMF: &str = "image/emf";
 /// beside, or instead of, a PDF (#1499).
 pub const EPS: &str = "application/postscript";
 /// A `.ai` or `.ait` file whose bytes are a PDF, copied in a file manager ([`file_flavour`]): Paste
-/// reads it as `document.open` does, from its editing data. The type is LocalVector's own: no
+/// reads it as `document.open` does, from its editing data. The type is Local Vector's own: no
 /// system clipboard carries it, and Paste asks for [`PDF`] to get it.
 pub const AI: &str = "application/x-ai";
 /// What Paste reads from other apps, best first: vector art before text, text before bitmaps
@@ -205,7 +205,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Load Metafile into Clipboard",
             [],
             None,
-            "{dataBase64 (EMF or WMF bytes), center?: [x, y]} replace the clipboard with the picture's objects (paths, clipping groups, images, point type; the images they use), centred on `center` (default: the first artboard) → {count, warnings}; records LocalVector doesn't read are skipped with one warning; then run edit.paste",
+            "{dataBase64 (EMF or WMF bytes), center?: [x, y]} replace the clipboard with the picture's objects (paths, clipping groups, images, point type; the images they use), centred on `center` (default: the first artboard) → {count, warnings}; records Local Vector doesn't read are skipped with one warning; then run edit.paste",
             has_doc,
             import_emf
         ),

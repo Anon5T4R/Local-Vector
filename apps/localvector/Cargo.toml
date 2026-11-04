@@ -19,7 +19,7 @@ localvector-engine = { workspace = true, features = ["bundled-fonts"] }
 localvector-ui-egui = { workspace = true }
 localvector-text = { workspace = true }
 # Shared across the Craft suite: decides who draws the window frame per desktop (compositor vs app)
-# so LocalVector matches the rest on Linux. `egui` adds `craft_window::decorate`. See #217.
+# so Local Vector matches the rest on Linux. `egui` adds `craft_window::decorate`. See #217.
 craft-window = { workspace = true }
 eframe = { workspace = true, features = ["clipboard", "default_fonts", "wayland", "x11"] }
 egui = { workspace = true }

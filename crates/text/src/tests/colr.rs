@@ -1,5 +1,5 @@
 //! COLR colour glyphs (v0 layers, v1 paints): read as trees of document nodes in font units, or
-//! as an image for paints LocalVector lacks, and laid out with the type.
+//! as an image for paints Local Vector lacks, and laid out with the type.
 
 use skrifa::MetadataProvider;
 use skrifa::color::ColorGlyphFormat;

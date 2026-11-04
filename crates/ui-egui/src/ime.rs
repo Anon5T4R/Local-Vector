@@ -1,4 +1,4 @@
-//! LocalVector's outgoing IME producer: the Type tool's committed logical text, its stable owner
+//! Local Vector's outgoing IME producer: the Type tool's committed logical text, its stable owner
 //! and context generation, and the explicit `InputMethod`/`Other` cause.
 //!
 //! The shared [`egui::ime_context`] helper does the lifecycle bookkeeping. This module is the thin
@@ -91,7 +91,7 @@ pub(crate) fn install_hooks(ctx: &Context) {
         return;
     }
     ctx.on_begin_pass(
-        "LocalVector IME pass begin",
+        "Local Vector IME pass begin",
         std::sync::Arc::new(|ui| {
             let ctx = ui.ctx();
             let id = mode_id(ctx.viewport_id());
@@ -99,7 +99,7 @@ pub(crate) fn install_hooks(ctx: &Context) {
         }),
     );
     ctx.on_end_pass(
-        "LocalVector IME pass end",
+        "Local Vector IME pass end",
         std::sync::Arc::new(|ui| {
             let ctx = ui.ctx();
             let id = mode_id(ctx.viewport_id());

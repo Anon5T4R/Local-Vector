@@ -1,5 +1,5 @@
 //! Placing a Word document (`.docx`): its text set as area type with the character and paragraph
-//! formatting LocalVector has, read as ECMA-376 Part 1 describes WordprocessingML
+//! formatting Local Vector has, read as ECMA-376 Part 1 describes WordprocessingML
 //! (<https://ecma-international.org/publications-and-standards/standards/ecma-376/>), in its
 //! Transitional and Strict namespaces.
 //!
@@ -130,9 +130,9 @@ fn package_error(cmd: &str, e: ReadError) -> EngineError {
         match e {
             ReadError::NotZip => "not a Word document: it isn't a ZIP package".to_string(),
             ReadError::TooManyFiles => format!("the Word document's package has more than {MAX_FILES} files"),
-            ReadError::Zip64 => "the Word document's package uses ZIP64 records, which LocalVector doesn't read".to_string(),
+            ReadError::Zip64 => "the Word document's package uses ZIP64 records, which Local Vector doesn't read".to_string(),
             ReadError::Encrypted(name) => format!("`{name}` in the Word document is encrypted"),
-            ReadError::Method(name, m) => format!("`{name}` in the Word document uses compression method {m}, which LocalVector doesn't read"),
+            ReadError::Method(name, m) => format!("`{name}` in the Word document uses compression method {m}, which Local Vector doesn't read"),
             ReadError::TooLarge(name) => format!("`{name}` in the Word document is too large to place (at most {} MB unpacked)", MAX_PART >> 20),
             ReadError::Damaged(name) if name.is_empty() => "the Word document's package is damaged".to_string(),
             ReadError::Damaged(name) => format!("the Word document's package is damaged: `{name}` can't be read"),
@@ -322,7 +322,7 @@ struct RunProps {
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 struct Chars {
     font: Option<usize>,
-    /// None: LocalVector's default size.
+    /// None: Local Vector's default size.
     half_points: Option<f64>,
     bold: bool,
     italic: bool,

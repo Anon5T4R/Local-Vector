@@ -6,7 +6,7 @@ Every bundled asset, with its author, source and license, is listed per file in
 an app asset: documentation and screenshots, the vendored forks, test data and the licences kept
 next to them.
 
-LocalVector's own code and original artwork are MIT OR Apache-2.0 (see [`LICENSE-MIT`](LICENSE-MIT),
+Local Vector's own code and original artwork are MIT OR Apache-2.0 (see [`LICENSE-MIT`](LICENSE-MIT),
 [`LICENSE-APACHE`](LICENSE-APACHE) and [`NOTICE`](NOTICE)). The code derives from VectorCraft
 (ArtCraft), also MIT OR Apache-2.0; that credit is in [`NOTICE`](NOTICE) and in the upstream
 copyright line of [`LICENSE-MIT`](LICENSE-MIT).
@@ -15,9 +15,9 @@ copyright line of [`LICENSE-MIT`](LICENSE-MIT).
 
 | Path | Author | Source | License |
 |---|---|---|---|
-| `docs/images/shot-*.png` | LocalVector contributors | Screenshots of LocalVector itself (its own UI icons and Lucide), taken from the example files in `examples/` | MIT OR Apache-2.0 |
-| `docs/images/art-*.png`, `docs/images/dusk-poster.png` | LocalVector contributors | Rendered by LocalVector from the example files in `examples/` | MIT OR Apache-2.0 |
-| `examples/*.vectorcraft`, `examples/*.svg` | LocalVector contributors | Original artwork drawn through the LocalVector command API | MIT OR Apache-2.0 |
+| `docs/images/shot-*.png` | Local Vector contributors | Screenshots of Local Vector itself (its own UI icons and Lucide), taken from the example files in `examples/` | MIT OR Apache-2.0 |
+| `docs/images/art-*.png`, `docs/images/dusk-poster.png` | Local Vector contributors | Rendered by Local Vector from the example files in `examples/` | MIT OR Apache-2.0 |
+| `examples/*.vectorcraft`, `examples/*.svg` | Local Vector contributors | Original artwork drawn through the Local Vector command API | MIT OR Apache-2.0 |
 | `packaging/macos/dmg/background.svg`, `.tiff`, `DS_Store` | Xus Badia (contributed in #493) | Original artwork for the DMG window, rebuilt by `packaging/macos/dmg/generate.py` | MIT OR Apache-2.0 |
 
 ## Vendored forks
@@ -47,5 +47,5 @@ with the packages as `OFL-<family>.txt`; the families and their licences are lis
 
 | Path | Origin | License |
 |---|---|---|
-| `crates/engine/tests/fixtures/jpeg2000/*` | Authored for LocalVector's tests with FFmpeg's JPEG 2000 encoder; hashes in `ASSETS.md` | MIT OR Apache-2.0 |
+| `crates/engine/tests/fixtures/jpeg2000/*` | Authored for Local Vector's tests with FFmpeg's JPEG 2000 encoder; hashes in `ASSETS.md` | MIT OR Apache-2.0 |
 | `corpus/` (never committed) | Fetched at pinned commits by `cargo xtask corpus`; real-file oracles live in <https://github.com/storytold/photocraft-corpus> | per its own notices |

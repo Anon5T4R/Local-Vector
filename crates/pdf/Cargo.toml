@@ -3,7 +3,7 @@ name = "localvector-pdf"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "LocalVector PDF export and import"
+description = "Local Vector PDF export and import"
 
 [lints]
 workspace = true

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Build, sign and package LocalVector for Windows.
+  Build, sign and package Local Vector for Windows.
 
 .DESCRIPTION
   Produces, in $env:DIST (default: dist/release):
@@ -54,7 +54,7 @@ New-Item -ItemType Directory -Force -Path $Dist | Out-Null
 if (-not $env:LOCALVECTOR_BUILD_SHA) { $env:LOCALVECTOR_BUILD_SHA = (git -C $Root rev-parse HEAD 2>$null) }
 if (-not $env:LOCALVECTOR_BUILD_DATE) { $env:LOCALVECTOR_BUILD_DATE = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd') }
 
-Write-Output "LocalVector $Version for Windows $Arch ($Target)"
+Write-Output "Local Vector $Version for Windows $Arch ($Target)"
 
 if (-not $SkipBuild) {
   # Static CRT: no VC++ redistributable needed. Scoped to the target so host build scripts and
@@ -109,7 +109,7 @@ if (Test-Path (Join-Path $Root 'licenses')) {
 }
 
 # ---- MSI ---------------------------------------------------------------------------------------
-# The setup wizard's art, drawn here from the app icon so the MSI shows LocalVector rather than
+# The setup wizard's art, drawn here from the app icon so the MSI shows Local Vector rather than
 # WiX's stock bitmaps: a 493x58 banner across the top of the inner pages (the page title is drawn
 # over its left side, so that stays white) and a 493x312 backdrop for the Welcome and Finish pages
 # (their text sits on the right; the left 164 px are ours). Both must be 24-bit BMPs.
@@ -146,7 +146,7 @@ $Banner = Join-Path $Stage 'installer-banner.bmp'
 $Dialog = Join-Path $Stage 'installer-dialog.bmp'
 New-InstallerArt (Join-Path $Root 'assets\app-icon\hicolor\256x256\apps\com.localvector.app.png') $Banner $Dialog
 
-# The welcome page of WixUI_Minimal shows the licence. LocalVector is MIT OR Apache-2.0, so the RTF
+# The welcome page of WixUI_Minimal shows the licence. Local Vector is MIT OR Apache-2.0, so the RTF
 # is a short notice pointing at both texts, hard-wrapped for the dialog's width.
 function ConvertTo-RtfText([string] $Text) {
   $sb = [System.Text.StringBuilder]::new()
@@ -157,7 +157,7 @@ function ConvertTo-RtfText([string] $Text) {
 }
 $LicenseRtf = Join-Path $Stage 'license.rtf'
 $rtf = '{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fswiss\fcharset0 Tahoma;}}\viewkind4\uc1\pard\sa120\f0\fs16 ' +
-  ('\b LocalVector\b0\par\par ' + (ConvertTo-RtfText 'LocalVector is free software, licensed under the MIT License or the Apache License, Version 2.0, at your option, with no warranty. The full licence texts are at https://opensource.org/licenses/MIT and https://www.apache.org/licenses/LICENSE-2.0. Source: https://github.com/Anon5T4R/Local-Vector.')) +
+  ('\b Local Vector\b0\par\par ' + (ConvertTo-RtfText 'Local Vector is free software, licensed under the MIT License or the Apache License, Version 2.0, at your option, with no warranty. The full licence texts are at https://opensource.org/licenses/MIT and https://www.apache.org/licenses/LICENSE-2.0. Source: https://github.com/Anon5T4R/Local-Vector.')) +
   "\par`r`n}`r`n"
 [System.IO.File]::WriteAllText($LicenseRtf, $rtf, [System.Text.Encoding]::ASCII)
 

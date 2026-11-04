@@ -209,12 +209,12 @@ fn temp_folder() -> Result<String, String> {
     preview_folder_in(&std::env::temp_dir(), PREVIEW_KEEP)
 }
 
-/// The name of a folder that a preview made in the temporary folder, beside a `LocalVector Save
+/// The name of a folder that a preview made in the temporary folder, beside a `Local Vector Save
 /// for Web` it couldn't use, before the process id and the count.
 #[cfg(not(target_arch = "wasm32"))]
-const BESIDE: &str = "LocalVector Save for Web ";
+const BESIDE: &str = "Local Vector Save for Web ";
 
-/// A new folder for a browser preview in the temporary folder `tmp`: inside `LocalVector Save for
+/// A new folder for a browser preview in the temporary folder `tmp`: inside `Local Vector Save for
 /// Web` ([`preview_folder`]), or, when that folder can't be used, directly in `tmp`, named
 /// [`BESIDE`] followed by the process id and a count. The log says why the shared folder wasn't
 /// used. Each preview first removes the folders of that name in `tmp` last changed `keep` or longer
@@ -222,7 +222,7 @@ const BESIDE: &str = "LocalVector Save for Web ";
 #[cfg(not(target_arch = "wasm32"))]
 pub(super) fn preview_folder_in(tmp: &std::path::Path, keep: std::time::Duration) -> Result<String, String> {
     remove_old(tmp, BESIDE, keep);
-    preview_folder(&tmp.join("LocalVector Save for Web"), keep).or_else(|e| {
+    preview_folder(&tmp.join("Local Vector Save for Web"), keep).or_else(|e| {
         log::warn!("localvector: Preview in Browser can't use {e}, so the preview goes to a new folder of its own");
         new_folder(tmp, BESIDE)
     })

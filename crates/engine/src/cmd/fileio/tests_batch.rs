@@ -1,6 +1,6 @@
 //! Batch exports through Export for Screens (#1935): a file name pattern (the document's and the
 //! item's names, a counter, the date), folders by format, by item or both, layers and the selection
-//! as what is exported, and document formats (LocalVector, Illustrator, EPS) as rows.
+//! as what is exported, and document formats (Local Vector, Illustrator, EPS) as rows.
 
 use serde_json::{Value, json};
 

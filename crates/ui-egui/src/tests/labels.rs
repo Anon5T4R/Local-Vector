@@ -1,4 +1,4 @@
-//! Neutral wording in menus and panels: what users read names LocalVector's own features.
+//! Neutral wording in menus and panels: what users read names Local Vector's own features.
 
 use egui::epaint::Shape;
 use localvector_engine::Session;
@@ -341,7 +341,7 @@ fn clipboard_preferences_name_the_legacy_format_neutrally() {
 fn shortcut_set_old_name_is_accepted() {
     use crate::shortcut_editor::{PRESETS, import_json};
     let (old, _) = crate::shortcut_editor::LEGACY_PRESETS[0];
-    assert_eq!(PRESETS, ["LocalVector Defaults", "Classic Defaults"]);
+    assert_eq!(PRESETS, ["Local Vector Defaults", "Classic Defaults"]);
     // UI preferences saved by an earlier version load (and save again) under the current name.
     let ui: crate::state::UiState = serde_json::from_value(json!({ "shortcut_set": old })).unwrap();
     assert_eq!(ui.shortcut_set, "Classic Defaults");
@@ -355,9 +355,14 @@ fn shortcut_set_old_name_is_accepted() {
     let mut app = app();
     app.run("shortcuts.preset", json!({ "name": old })).unwrap();
     assert_eq!(app.ui.shortcut_set, "Classic Defaults");
-    app.run("shortcuts.preset", json!({ "name": "LocalVector Defaults" })).unwrap();
-    assert_eq!(app.ui.shortcut_set, "LocalVector Defaults");
+    app.run("shortcuts.preset", json!({ "name": "Local Vector Defaults" })).unwrap();
+    assert_eq!(app.ui.shortcut_set, "Local Vector Defaults");
     assert!(app.run("shortcuts.preset", json!({ "name": "Nope" })).is_err());
     let (set, _) = import_json(&json!({ "set": old, "overrides": {} })).unwrap();
     assert_eq!(set, "Classic Defaults");
+    // The name the default set had before the app's rename loads under the current one.
+    let renamed: crate::state::UiState = serde_json::from_value(json!({ "shortcut_set": "LocalVector Defaults" })).unwrap();
+    assert_eq!(renamed.shortcut_set, PRESETS[0]);
+    let (set, _) = import_json(&json!({ "set": "LocalVector Defaults", "overrides": {} })).unwrap();
+    assert_eq!(set, PRESETS[0]);
 }

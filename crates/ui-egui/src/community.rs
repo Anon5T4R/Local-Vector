@@ -22,7 +22,7 @@ fn link(app: &mut LocalvectorApp, ui: &mut Ui, icon: &str, label: &str, cmd: &st
 pub fn links(app: &mut LocalvectorApp, ui: &mut Ui) {
     let l = app.session.execute("help.links", &serde_json::json!({})).unwrap_or_default();
     let s = |k: &str| l[k].as_str().unwrap_or("").to_string();
-    link(app, ui, "globe", tl!("LocalVector website"), "help.website", &s("website"));
+    link(app, ui, "globe", tl!("Local Vector website"), "help.website", &s("website"));
     link(app, ui, "external-link", tl!("Report an Issue"), "help.reportIssue", &s("reportIssue"));
     link(app, ui, "git-branch", tl!("Source code on GitHub"), "help.github", &s("github"));
 }

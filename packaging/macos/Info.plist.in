@@ -37,9 +37,9 @@
     <string>zh-Hant</string>
   </array>
   <key>CFBundleDisplayName</key>
-  <string>LocalVector</string>
+  <string>Local Vector</string>
   <key>CFBundleName</key>
-  <string>LocalVector</string>
+  <string>Local Vector</string>
   <key>CFBundleExecutable</key>
   <string>LocalVector</string>
   <key>CFBundleIdentifier</key>
@@ -73,23 +73,23 @@
   <key>NSRequiresAquaSystemAppearance</key>
   <false/>
   <key>NSHumanReadableCopyright</key>
-  <string>Copyright © the LocalVector authors. MIT OR Apache-2.0.</string>
+  <string>Copyright © the Local Vector authors. MIT OR Apache-2.0.</string>
 
   <!-- Every format File › Open reads (OPEN_EXTS in crates/engine/src/cmd/fileio/formats.rs; a test in
-       apps/localvector checks this list), so Finder offers LocalVector for them (Open With,
-       double-click, Dock drop). LocalVector owns its own formats; for the others it is an
+       apps/localvector checks this list), so Finder offers Local Vector for them (Open With,
+       double-click, Dock drop). Local Vector owns its own formats; for the others it is an
        alternate, so it doesn't take over another app's files. The app isn't NSDocument-based (no
        NSDocumentClass): it opens these files itself (apps/localvector/src/open_documents.rs). -->
   <key>CFBundleDocumentTypes</key>
   <array>
     <dict>
-      <key>CFBundleTypeName</key><string>LocalVector Document</string>
+      <key>CFBundleTypeName</key><string>Local Vector Document</string>
       <key>LSItemContentTypes</key><array><string>com.localvector.app.document</string></array>
       <key>CFBundleTypeRole</key><string>Editor</string>
       <key>LSHandlerRank</key><string>Owner</string>
     </dict>
     <dict>
-      <key>CFBundleTypeName</key><string>LocalVector Template</string>
+      <key>CFBundleTypeName</key><string>Local Vector Template</string>
       <key>CFBundleTypeExtensions</key><array><string>vctemplate</string></array>
       <key>CFBundleTypeRole</key><string>Editor</string>
       <key>LSHandlerRank</key><string>Owner</string>
@@ -148,14 +148,14 @@
     </dict>
   </array>
 
-  <!-- LocalVector's own format (.drawcraft is its name from before the rename). -->
+  <!-- Local Vector's own format (.drawcraft is its name from before the rename). -->
   <key>UTExportedTypeDeclarations</key>
   <array>
     <dict>
       <key>UTTypeIdentifier</key>
       <string>com.localvector.app.document</string>
       <key>UTTypeDescription</key>
-      <string>LocalVector Document</string>
+      <string>Local Vector Document</string>
       <key>UTTypeConformsTo</key>
       <array>
         <string>public.data</string>

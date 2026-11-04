@@ -4,7 +4,7 @@
 //! their Symbol Options; saved, it is a native `.vectorcraft` file, which File › Open also opens.
 //! The built-in library is generated here ([`BUILTIN`]); User Defined ones are the `.vectorcraft`
 //! files in the user library folder ([`Libraries`]), and Other Library… loads the symbols of any
-//! document LocalVector opens. `symbol.addFromLibrary` copies symbols into the document;
+//! document Local Vector opens. `symbol.addFromLibrary` copies symbols into the document;
 //! `symbol.saveLibrary` writes the document's.
 
 use std::collections::HashSet;
@@ -68,7 +68,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Other Library…",
             ["Window", "Symbol Libraries"],
             None,
-            "{path? | data?: file text | dataBase64?, name?: file name (default: the path's)} load the symbols of any document LocalVector opens (see document.formats), a saved symbol library included, for the library panel (Window → Symbol Libraries lists it until the app quits; a file of the user library folder, or a file with the same bytes as one there, opens as that User Defined library) → {library: id, name, count}",
+            "{path? | data?: file text | dataBase64?, name?: file name (default: the path's)} load the symbols of any document Local Vector opens (see document.formats), a saved symbol library included, for the library panel (Window → Symbol Libraries lists it until the app quits; a file of the user library folder, or a file with the same bytes as one there, opens as that User Defined library) → {library: id, name, count}",
             always,
             load
         ),

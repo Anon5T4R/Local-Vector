@@ -1,4 +1,4 @@
-# Releasing LocalVector
+# Releasing Local Vector
 
 Every tag `vX.Y.Z` runs `.github/workflows/release.yml`. The workflow builds the installers for
 macOS, Windows, Linux (AppImage, deb, rpm, tarball, Flatpak bundles and a RISC-V tarball), FreeBSD
@@ -9,7 +9,7 @@ run.
 The other packagers — the Flatpak from-source manifest, FreeBSD and the web build — stay in
 `packaging/` and are run by hand when needed.
 
-User-facing names say **LocalVector**. Files, binaries and ids stay lowercase
+User-facing names say **Local Vector**. Files, binaries and ids stay lowercase
 (`localvector-<version>-<platform>-<arch>.<ext>`, `com.localvector.app`).
 
 ## In-app update checks
@@ -91,7 +91,7 @@ still compiles and falls back to the system's fonts. The build option is in
   `assets/app-icon/localvector.icns`. `cargo xtask bundle` fills in the same template for its
   development app.
 - **Document types:** `Info.plist.in` declares every format File › Open reads, so Finder opens
-  them with LocalVector (double-click, Open With, a drop on the Dock icon). LocalVector owns its own
+  them with Local Vector (double-click, Open With, a drop on the Dock icon). Local Vector owns its own
   formats and is an alternate for the others. A test keeps the list in step with the engine's
   `OPEN_EXTS`. AppKit hands the files to the app as open-document events, which
   `apps/localvector/src/open_documents.rs` opens like files named on the command line.
@@ -104,7 +104,7 @@ still compiles and falls back to the system's fonts. The build option is in
   to drag onto), which is signed, notarized and stapled too; the app mounted from it must pass
   `codesign --verify --strict --deep` (#1085). Its Finder window (background, icon size and positions)
   comes from [`packaging/macos/dmg/`](../packaging/macos/dmg/README.md), and its volume is named
-  `LocalVector` without the version, which the window's background needs; the DMG file name keeps
+  `Local Vector` without the version, which the window's background needs; the DMG file name keeps
   the version.
 - **CLI:** the universal `localvector-cli` is signed the same way, zipped, and the zip is
   notarized. A bare executable can't hold a stapled ticket, so Gatekeeper looks the CLI's ticket up
@@ -131,12 +131,12 @@ to the target triple, so host build scripts aren't affected.
   can never ship labelled arm64), that `localvector.exe` is a GUI program (no console window) and
   that `localvector-cli.exe` is a console program.
 - `localvector.wxs` (WiX v5) is a **per-machine** package (`Scope="perMachine"`): it installs into
-  `Program Files\LocalVector` (`Program Files (x86)\LocalVector` for the 32-bit build), needs an
+  `Program Files\Local Vector` (`Program Files (x86)\Local Vector` for the 32-bit build), needs an
   elevated setup, and refuses a per-user install (`<Launch Condition="ALLUSERS = 1 OR (Installed
   AND REMOVE = "ALL")">`, so an older per-user copy can still be uninstalled). It creates a plain
   Start Menu shortcut and a desktop shortcut — not advertised MSI shortcuts, whose descriptor
   Windows can't use as a file handler — each in its own component with an HKLM key path, so
-  Windows Installer removes them on uninstall. LocalVector becomes the default app for
+  Windows Installer removes them on uninstall. Local Vector becomes the default app for
   `.vectorcraft` (and the older `.drawcraft`), is listed under "Open with" for SVG, PDF,
   `.ai`/`.ait`, EPS, Affinity, DXF, EMF/WMF and the image formats the app opens, it registers App
   Paths (Win+R `localvector`), and it writes `HKLM\Software\Anon5T4R\LocalVector\InstallDir` so the
@@ -146,7 +146,7 @@ to the target triple, so host build scripts aren't affected.
   details are in [`packaging/windows/INSTALLATION.md`](../packaging/windows/INSTALLATION.md).
 - Double-clicking the MSI opens the `WixUI_Minimal` wizard: welcome with the licence (the project's
   `LICENSE-MIT`/`LICENSE-APACHE` text), a progress page, and a Finish page that says where to find
-  the app, with a ticked "Launch LocalVector" box. The pages name the full version
+  the app, with a ticked "Launch Local Vector" box. The pages name the full version
   (`localvector.en-us.wxl`). `package.ps1` draws the wizard's banner and side bitmaps from the app
   icon, so no WiX stock art ships. `msiexec /qn ALLUSERS=1` installs silently per-machine, as the
   launch condition requires. Building needs the WiX UI and Util extensions:
@@ -192,14 +192,14 @@ Locally on Windows: `dotnet tool install -g wix --version 5.0.2`,
 `packaging/linux/package.sh` builds the release binaries and packages them as an AppImage, a
 `.deb` and an `.rpm` (with [nfpm](https://nfpm.goreleaser.com), from `nfpm.yaml`) and a plain
 `.tar.gz` tree (`bin/`, `share/`). The packages install both programs, the desktop entry, the
-AppStream metainfo, the MIME type for LocalVector documents, the icons and the licence files.
+AppStream metainfo, the MIME type for Local Vector documents, the icons and the licence files.
 
 **Document types.** The desktop entry's `MimeType` lists every format File › Open reads but PSD,
-PSB, `.ps` PostScript, Targa, PCX and JPEG 2000, so file managers list LocalVector under Open With
+PSB, `.ps` PostScript, Targa, PCX and JPEG 2000, so file managers list Local Vector under Open With
 for them. `packaging/linux/com.localvector.app.mime.xml` declares the types that shared-mime-info
-lacks: LocalVector documents and templates, `.ait` templates and Affinity files
+lacks: Local Vector documents and templates, `.ait` templates and Affinity files
 (`application/x-affinity`). An `.af` file gets the Affinity type by its content, and `.afdesign`
-and `.afpub` files by their extension. The MIME type names of LocalVector's own formats
+and `.afpub` files by their extension. The MIME type names of Local Vector's own formats
 (`application/x-vectorcraft`, `application/x-vectorcraft-template`, `*.vectorcraft`) are the
 format's identifiers and stay as they are. A test keeps both files in step with the engine's
 `OPEN_EXTS`.
@@ -299,7 +299,7 @@ on a change to `packaging/`: `packaging/windows/check-icons.ps1`,
 
 | Date | Change | Summary |
 |---|---|---|
-| 2026-11-02 | major | Rebranded from VectorCraft to LocalVector: names, ids, MSI package (per-machine, new UpgradeCode), GitHub URLs and the vendored fonts. |
+| 2026-11-02 | major | Rebranded from VectorCraft to Local Vector: names, ids, MSI package (per-machine, new UpgradeCode), GitHub URLs and the vendored fonts. |
 | 2026-10-14 | minor | RPM glibc floor names libm's `GLIBC_2.35`: RHEL 9's glibc 2.34 provides libc's through backports |
 | 2026-10-12 | minor | RPM dependencies use 64-bit runtime capabilities and enforce glibc 2.35 (#1275); real distro install/start-up checks remain pending |
 | 2026-10-12 | minor | Portable mode (#1366): the Windows portable zip ships `portable.txt`; where the marker goes on macOS and Linux, and what Flatpak can't do |

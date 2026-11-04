@@ -320,7 +320,7 @@ fn char_style_new_apply_range_redefine_keeps_overrides() {
 
 /// Applying and redefining a style record a step named from a template with the style's name
 /// in it (`HistoryEntry::named`), and undo and redo keep it. The Normal styles' names are
-/// marked as names LocalVector gives. A new style's step has a name of its own.
+/// marked as names Local Vector gives. A new style's step has a name of its own.
 #[test]
 fn style_steps_are_named_from_a_template() {
     let (mut s, id) = session_with_text("Hello");

@@ -1,4 +1,4 @@
-//! Where LocalVector keeps its settings, `ui.json`, and next to it folders of the user's own
+//! Where Local Vector keeps its settings, `ui.json`, and next to it folders of the user's own
 //! (Swatches, Graphic Styles, Fonts, Data Recovery, logs). The desktop app and `localvector-cli`
 //! (which shares this file) read the same Fonts folder.
 
@@ -23,7 +23,7 @@ pub fn prefs_path() -> Option<PathBuf> {
     prefs_path_for(CURRENT.0, CURRENT.1)
 }
 
-/// Have the font scans read LocalVector's own Fonts folder, next to the settings, which
+/// Have the font scans read Local Vector's own Fonts folder, next to the settings, which
 /// `text.addFontFiles` copies font files into. The folder is set whether or not
 /// `LOCALVECTOR_NO_PREFS` is set, as the Swatches and Graphic Styles folders are.
 pub fn install_fonts() {

@@ -3,7 +3,7 @@ name = "localvector-effects"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "LocalVector live effects evaluated to geometry"
+description = "Local Vector live effects evaluated to geometry"
 
 [lints]
 workspace = true

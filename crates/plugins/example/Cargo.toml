@@ -1,12 +1,12 @@
 [package]
 name = "localvector-plugin-desaturate"
-description = "Example LocalVector WebAssembly object filter plug-in: Desaturate"
+description = "Example Local Vector WebAssembly object filter plug-in: Desaturate"
 version = "1.0.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 publish = false
 
-# Not a member of the LocalVector workspace: it builds for wasm32-unknown-unknown only.
+# Not a member of the Local Vector workspace: it builds for wasm32-unknown-unknown only.
 [workspace]
 
 [lib]

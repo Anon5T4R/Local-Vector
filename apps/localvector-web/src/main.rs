@@ -1,4 +1,4 @@
-//! LocalVector in the browser.
+//! Local Vector in the browser.
 //!
 //! Runs the same [`localvector_ui_egui::LocalvectorApp`] as the desktop app through eframe's web
 //! runner (wgpu: WebGPU where available, WebGL2 otherwise). Build with `trunk build --release`

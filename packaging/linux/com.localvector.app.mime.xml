@@ -4,13 +4,13 @@
      apps/localvector/src/main.rs checks both files. -->
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
   <mime-type type="application/x-vectorcraft">
-    <comment>LocalVector document</comment>
+    <comment>Local Vector document</comment>
     <icon name="com.localvector.app"/>
     <glob pattern="*.vectorcraft"/>
     <glob pattern="*.drawcraft"/>
   </mime-type>
   <mime-type type="application/x-vectorcraft-template">
-    <comment>LocalVector template</comment>
+    <comment>Local Vector template</comment>
     <sub-class-of type="application/x-vectorcraft"/>
     <glob pattern="*.vctemplate"/>
   </mime-type>

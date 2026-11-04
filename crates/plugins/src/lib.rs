@@ -1,6 +1,6 @@
-//! Sandboxed WebAssembly plug-ins for LocalVector.
+//! Sandboxed WebAssembly plug-ins for Local Vector.
 //!
-//! A plug-in is a WebAssembly module that implements the LocalVector plug-in ABI (v1, documented
+//! A plug-in is a WebAssembly module that implements the Local Vector plug-in ABI (v1, documented
 //! in `docs/plugins.md`). It runs in [`wasmi`], a pure-Rust interpreter, with:
 //!
 //! - **no host imports**: no WASI, file system, network, clock or randomness. A module that

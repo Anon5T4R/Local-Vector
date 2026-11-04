@@ -1,4 +1,4 @@
-//! Pathfinder panel: Shape Modes (+ Expand) and Pathfinders, with icons drawn for LocalVector.
+//! Pathfinder panel: Shape Modes (+ Expand) and Pathfinders, with icons drawn for Local Vector.
 //! Alt-clicking a Shape Mode makes a compound shape; with members of one selected, a Shape Mode
 //! sets theirs.
 

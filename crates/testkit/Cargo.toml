@@ -3,7 +3,7 @@ name = "localvector-testkit"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "LocalVector test helpers: fixtures, generators, render comparison, geometry assertions"
+description = "Local Vector test helpers: fixtures, generators, render comparison, geometry assertions"
 publish = false
 
 [lints]

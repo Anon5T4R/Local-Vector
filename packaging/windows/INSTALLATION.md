@@ -1,6 +1,6 @@
 # Windows installation
 
-LocalVector installs for all users, into `Program Files\LocalVector` (`Program Files (x86)` for
+Local Vector installs for all users, into `Program Files\Local Vector` (`Program Files (x86)` for
 the 32-bit build). The package is `Scope="perMachine"`: it needs an elevated setup and refuses a
 per-user install, because its registrations (app paths, file types, the shortcuts' key paths) live
 under `HKLM`. An older per-user copy can still be uninstalled: the launch condition allows
@@ -14,7 +14,7 @@ The package registers:
 - `HKLM\Software\Anon5T4R\LocalVector\InstallDir`, which the app's updater reads to tell an MSI
   install (it updates with the next MSI) from a portable copy (it updates with the portable zip);
 - App Paths for `localvector.exe`, so Win+R `localvector` works;
-- LocalVector as the default app for `.vectorcraft` (and the older `.drawcraft`), and as an
+- Local Vector as the default app for `.vectorcraft` (and the older `.drawcraft`), and as an
   "Open with" choice for SVG, PDF, `.ai`/`.ait`, EPS, Affinity, DXF, EMF/WMF and the image formats
   the app opens;
 - a Start Menu shortcut and a desktop shortcut, both plain links to `localvector.exe` (not

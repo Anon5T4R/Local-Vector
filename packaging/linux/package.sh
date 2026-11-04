@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and package LocalVector for Linux (<arch> is x86_64 or aarch64, or riscv64 when cross-compiling):
+# Build and package Local Vector for Linux (<arch> is x86_64 or aarch64, or riscv64 when cross-compiling):
 #
 #   $DIST/localvector-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
 #   $DIST/localvector-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
@@ -41,10 +41,10 @@ case "$ARCH" in
   aarch64 | arm64) ARCH=aarch64; DEB_ARCH=arm64 ;;
   *) echo "unsupported architecture $ARCH" >&2; exit 2 ;;
 esac
-export LOCALVECTOR_MAINTAINER="${LOCALVECTOR_MAINTAINER:-LocalVector maintainers <localvector@users.noreply.github.com>}"
+export LOCALVECTOR_MAINTAINER="${LOCALVECTOR_MAINTAINER:-Local Vector maintainers <localvector@users.noreply.github.com>}"
 BASENAME="localvector-$VERSION-linux-$ARCH"
 
-echo "==> LocalVector $VERSION for Linux $ARCH ($FORMATS)"
+echo "==> Local Vector $VERSION for Linux $ARCH ($FORMATS)"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   if [[ -n "${CROSS_TARGET:-}" ]]; then

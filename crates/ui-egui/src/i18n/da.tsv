@@ -1,7 +1,7 @@
 # Danish (da) catalog. Same format as zh-hant.tsv:  context <TAB> source <TAB> translation
 # (empty context = a plain UI string; `@id` = a command id; `@plural` = "one|other" forms)
 #
-# Clean-room: written from the meaning of LocalVector's English labels in neutral, international
+# Clean-room: written from the meaning of Local Vector's English labels in neutral, international
 # Danish, using the feature names Danish speakers of vector illustration software know. No other
 # localisation was copied. Labels use sentence case (only the first word capitalised).
 	New Design	Nyt design
@@ -9,7 +9,7 @@
 	Paste Design	Indsæt design
 	Select Unused	Markér ubrugte
 	Glowing Edges…	Glødende kanter…
-	About LocalVector	Om LocalVector
+	About Local Vector	Om Local Vector
 	Align to Path	Justér til kurve
 	Cut Path at Selected Anchor Points	Klip kurve ved valgte ankerpunkter
 	Language	Sprog
@@ -18,7 +18,7 @@
 	Medium Dark	Mellemmørk
 	Medium Light	Mellemlys
 	Light	Lys
-	Quit LocalVector	Slut LocalVector
+	Quit Local Vector	Slut Local Vector
 # Artwork drag between document tabs.
 	Drop Artwork	Slip illustration
 @msg	{key} must be [x, y] with finite coordinates	{key} skal være [x, y] med endelige koordinater
@@ -107,7 +107,7 @@
 	Keyboard Shortcuts…	Tastaturgenveje…
 	Import Shortcut Set	Importér genvejssæt
 	Import Shortcut Set…	Importér genvejssæt…
-	Each entry of the file is matched to a LocalVector tool, command or panel. Check the matches and answer what is left.	Hver post i filen matches med et LocalVector-værktøj, en kommando eller et panel. Kontrollér matchene, og angiv det, der mangler.
+	Each entry of the file is matched to a Local Vector tool, command or panel. Check the matches and answer what is left.	Hver post i filen matches med et Local Vector-værktøj, en kommando eller et panel. Kontrollér matchene, og angiv det, der mangler.
 	Keys	Taster
 	The file writes keys and modifiers as codes. Check the proposed meanings and answer the codes that are not known yet.	Filen skriver taster og ændringstaster som koder. Kontrollér de foreslåede betydninger, og angiv de koder, der endnu ikke er kendt.
 	Click, then press the key this code stands for (Esc cancels)	Klik, og tryk derefter på den tast, som koden står for (Esc annullerer)
@@ -117,7 +117,7 @@
 	not known yet	endnu ikke kendt
 	Shortcuts	Genveje
 	In the File	I filen
-	In LocalVector	I LocalVector
+	In Local Vector	I Local Vector
 	Needs Attention Only	Kræver kun opmærksomhed
 	Ready	Klar
 	Needs a choice	Kræver et valg
@@ -126,7 +126,7 @@
 	Tools take a single key (optionally with Shift)	Værktøjer bruger en enkelt tast (eventuelt med Shift)
 	A later row takes this shortcut	En senere række bruger denne genvej
 	Same item as a later row	Samme element som en senere række
-	Start from LocalVector Defaults	Start fra LocalVectors standarder
+	Start from Local Vector Defaults	Start fra Local Vectors standarder
 	Add to the Current Shortcuts	Føj til de aktuelle genveje
 	Remember My Choices	Husk mine valg
 	{ready} of {total} ready	{ready} af {total} klar
@@ -140,7 +140,7 @@
 	Forget Import Matches	Glem importmatch
 @plural	agrees with {n} default shortcut|agrees with {n} default shortcuts	stemmer overens med {n} standardgenvej|stemmer overens med {n} standardgenveje
 @plural	{n} part of the file wasn't read|{n} parts of the file weren't read	{n} del af filen blev ikke læst|{n} dele af filen blev ikke læst
-@msg	This shortcut file is in a form LocalVector can't read.	Denne genvejsfil er i et format, som LocalVector ikke kan læse.
+@msg	This shortcut file is in a form Local Vector can't read.	Denne genvejsfil er i et format, som Local Vector ikke kan læse.
 @msg	not a shortcut set: the text doesn't start with a slash name and an opening brace	ikke et genvejssæt: teksten begynder ikke med et skråstregnavn og en startklammeparentes
 	Preferences…	Indstillinger…
 	Object	Objekt
@@ -486,7 +486,7 @@
 	Working CMYK	Arbejds-CMYK
 	RGB	RGB
 	sRGB IEC61966-2.1	sRGB IEC61966-2.1
-	LocalVector Generic CMYK (SWOP-like)	LocalVector-generisk CMYK (SWOP-lignende)
+	Local Vector Generic CMYK (SWOP-like)	Local Vector-generisk CMYK (SWOP-lignende)
 	Legacy Macintosh RGB (Gamma 1.8)	Ældre Macintosh RGB (gamma 1,8)
 	Internet Standard RGB (sRGB)	Internetstandard-RGB (sRGB)
 	Monitor RGB	Skærm-RGB
@@ -692,11 +692,11 @@
 	Save Swatch Library…	Gem bibliotek med farveprøver…
 	Symbol Libraries	Symbolbiblioteker
 	Help	Hjælp
-	LocalVector Website	LocalVectors websted
+	Local Vector Website	Local Vectors websted
 	Report an Issue	Rapporter et problem
-	LocalVector on GitHub	LocalVector på GitHub
+	Local Vector on GitHub	Local Vector på GitHub
 	Search Commands…	Søg i kommandoer…
-	LocalVector Help…	Hjælp til LocalVector…
+	Local Vector Help…	Hjælp til Local Vector…
 	Auto Color	Autofarve
 	Automatic	Automatisk
 	Isolate Selected Group	Isolér valgt gruppe
@@ -745,7 +745,7 @@
 	Dock Panel	Dok panel
 	Float Tool Group	Flydende værktøjsgruppe
 	Services	Tjenester
-	Hide LocalVector	Skjul LocalVector
+	Hide Local Vector	Skjul Local Vector
 	Hide Others	Skjul andre
 	Minimize	Minimér
 	Zoom	Zoom
@@ -1905,8 +1905,8 @@ digits	Malayalam	Malayalam
 	Select All Bound Objects	Markér alle bundne objekter
 	Multiple objects	Flere objekter
 	Graphics: {adapter}	Grafik: {adapter}
-	MIT OR Apache-2.0. Fonts: Source Sans 3, Inter, JetBrains Mono (OFL). Icons: Lucide (ISC) + LocalVector.	MIT OR Apache-2.0. Skrifttyper: Source Sans 3, Inter, JetBrains Mono (OFL). Ikoner: Lucide (ISC) + LocalVector.
-	MIT OR Apache-2.0. Fonts: Source Sans 3, Inter, JetBrains Mono, Noto Sans SC (OFL). Icons: Lucide (ISC) + LocalVector.	MIT OR Apache-2.0. Skrifttyper: Source Sans 3, Inter, JetBrains Mono, Noto Sans SC (OFL). Ikoner: Lucide (ISC) + LocalVector.
+	MIT OR Apache-2.0. Fonts: Source Sans 3, Inter, JetBrains Mono (OFL). Icons: Lucide (ISC) + Local Vector.	MIT OR Apache-2.0. Skrifttyper: Source Sans 3, Inter, JetBrains Mono (OFL). Ikoner: Lucide (ISC) + Local Vector.
+	MIT OR Apache-2.0. Fonts: Source Sans 3, Inter, JetBrains Mono, Noto Sans SC (OFL). Icons: Lucide (ISC) + Local Vector.	MIT OR Apache-2.0. Skrifttyper: Source Sans 3, Inter, JetBrains Mono, Noto Sans SC (OFL). Ikoner: Lucide (ISC) + Local Vector.
 	Version {version} — open-source vector illustration in pure Rust.	Version {version} — open source-vektorillustration i ren Rust.
 	Align to Page	Justér til side
 	Smooth Color	Jævn farve
@@ -2236,7 +2236,7 @@ digits	Malayalam	Malayalam
 @plural	{n} folder or file couldn't be read|{n} folders or files couldn't be read	{n} mappe eller fil kunne ikke læses|{n} mapper eller filer kunne ikke læses
 	The search stopped at its limit: search a smaller folder.	Søgningen stoppede ved sin grænse: søg i en mindre mappe.
 	Copy only fonts you own or are licensed to install.	Kopiér kun skrifttyper, du ejer eller har licens til at installere.
-	LocalVector copies the fonts to {folder}.	LocalVector kopierer skrifttyperne til {folder}.
+	Local Vector copies the fonts to {folder}.	Local Vector kopierer skrifttyperne til {folder}.
 @plural	Apply to All ({n} more missing)|Apply to All ({n} more missing)	Anvend på alle ({n} mere mangler)|Anvend på alle ({n} flere mangler)
 	Ignore	Ignorér
 	Linked File Not Found	Linket fil blev ikke fundet
@@ -2324,7 +2324,7 @@ digits	Malayalam	Malayalam
 	On: one locked object showing the document, updated when it changes.	Til: ét låst objekt, der viser dokumentet, og som opdateres, når det ændres.
 	Off: an editable copy of its art, embedded in this document.	Fra: en redigerbar kopi af dens grafik, indlejret i dette dokument.
 	Images: link to the file instead of only embedding it.	Billeder: link til filen i stedet for kun at indlejre den.
-	LocalVector documents: one locked object, updated when the file changes.	LocalVector-dokumenter: ét låst objekt, som opdateres, når filen ændres.
+	Local Vector documents: one locked object, updated when the file changes.	Local Vector-dokumenter: ét låst objekt, som opdateres, når filen ændres.
 	Alignment:	Justering:
 	Applies when the linked file is relinked or updated.	Anvendes, når linket til filen genoprettes eller filen opdateres.
 	Bounds (Fill Proportionally)	Grænser (udfyld proportionalt)
@@ -2410,7 +2410,7 @@ digits	Malayalam	Malayalam
 	A new preset starting from the selected one	En ny forudindstilling, der starter ud fra den valgte
 	Differences from {preset}:	Afvigelser fra {preset}:
 	Differences from [Default]:	Afvigelser fra [Standard]:
-	Differences from LocalVector Default:	Afvigelser fra LocalVector-standard:
+	Differences from Local Vector Default:	Afvigelser fra Local Vector-standard:
 	Edit…	Redigér…
 	None.	Ingen.
 	Presets:	Forudindstillinger:
@@ -2460,7 +2460,7 @@ digits	Malayalam	Malayalam
 	3 Color Job	3-farvejob
 	Recover Documents	Gendan dokumenter
 	Restored documents open unsaved: save them to keep them.	Gendannede dokumenter åbnes uden at være gemt: gem dem for at beholde dem.
-	LocalVector didn't quit normally last time. These documents had unsaved changes:	LocalVector blev ikke lukket normalt sidst. Disse dokumenter havde ugemte ændringer:
+	Local Vector didn't quit normally last time. These documents had unsaved changes:	Local Vector blev ikke lukket normalt sidst. Disse dokumenter havde ugemte ændringer:
 	Do you want to save the changes you made to “{name}”?	Vil du gemme de ændringer, du har foretaget i »{name}«?
 	Don't Save	Gem ikke
 	Your changes will be lost if you don't save them.	Dine ændringer går tabt, hvis du ikke gemmer dem.
@@ -2526,7 +2526,7 @@ digits	Malayalam	Malayalam
 	Color images	Farvebilleder
 	Compatibility:	Kompatibilitet:
 	PDF 1.7	PDF 1.7
-	LocalVector Default	LocalVector-standard
+	Local Vector Default	Local Vector-standard
 	High Quality Print	Udskrivning i høj kvalitet
 	[High Quality Print]	[Udskrivning i høj kvalitet]
 	Press Quality	Trykkvalitet
@@ -2539,7 +2539,7 @@ digits	Malayalam	Malayalam
 	[PDF/X-3:2002]	[PDF/X-3:2002]
 	PDF/X-4:2010	PDF/X-4:2010
 	[PDF/X-4:2010]	[PDF/X-4:2010]
-	Keeps the document editable: LocalVector reopens the PDF with nothing lost. For files you'll edit again.	Bevarer dokumentet redigerbart: LocalVector genåbner PDF'en uden at miste noget. Til filer, du vil redigere igen.
+	Keeps the document editable: Local Vector reopens the PDF with nothing lost. For files you'll edit again.	Bevarer dokumentet redigerbart: Local Vector genåbner PDF'en uden at miste noget. Til filer, du vil redigere igen.
 	Compress text and line art	Komprimér tekst og streggrafik
 	Compression	Komprimering
 	Compression › Color › Above Ppi	Komprimering › Farve › Over Ppi
@@ -2617,14 +2617,14 @@ digits	Malayalam	Malayalam
 	A File…	En fil…
 	GPL palettes keep solid colours only, as RGB.	GPL-paletter indeholder kun massive farver, som RGB.
 	Save Swatch Library	Gem farveprøvebibliotek
-	LocalVector Swatches (.vcswatches)	LocalVector-farveprøver (.vcswatches)
+	Local Vector Swatches (.vcswatches)	Local Vector-farveprøver (.vcswatches)
 	Save To:	Gem i:
 	Saved to User Defined: {}	Gemt i Brugerdefineret: {}
 	Selected Swatches Only	Kun valgte farveprøver
 	Selected Swatches Only (0)	Kun valgte farveprøver (0)
 	User Defined Libraries	Brugerdefinerede biblioteker
 	Copy Report	Kopiér rapport
-	LocalVector read this script without running it.	LocalVector læste dette script uden at køre det.
+	Local Vector read this script without running it.	Local Vector læste dette script uden at køre det.
 	Needs nothing beyond plain JavaScript	Kræver intet ud over ren JavaScript
 	Needs the script language's own objects or directives	Kræver scriptsprogets egne objekter eller direktiver
 	Needs the document model	Kræver dokumentmodellen
@@ -3551,7 +3551,7 @@ axis	Both	Begge
 	Print as Bitmap	Udskriv som bitmap
 	Draft	Udkast
 	Default	Standard
-	[LocalVector Default]	[LocalVector Standard]
+	[Local Vector Default]	[Local Vector Standard]
 	Magenta	Magenta
 	Page	Side
 	Print Tiling	Sideopdeling ved udskrivning
@@ -3654,8 +3654,8 @@ effect	Regular	Regular
 	Quickly start a new file	Start hurtigt en ny fil
 	Recent Files	Seneste filer
 	Vector illustration — fast, open, scriptable.	Vektorillustration — hurtig, åben, scriptbar.
-	Welcome to LocalVector	Velkommen til LocalVector
-	LocalVector website	LocalVector-websted
+	Welcome to Local Vector	Velkommen til Local Vector
+	Local Vector website	Local Vector-websted
 	Source code on GitHub	Kildekode på GitHub
 	All Tools	Alle værktøjer
 	Draw	Tegn
@@ -3697,7 +3697,7 @@ font-technology	Variable	Variable
 	Installed plug-in {}	Installerede plug-in'en {}
 	Revert to the saved version of “{name}”?	Gendan den gemte version af »{name}«?
 	Replace “{name}”, the file this document was opened from?	Erstat »{name}«, den fil, dette dokument blev åbnet fra?
-	Opening it left out what LocalVector can't read yet ({what}), so replacing it loses that for good. Save under another name to keep it.	Da den blev åbnet, blev det udeladt, som LocalVector ikke kan læse endnu ({what}), så hvis du erstatter den, går det tabt for altid. Gem under et andet navn for at beholde det.
+	Opening it left out what Local Vector can't read yet ({what}), so replacing it loses that for good. Save under another name to keep it.	Da den blev åbnet, blev det udeladt, som Local Vector ikke kan læse endnu ({what}), så hvis du erstatter den, går det tabt for altid. Gem under et andet navn for at beholde det.
 	Saved {path}	Gemte {path}
 	Saving	Gemmer
 	Saving {}	Gemmer {}
@@ -3705,7 +3705,7 @@ font-technology	Variable	Variable
 	Dashed Line	Stiplet linje
 	Panel menu	Panelmenu
 	Unembed…	Ophæv integrering…
-	Applies the next time LocalVector starts.	Anvendes næste gang LocalVector starter.
+	Applies the next time Local Vector starts.	Anvendes næste gang Local Vector starter.
 	Enable Contextual Task Bar	Aktivér kontekstuel opgavelinje
 	Next	Næste
 	OK	OK
@@ -4102,7 +4102,7 @@ imageTrace	Outline	Kontur
 @msg	can't encode the document: {0}	kan ikke kode dokumentet: {0}
 @msg	can't parse shortcut `{c}`	kan ikke parse genvejen `{c}`
 @msg	can't parse shortcut `{s}` for `{k}`	kan ikke parse genvejen `{s}` for `{k}`
-@msg	can't save version {0}: LocalVector writes versions {MIN_VERSION} to {VERSION}	kan ikke gemme version {0}: LocalVector skriver versionerne {MIN_VERSION} til {VERSION}
+@msg	can't save version {0}: Local Vector writes versions {MIN_VERSION} to {VERSION}	kan ikke gemme version {0}: Local Vector skriver versionerne {MIN_VERSION} til {VERSION}
 @msg	can't write .{ext} images	kan ikke skrive .{ext}-billeder
 @msg	cannot distort a zero-size bounding box	kan ikke forvrænge en omsluttende ramme uden størrelse
 @msg	cannot read PDF: {0}	kan ikke læse PDF: {0}
@@ -4127,7 +4127,7 @@ imageTrace	Outline	Kontur
 @msg	empty brush stroke	tomt penselstrøg
 @msg	empty cutter	tom skæring
 @msg	empty path	tom kurve
-@msg	file version {0} is newer than this LocalVector supports ({VERSION})	filversion {0} er nyere, end denne LocalVector understøtter ({VERSION})
+@msg	file version {0} is newer than this Local Vector supports ({VERSION})	filversion {0} er nyere, end denne Local Vector understøtter ({VERSION})
 @msg	freeform point {i} needs `at` [x, y] and a valid `color`	freeform-punkt {i} skal have `at` [x, y] og en gyldig `color`
 @msg	freeform line {i} must be an array of point indices	freeform-linje {i} skal være et array af punktindekser
 @msg	give both `start` and `end` [x, y] (or neither)	angiv både `start` og `end` [x, y] (eller ingen af dem)
@@ -4146,9 +4146,9 @@ imageTrace	Outline	Kontur
 @msg	invalid PDF setting: {0}	ugyldig PDF-indstilling: {0}
 @msg	invalid image data for `{0}`	ugyldige billeddata for `{0}`
 @msg	invalid parameters for `{cmd}`: {msg}	ugyldige parametre for `{cmd}`: {msg}
-@msg	is not an image LocalVector reads	er ikke et billede, som LocalVector læser
-@msg	it uses `{at}`, which LocalVector's PostScript reader doesn't know	den bruger `{at}`, som LocalVectors PostScript-læser ikke kender
-@msg	it uses `{at}`, which LocalVector's PostScript reader doesn't know, in {procs}	den bruger `{at}`, som LocalVectors PostScript-læser ikke kender, i {procs}
+@msg	is not an image Local Vector reads	er ikke et billede, som Local Vector læser
+@msg	it uses `{at}`, which Local Vector's PostScript reader doesn't know	den bruger `{at}`, som Local Vectors PostScript-læser ikke kender
+@msg	it uses `{at}`, which Local Vector's PostScript reader doesn't know, in {procs}	den bruger `{at}`, som Local Vectors PostScript-læser ikke kender, i {procs}
 @msg	its Windows metafile preview was opened instead, which may simplify the art	dens Windows-metafil-forhåndsvisning blev åbnet i stedet, hvilket kan forenkle grafikken
 @msg	its preview was placed instead, at screen resolution	dens forhåndsvisning blev placeret i stedet, i skærmopløsning
 @msg	join needs open paths	sammenføjning kræver åbne kurver
@@ -4240,7 +4240,7 @@ imageTrace	Outline	Kontur
 @msg	not an action set file	ikke en handlingssætfil
 @msg	the action set file is larger than 8 MiB	handlingssætfilen er større end 8 MiB
 @msg	the action set file holds more than 1,000 actions	handlingssætfilen indeholder mere end 1.000 handlinger
-@msg	the action set file needs a later version of LocalVector	handlingssætfilen kræver en nyere version af LocalVector
+@msg	the action set file needs a later version of Local Vector	handlingssætfilen kræver en nyere version af Local Vector
 @msg	an action in the action set file has more than 10,000 steps	en handling i handlingssætfilen har mere end 10.000 trin
 @msg	no such anchor	intet sådant anker
 @msg	no such artboard	intet sådant artboard
@@ -4266,8 +4266,8 @@ imageTrace	Outline	Kontur
 @msg	no user workspace `{from}`	intet brugerarbejdsområde `{from}`
 @msg	node {_1} is not text	knuden {_1} er ikke tekst
 @msg	not a DXF drawing	ikke en DXF-tegning
-@msg	not a LocalVector file: {0}	ikke en LocalVector-fil: {0}
-@msg	not a LocalVector shortcut set (missing `overrides`)	ikke et LocalVector-genvejssæt (`overrides` mangler)
+@msg	not a Local Vector file: {0}	ikke en Local Vector-fil: {0}
+@msg	not a Local Vector shortcut set (missing `overrides`)	ikke et Local Vector-genvejssæt (`overrides` mangler)
 @msg	not a graphic style library (format `{_1}`)	ikke et bibliotek med grafiske stilarter (format `{_1}`)
 @msg	not a stored central record	ikke en gemt central post
 @msg	not a valid plug-in module: {0}	ikke et gyldigt plug-in-modul: {0}
@@ -4526,9 +4526,9 @@ imageTrace	Outline	Kontur
 @msg	Sent to {_1}	Sendte til {_1}
 @msg	{_1} files	{_1}-filer
 @msg	The graphics were lost and have been restarted	Grafikken gik tabt og er blevet genstartet
-@msg	The graphics processor tried first couldn't show the window, so LocalVector started again on {summary}	Den grafikprocessor, der blev prøvet først, kunne ikke vise vinduet, så LocalVector startede igen med {summary}
-@msg	Loading LocalVector…	Indlæser LocalVector…
-@msg	LocalVector failed to start: {e}	LocalVector kunne ikke starte: {e}
+@msg	The graphics processor tried first couldn't show the window, so Local Vector started again on {summary}	Den grafikprocessor, der blev prøvet først, kunne ikke vise vinduet, så Local Vector startede igen med {summary}
+@msg	Loading Local Vector…	Indlæser Local Vector…
+@msg	Local Vector failed to start: {e}	Local Vector kunne ikke starte: {e}
 @msg	A browser with WebGPU or WebGL2 is required.	Der kræves en browser med WebGPU eller WebGL2.
 @msg	The graphics were lost and couldn't be restarted.	Grafikken gik tabt og kunne ikke genstartes.
 @msg	Your unsaved changes are kept in this browser: reload the page to get them back.	Dine ikke-gemte ændringer bevares i denne browser: genindlæs siden for at få dem tilbage.
@@ -4558,12 +4558,12 @@ imageTrace	Outline	Kontur
 @msg	it has more than {MAX_NODES} objects	den har flere end {MAX_NODES} objekter
 @msg	it has no layers	den har ingen lag
 @msg	it has too many values in a row	den har for mange værdier i træk
-@msg	it has {_1}, which LocalVector doesn't read from it yet	den har {_1}, hvilket LocalVector endnu ikke læser fra den
+@msg	it has {_1}, which Local Vector doesn't read from it yet	den har {_1}, hvilket Local Vector endnu ikke læser fra den
 @msg	its objects are nested too deeply	dens objekter er indlejret for dybt
 @msg	its section ending with `%{end}` doesn't end	dens sektion, der ender med `%{end}`, ender ikke
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	objekter med flere fyld eller streger, effekter eller pensler kom ind, som de er tegnet ({_1}): deres udseende er endnu ikke redigerbart
 @msg	gradient “{name}” isn't defined in the file: a plain colour stands in for it	gradienten »{name}« er ikke defineret i filen: der bruges en flad farve i stedet
-@msg	an image LocalVector can't read was left out	et billede, som LocalVector ikke kan læse, blev udeladt
+@msg	an image Local Vector can't read was left out	et billede, som Local Vector ikke kan læse, blev udeladt
 @msg	an image whose data is cut short was left out	et billede, hvis data er afkortet, blev udeladt
 @msg	linked pictures show the low-resolution preview saved in the file until their files are found: relink them in the Links panel	linkede billeder viser den gemte forhåndsvisning i lav opløsning, indtil deres filer findes: link dem igen i Links-panelet
 @msg	area type in frames too short for a line of the font it shows in got taller frames ({_1}): their type wouldn't show otherwise	rammetekst i rammer, der er for lave til en tekstlinje i den skrifttype, den viser i, fik højere rammer ({_1}): teksten ville ellers ikke blive vist
@@ -4571,13 +4571,13 @@ imageTrace	Outline	Kontur
 @msg	this file was saved without PDF compatibility, and its editing data can't be read ({why})	denne fil blev gemt uden PDF-kompatibilitet, og dens redigeringsdata kan ikke læses ({why})
 @msg	the PDF part couldn't be read ({_1}): the file opened from its editing data	PDF-delen kunne ikke læses ({_1}): filen blev åbnet fra dens redigeringsdata
 @msg	No fonts are missing in this document	Ingen skrifttyper mangler i dette dokument
-@msg	LocalVector doesn't search other apps' or the system's folders: {path}	LocalVector gennemsøger ikke andre programmers eller systemets mapper: {path}
-@msg	LocalVector doesn't search the Shared or Public folder in Users: {path}	LocalVector gennemsøger ikke mappen Shared eller Public i Users: {path}
+@msg	Local Vector doesn't search other apps' or the system's folders: {path}	Local Vector gennemsøger ikke andre programmers eller systemets mapper: {path}
+@msg	Local Vector doesn't search the Shared or Public folder in Users: {path}	Local Vector gennemsøger ikke mappen Shared eller Public i Users: {path}
 @msg	{path} is not a folder	{path} er ikke en mappe
 @msg	the search couldn't start: try again in a moment	søgningen kunne ikke starte: prøv igen om et øjeblik
 @msg	searching a folder isn't available on the web	mappesøgning er ikke tilgængelig i webversionen
 @msg	every search thread stopped on an internal error (please report this bug)	alle søgetråde stoppede ved en intern fejl (rapportér venligst denne programfejl)
-@msg	LocalVector's Fonts folder isn't set here: the desktop app and localvector-cli set it	LocalVectors Fonts-mappe er ikke angivet her: skrivebordsprogrammet og localvector-cli angiver den
+@msg	Local Vector's Fonts folder isn't set here: the desktop app and localvector-cli set it	Local Vectors Fonts-mappe er ikke angivet her: skrivebordsprogrammet og localvector-cli angiver den
 @msg	choose the font files to add	vælg de skrifttypefiler, der skal tilføjes
 @msg	not a file	ikke en fil
 @msg	not a font file	ikke en skrifttypefil
@@ -4716,7 +4716,7 @@ imageTrace	Outline	Kontur
 	All shortcuts reset to defaults.	Alle genveje er nulstillet til standard.
 	Imported. Press OK to keep the imported set.	Importeret. Tryk på OK for at beholde det importerede sæt.
 	⚠ {chord} was already used by {names} — it has been removed there.	Advarsel: {chord} blev allerede brugt af {names} — den er blevet fjernet der.
-	LocalVector Defaults	LocalVector-standard
+	Local Vector Defaults	Local Vector-standard
 @plural	{n} shortcut is assigned more than once|{n} shortcuts are assigned more than once	{n} genvej er tildelt mere end én gang|{n} genveje er tildelt mere end én gang
 	Simulate prints overprints as Overprint Preview shows them; separations always keep them. A preset flattens transparency before printing (PostScript files always flatten it).	Simulér udskriver overprint, som de vises i Overprint-forhåndsvisningen; separationer bevarer dem altid. En forudindstilling flader gennemsigtighed ud før udskrivning (PostScript-filer flader den altid ud).
 	Preserve	Bevar
@@ -4931,7 +4931,7 @@ file-filter	Print presets	Printforudindstillinger
 file-filter	Export presets	Eksportforudindstillinger
 file-filter	SVG Compressed	Komprimeret SVG
 file-filter	PDF-compatible .ai	PDF-kompatibel .ai
-file-filter	LocalVector Template	LocalVector-skabelon
+file-filter	Local Vector Template	Local Vector-skabelon
 file-filter	Templates	Skabeloner
 diagnostics	render	Gengivelse
 diagnostics	ui	Brugerflade
@@ -4942,7 +4942,7 @@ diagnostics	ui	Brugerflade
 @plural	{n} commit|{n} commits	{n} commit|{n} commits
 gradient-kind	Radial	Radial
 mark-style	Japanese	Japansk
-@msg	the compressed file unpacks to more than LocalVector reads ({_1} MB of document, {_2} MB per image)	den komprimerede fil udpakkes til mere end LocalVector læser ({_1} MB dokument, {_2} MB pr. billede)
+@msg	the compressed file unpacks to more than Local Vector reads ({_1} MB of document, {_2} MB per image)	den komprimerede fil udpakkes til mere end Local Vector læser ({_1} MB dokument, {_2} MB pr. billede)
 @msg	the document is too large to save compressed ({0}): save it with Use Compression off	dokumentet er for stort til at gemme komprimeret ({0}): gem det med Brug komprimering slået fra
 @msg	the file stopped being read (please report this bug)	læsningen af filen stoppede (rapportér venligst denne programfejl)
 	Concentric Dividers:	Koncentriske skillelinjer:
@@ -5067,7 +5067,7 @@ mark-style	Japanese	Japansk
 	Tracing	Sporing
 	Touch	Touch
 	Typography	Typografi
-	LocalVector	LocalVector
+	Local Vector	Local Vector
 	Web	Web
 	Decrease Font Size by Five Steps	Formindsk skriftstørrelsen med fem trin
 	Increase Font Size by Five Steps	Forøg skriftstørrelsen med fem trin
@@ -5076,8 +5076,8 @@ mark-style	Japanese	Japansk
 	Rotate View to Selection	Rotér visning til markering
 @msg	select an Intertwine group	vælg en sammenfletningsgruppe
 @msg	this is a PostScript file (an .ai saved in an older format or without PDF compatibility, or an EPS file), not a PDF: File › Open and File › Place read it as EPS	dette er en PostScript-fil (en .ai gemt i et ældre format eller uden PDF-kompatibilitet, eller en EPS-fil), ikke en PDF: Filer › Åbn og Filer › Placér læser den som EPS
-@msg	The last start of LocalVector ended on {name} before its window appeared, so it started on {summary}. To try that graphics processor again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set	Den seneste start af LocalVector endte på {name}, før vinduet blev vist, så programmet startede på {summary}. For at prøve den grafikprocessor igen skal du ændre Indstillinger › Ydeevne › Grafikprocessor eller starte med WGPU_BACKEND angivet
-@msg	The last start of LocalVector ended while it listed the graphics processors, so it started on {summary} with OpenGL alone. To try the other graphics backends again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set	Den seneste start af LocalVector endte, mens grafikprocessorerne blev listet, så programmet startede på {summary} med kun OpenGL. For at prøve de andre grafikbackends igen skal du ændre Indstillinger › Ydeevne › Grafikprocessor eller starte med WGPU_BACKEND angivet
+@msg	The last start of Local Vector ended on {name} before its window appeared, so it started on {summary}. To try that graphics processor again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set	Den seneste start af Local Vector endte på {name}, før vinduet blev vist, så programmet startede på {summary}. For at prøve den grafikprocessor igen skal du ændre Indstillinger › Ydeevne › Grafikprocessor eller starte med WGPU_BACKEND angivet
+@msg	The last start of Local Vector ended while it listed the graphics processors, so it started on {summary} with OpenGL alone. To try the other graphics backends again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set	Den seneste start af Local Vector endte, mens grafikprocessorerne blev listet, så programmet startede på {summary} med kun OpenGL. For at prøve de andre grafikbackends igen skal du ændre Indstillinger › Ydeevne › Grafikprocessor eller starte med WGPU_BACKEND angivet
 	Loaded Texture	Indlæst tekstur
 	Load Texture…	Indlæs tekstur…
 	Texture Image	Teksturbillede
@@ -5384,7 +5384,7 @@ swatch	Bright Violet	Kraftig violet
 	Resize	Tilpas størrelse
 	Scale Design	Skalér design
 	Sliding	Glidende
-	The name in the save panel was “{typed}”; LocalVector added the file type's extension. Replacing the file overwrites its contents.	Navnet i gemmedialogen var »{typed}«, og LocalVector tilføjede filtypens filtypenavn. Hvis du erstatter filen, overskrives dens indhold.
+	The name in the save panel was “{typed}”; Local Vector added the file type's extension. Replacing the file overwrites its contents.	Navnet i gemmedialogen var »{typed}«, og Local Vector tilføjede filtypens filtypenavn. Hvis du erstatter filen, overskrives dens indhold.
 	Uniformly Scaled	Ensartet skaleret
 	Vertically Scaled	Lodret skaleret
 	“{name}” already exists. Replace it?	»{name}« findes allerede. Erstat den?
@@ -6065,7 +6065,7 @@ breakText	Glyphs	Glyffer
 	Malayalam	Malayalam
 	Odia	Oriya
 	Urdu	Urdu
-	LocalVector {release} and later (version {n})	LocalVector {release} og nyere (version {n})
+	Local Vector {release} and later (version {n})	Local Vector {release} og nyere (version {n})
 # Document Tools add-on: Export All Open Documents (#4920).
 	Export All Open Documents as PDF	Eksportér alle åbne dokumenter som PDF
 	Export All Open Documents as SVG	Eksportér alle åbne dokumenter som SVG

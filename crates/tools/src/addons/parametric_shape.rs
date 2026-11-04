@@ -22,7 +22,7 @@ use crate::{Action, Cursor, Mods, Overlay, PointerEvent, PointerKind, Tool, Tool
 /// The tool's id.
 pub const ID: &str = "parametricShape";
 /// The object data entry that holds a parametric shape's numbers (JSON). The `vc-` prefix marks it
-/// as LocalVector's own, which SVG export leaves out of the `data-*` attributes it writes.
+/// as Local Vector's own, which SVG export leaves out of the `data-*` attributes it writes.
 pub const KEY: &str = "vc-pathtools-shape";
 /// The longest entry read back (a damaged file's longer one is no shape).
 const MAX_STORED: usize = 4096;

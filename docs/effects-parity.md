@@ -2,14 +2,14 @@
 
 > **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-28 · **Change:** minor (Effect dialogs clamp bounded length inputs immediately on commit and flash rejection on invalid input (#4638); previously: Drop Shadow Darkness uses fixed RGB subtraction and CMYK black addition; scores unchanged; Pathfinder › Trap: the Pathfinder panel's Trap… and Effect › Pathfinder › Trap… add an overprinting strip of the lighter colour where two solid colours meet; recounted with Hard Mix (#3061) and Soft Mix already in the catalogue: Pathfinder 13/13, Illustrator effects 49/50) · **Target:** Adobe Illustrator 2026 (30.x)
 
-Every entry of Illustrator's Effect menu, by its public feature name, against LocalVector's effects catalogue
+Every entry of Illustrator's Effect menu, by its public feature name, against Local Vector's effects catalogue
 (`effect_catalog()` in `crates/effects/src/lib.rs`) and the Effect menu built from it
 (`crates/ui-egui/src/menus.rs`). Counts are **measured** from the catalogue; "depth" notes are estimated.
 Part of [target-app-parity.md](target-app-parity.md); open work is in [gaps.md](gaps.md).
 
 ## Summary
 
-| Group | Illustrator | LocalVector | % | Remaining (h) |
+| Group | Illustrator | Local Vector | % | Remaining (h) |
 |---|---:|---:|---:|---:|
 | Illustrator effects (vector and stylize) | 50 | 49 | 98% | 4–8 |
 | Photoshop effects (raster, Effect Gallery) | 57 | 57 | 100% | 1–2 (Effect Gallery thumbnails and in-dialog preview) |
@@ -24,7 +24,7 @@ Part of [target-app-parity.md](target-app-parity.md); open work is in [gaps.md](
 | Crop Marks | Crop Marks | 1/1 | — |
 | Distort & Transform | Free Distort, Pucker & Bloat, Roughen, Transform, Tweak, Twist, Zig Zag | 7/7 | Free Distort's dialog has a handle on each corner of the object's bounds, moved by dragging or with the arrow keys; Zig Zag's ridges are evenly spaced along each segment (#1558), and Smooth points make a continuous wave whose peaks and valleys have handles along the path (#2343); Roughen with Smooth keeps turn-backs smooth instead of cusps that draw as spikes (#1646) |
 | Path | Offset Path, Outline Object, Outline Stroke | 3/3 | With Use Preview Bounds on, Align, Distribute and the Transform panel still measure type that carries Outline Object by its layout box (preview bounds leave out effects) |
-| Pathfinder | Add, Intersect, Exclude, Subtract, Minus Back, Divide, Trim, Merge, Crop, Outline, Hard Mix, Soft Mix, Trap | 13/13 | Trap traps only solid fills (gradients and patterns hide what is below them but don't trap) and spreads each colour's visible area as a whole; the public page gives no default values, so Trap's 0.25 pt, 100% and 40% are LocalVector's own |
+| Pathfinder | Add, Intersect, Exclude, Subtract, Minus Back, Divide, Trim, Merge, Crop, Outline, Hard Mix, Soft Mix, Trap | 13/13 | Trap traps only solid fills (gradients and patterns hide what is below them but don't trap) and spreads each colour's visible area as a whole; the public page gives no default values, so Trap's 0.25 pt, 100% and 40% are Local Vector's own |
 | Rasterize | Rasterize… (as a live effect) | 1/1 | — |
 | Stylize | Drop Shadow, Feather, Inner Glow, Outer Glow, Round Corners, Scribble | 6/6 | Scribble Options' Settings presets |
 | SVG Filters | Apply SVG Filter… and the filter list | 0/1 | the whole submenu (SVG filters on import round-trip already) |
@@ -67,7 +67,7 @@ quieter highlight grain. Grain strength stays even across shadows and midtones a
 mid-grey to a quarter-strength floor at full Intensity before highlight headroom; cream retains
 soft grain, black takes light speckles and white stays clean. The tonal curve and endpoint behaviour
 are interpretations, not verified proprietary behaviour. Saturated colour channels may clip. The parameter
-ranges and defaults are chosen for LocalVector, not asserted as measured proprietary defaults.
+ranges and defaults are chosen for Local Vector, not asserted as measured proprietary defaults.
 
 Cutout, Neon Glow and Poster Edges (`artistic.cutout`, `artistic.neonGlow`, `artistic.posterEdges`)
 follow the same two public references, with original algorithms. Cutout softens the object's colours (Edge Simplicity, less with Edge
@@ -80,7 +80,7 @@ from its light areas (positive Glow Size) or its dark ones (negative), spread by
 strong as Glow Brightness; with no foreground and background colours in Illustrator's model, the
 glow colour is the effect's own parameter. All three keep coverage, work in document units at any
 Document Raster Effects resolution, and use the generic effect dialog with live preview. Ranges and
-defaults are chosen for LocalVector. Evidence: `crates/effects/src/pixel/artistic.rs`, the
+defaults are chosen for Local Vector. Evidence: `crates/effects/src/pixel/artistic.rs`, the
 `artistic_*`, `cutout_*`, `poster_edges_*` and `neon_glow_*` tests in `crates/effects/src/pixel/tests.rs`,
 and `artistic_settings_survive_a_save_and_open` in `crates/engine/src/tests/rasterfilters.rs`.
 Smudge Stick (`artistic.smudgeStick`), Sponge (`artistic.sponge`) and Watercolor (`artistic.watercolor`),
@@ -89,7 +89,7 @@ Effect › Artistic, are original visual approximations from the public descript
 [public Artistic filters guide](https://helpx.adobe.com/photoshop-elements/using/artistic-filters.html), not
 pixel-identical copies. Each has live preview, appearance editing, document-unit patterns that follow the
 object, bounded work per pixel and kept coverage (they paint nothing outside the object), and bakes to an
-image in SVG and PDF. Ranges and defaults are chosen for LocalVector, not asserted as measured.
+image in SVG and PDF. Ranges and defaults are chosen for Local Vector, not asserted as measured.
 - Smudge Stick (Stroke Length 0–10, Highlight Area 0–20, Intensity 0–10): dark areas smudged along short
   diagonal strokes; light areas smudged with strokes twice as long and lightened towards white.
 - Sponge (Brush Size 0–10, Definition 0–25, Smoothness 1–15): the object softened, then lighter and darker
@@ -120,7 +120,7 @@ Effect › Artistic, are original visual approximations from the public descript
 [public Artistic filters guide](https://helpx.adobe.com/photoshop-elements/using/artistic-filters.html), not
 pixel-identical copies. Each has live preview, appearance editing, document-unit patterns that follow the
 object, bounded work per pixel and kept coverage (they paint nothing outside the object), and bakes to an
-image in SVG and PDF. Ranges and defaults are chosen for LocalVector, not asserted as measured.
+image in SVG and PDF. Ranges and defaults are chosen for Local Vector, not asserted as measured.
 - Smudge Stick (Stroke Length 0–10, Highlight Area 0–20, Intensity 0–10): dark areas smudged along short
   diagonal strokes; light areas smudged with strokes twice as long and lightened towards white.
 - Sponge (Brush Size 0–10, Definition 0–25, Smoothness 1–15): the object softened, then lighter and darker
@@ -145,16 +145,16 @@ live. Behaviour is an original visual approximation based on
 [Illustrator's public effects reference](https://helpx.adobe.com/illustrator/using/summary-effects.html)
 and the [public Sketch filters guide](https://helpx.adobe.com/photoshop-elements/using/sketch-filters.html),
 not a pixel-identical proprietary implementation; the parameter ranges and defaults are chosen for
-LocalVector, not asserted as measured proprietary defaults. Tests: `pixel::tests_sketch::*`,
+Local Vector, not asserted as measured proprietary defaults. Tests: `pixel::tests_sketch::*`,
 `tests_rasterfilters`, `command_sweep`, `dialogs::tests::raster_filter_dialogs_preview_and_apply` and
 `tests_labels::effect_menu_lists_the_sketch_filters_*`.
 
 Effect › Sketch › Halftone Pattern and Note Paper (`sketch.halftonePattern`, `sketch.notePaper`) are
 original black-and-white filters guided by [Illustrator's public Sketch effects summary](https://helpx.adobe.com/illustrator/using/summary-effects.html)
 and [effects overview](https://helpx.adobe.com/illustrator/using/effects.html) (Halftone Size in points at any Document Raster Effects resolution).
-The public help pages name each control but publish no numeric defaults or slider limits; LocalVector's ranges
+The public help pages name each control but publish no numeric defaults or slider limits; Local Vector's ranges
 follow those control names and the emboss/halftone behaviour described there, while dialog defaults are chosen
-for LocalVector and are not verified against proprietary defaults. Evidence: `crates/effects/src/pixel/sketch.rs`,
+for Local Vector and are not verified against proprietary defaults. Evidence: `crates/effects/src/pixel/sketch.rs`,
 `halftone_*` and `note_paper_*` in `crates/effects/src/pixel/tests.rs`, `SKETCH` and
 `halftone_pattern_settings_survive_a_save_and_open` in `crates/engine/src/tests/rasterfilters.rs`, and
 `tests_labels::effect_menu_lists_the_sketch_filters_between_sharpen_and_stylize`.
@@ -169,7 +169,7 @@ black crayon where it is dark and a pure white crayon where it is light, on mid-
 each crayon reaches into the midtones; Texture (Brick, Burlap, Canvas, Sandstone, the surfaces Texturizer
 draws), Scaling, Relief, Light Direction and Invert make the paper's tooth, which breaks the diagonal crayon
 strokes, and its relief. The public pages publish no slider ranges or defaults, so those are unverified
-LocalVector choices; an original approximation, never compared with another application's output. Tests:
+Local Vector choices; an original approximation, never compared with another application's output. Tests:
 `pixel::tests_sketch::conte_crayon_*`, `tests_rasterfilters`, `command_sweep`,
 `dialogs::tests::raster_filter_dialogs_preview_and_apply` and
 `tests_labels::effect_menu_lists_the_sketch_filters_between_sharpen_and_stylize`.
@@ -198,10 +198,10 @@ angular cut caps, exact visibility, 3D Classic, Turntable, 3D export) is 25–45
 | 2026-10-22 | minor | The Transform effect has Transform Objects, Transform Patterns and Scale Strokes & Effects, with visible checkboxes (#885); on a fill's or stroke's own Transform effect the last two are still missing. Counts unchanged. |
 | 2026-10-22 | minor | G2: the Effect Gallery shipped (#2883): Effect › Effect Gallery… browses the Artistic, Brush Strokes, Distort, Sketch, Stylize and Texture filters, edits each filter's settings, builds an ordered stack (add, reorder, hide, remove) with a live canvas preview, and OK applies it as separate appearance effects in one undo step; remaining: filter thumbnails and a preview area inside the dialog; G2 estimate 4–6 → 1–2 h; Raster effects 82% → 85% (power-user view 49% → 52%), estimated, a modest move because the named missing dialog landed without thumbnails or an in-dialog preview. |
 | 2026-10-22 | minor | Stacked geometry effects make at most 2 million anchors of a path (of a type, symbol or image art's paths together) and about 8 million lines to draw: Roughen spaces its points further apart, Zig Zag makes fewer ridges a segment, Free Distort, Twist and the warps split into longer pieces, a result drawn with too many lines is built again with fewer points, and an effect that would still pass either is left out (#3578). Scores unchanged (estimated) |
-| 2026-10-22 | minor | G2: Effect › Sketch › Conté Crayon (Foreground Level, Background Level, Texture, Scaling, Relief, Light Direction, Invert; a black crayon in the dark areas and a white one in the light areas on textured mid-grey paper; ranges and defaults unverified LocalVector choices); measured Photoshop-style filters 57/57, the Effect Gallery remains (4–6 h); Sketch 14/14. |
+| 2026-10-22 | minor | G2: Effect › Sketch › Conté Crayon (Foreground Level, Background Level, Texture, Scaling, Relief, Light Direction, Invert; a black crayon in the dark areas and a white one in the light areas on textured mid-grey paper; ranges and defaults unverified Local Vector choices); measured Photoshop-style filters 57/57, the Effect Gallery remains (4–6 h); Sketch 14/14. |
 | 2026-10-21 | minor | 3D: original Standard, Diffuse, Top Left and Right lighting presets; command access, effective-setting recognition and preview/history; scores and estimates unchanged |
 | 2026-10-20 | minor | G2: Effect › Sketch › Water Paper (Fiber Length, Brightness, Contrast; colours flow on damp fibrous paper, defaults unverified, #2955); measured Photoshop filters 47/57, Sketch 12/14. |
-| 2026-10-20 | minor | G2: Effect › Sketch › Note Paper (Image Balance, Graininess, Relief; embossed tones on fibrous paper); Halftone Pattern and Note Paper parameter ranges follow public control names, numeric defaults are unverified LocalVector choices (public help gives no numbers); measured Photoshop filters 46/57, Sketch 11/14. |
+| 2026-10-20 | minor | G2: Effect › Sketch › Note Paper (Image Balance, Graininess, Relief; embossed tones on fibrous paper); Halftone Pattern and Note Paper parameter ranges follow public control names, numeric defaults are unverified Local Vector choices (public help gives no numbers); measured Photoshop filters 46/57, Sketch 11/14. |
 | 2026-10-19 | minor | Sketch › Chalk & Charcoal, Graphic Pen and Reticulation and Artistic › Plastic Wrap landed (#2972, #2967, #2976, #3034): 36/57 Photoshop effects (estimated; defaults unverified) |
 | 2026-10-16 | minor | Zig Zag with Smooth points draws a continuous wave: every peak and valley is a smooth point with handles along the path, a third of the way to the next ridge, so each span follows a half cosine through the path instead of a straight diagonal with rounded tips, also at the ends of open paths and for ridges much taller than they are apart (#2343); score unchanged (estimated) |
 | 2026-10-16 | minor | G2: Effect › Artistic › Smudge Stick, Sponge and Watercolor (live, with their documented options; original approximations); measured Photoshop filters 36/57 with Cutout, Neon Glow and Poster Edges, 21 remaining (19–31 h). |

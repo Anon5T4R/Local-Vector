@@ -851,7 +851,7 @@ impl Player {
         if self.skipped > 0 {
             let n = self.skipped;
             self.warnings.push(format!(
-                "{n} record{} of kinds LocalVector doesn't read {} skipped",
+                "{n} record{} of kinds Local Vector doesn't read {} skipped",
                 if n == 1 { "" } else { "s" },
                 if n == 1 { "was" } else { "were" }
             ));

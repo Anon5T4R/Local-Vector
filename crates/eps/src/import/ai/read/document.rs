@@ -218,7 +218,7 @@ fn artboards_read(data: &[u8]) -> Vec<(String, Rect)> {
 /// How many variables and data sets the variable library of the editing data has: XML nodes
 /// (`/XMLNode`) of the `/Document` dictionary, a `variableSets` element holding `variableSet`s, each
 /// with its `variables` (`variable` elements) and `sampleDataSets` (`sampleDataSet` elements).
-/// LocalVector doesn't read them.
+/// Local Vector doesn't read them.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct VariableLibrary {
     pub variables: usize,
@@ -569,11 +569,11 @@ impl<'a> Reader<'a> {
         }
         if !self.unknown.is_empty() {
             let ops: Vec<String> = self.unknown.iter().map(|o| format!("`{o}`")).collect();
-            self.unsupported.insert(format!("operators LocalVector doesn't know ({})", ops.join(", ")));
+            self.unsupported.insert(format!("operators Local Vector doesn't know ({})", ops.join(", ")));
         }
         if !self.unsupported.is_empty() {
             let list: Vec<&str> = self.unsupported.iter().map(String::as_str).collect();
-            return Err(format!("it has {}, which LocalVector doesn't read from it yet", join_and(&list)));
+            return Err(format!("it has {}, which Local Vector doesn't read from it yet", join_and(&list)));
         }
         if self.doc.layers.is_empty() {
             return Err("it has no layers".into());

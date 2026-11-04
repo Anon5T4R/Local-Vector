@@ -343,11 +343,11 @@ const fn reader(id: &'static str, label: &'static str, extensions: &'static [&'s
     Format { id, label, extensions, mime, read: true, write: false, raster, options: &[] }
 }
 
-/// Every format LocalVector reads or writes. Append-only: new formats go at the end.
+/// Every format Local Vector reads or writes. Append-only: new formats go at the end.
 pub const FORMATS: &[Format] = &[
     Format {
         id: "vectorcraft",
-        label: "LocalVector",
+        label: "Local Vector",
         extensions: &[localvector_format::EXTENSION, localvector_format::LEGACY_EXTENSION],
         mime: "application/json",
         read: true,
@@ -451,7 +451,7 @@ pub const FORMATS: &[Format] = &[
     Format { id: "bmp", label: "BMP", extensions: &["bmp"], mime: "image/bmp", read: true, write: true, raster: true, options: BMP_OPTIONS },
     Format {
         id: "template",
-        label: "LocalVector Template",
+        label: "Local Vector Template",
         extensions: &["vctemplate"],
         mime: "application/json",
         read: true,
@@ -548,7 +548,7 @@ pub const OPEN_EXTS: &[&str] = &[
 /// raster editors, so Finder and file managers don't offer a vector app for them, and there is no
 /// `.epsf`, `.ps`, Targa, PCX or JPEG 2000 type, nor one for the `.pns`, `.dib` and `.rle` names of
 /// PNG and BMP files (File › Open and Place still read them all). On Linux the desktop entry's EPS
-/// type (shared-mime-info's) also covers `.epsf`, so file managers offer LocalVector for it.
+/// type (shared-mime-info's) also covers `.epsf`, so file managers offer Local Vector for it.
 pub const UNASSOCIATED_EXTS: &[&str] =
     &["psd", "pdd", "psb", "epsf", "ps", "pns", "dib", "rle", "tga", "vda", "icb", "vst", "pcx", "jpf", "jpx", "jp2", "j2k", "j2c", "jpc"];
 

@@ -2,7 +2,7 @@ use super::slots::{PERSPECTIVE_SLOTS, RECENT_FONT_IDS, RECENT_IDS, SAVED_SELECTI
 use super::submenus::{INSERT_BREAK, INSERT_SPECIAL, INSERT_WHITESPACE, PATH_EFFECTS, TYPE_SIZES, effect_menu, font_items, insert_items};
 use super::{Item, Sep, c, cp, json, sub, todo, todos};
 
-/// The in-window and native menu tree. The in-window bar skips the LocalVector menu (see
+/// The in-window and native menu tree. The in-window bar skips the Local Vector menu (see
 /// `menu_bar`); the native Mac bar is composed from the whole tree (see `native_menu`).
 /// `english_names` is Preferences › Type › Show Font Names in English (the Type → Font labels
 /// follow it; tests use the default `true`).
@@ -19,8 +19,8 @@ pub fn menu_tree_named(english_names: bool) -> Vec<(&'static str, Vec<Item>)> {
             // App menu from this entry and the other menus (About from Help, Settings from Edit,
             // Quit from File, Language and Appearance synthesized). It stays first: `from_tree`
             // gives the first menu the App role.
-            "LocalVector",
-            vec![c("About LocalVector", "help.about")],
+            "Local Vector",
+            vec![c("About Local Vector", "help.about")],
         ),
         (
             "File",
@@ -692,15 +692,15 @@ pub fn menu_tree_named(english_names: bool) -> Vec<(&'static str, Vec<Item>)> {
         (
             "Help",
             vec![
-                c("LocalVector Website", "help.website"),
-                c("LocalVector on GitHub", "help.github"),
+                c("Local Vector Website", "help.website"),
+                c("Local Vector on GitHub", "help.github"),
                 c("Report an Issue", "help.reportIssue"),
                 Sep,
                 c("Search Commands…", "help.commandPalette"),
-                todos("LocalVector Help…", "F1"),
+                todos("Local Vector Help…", "F1"),
                 Sep,
                 c("Check for Updates…", "help.checkForUpdates"),
-                c("About LocalVector", "help.about"),
+                c("About Local Vector", "help.about"),
             ],
         ),
     ]

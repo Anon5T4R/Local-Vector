@@ -1,7 +1,7 @@
-//! LocalVector's MCP server.
+//! Local Vector's MCP server.
 //!
 //! [Model Context Protocol](https://modelcontextprotocol.io) over stdio: newline-delimited
-//! JSON-RPC 2.0, hand-written (no async runtime). The server exposes LocalVector as a set of MCP
+//! JSON-RPC 2.0, hand-written (no async runtime). The server exposes Local Vector as a set of MCP
 //! tools and resources and forwards everything to a [`Backend`]:
 //!
 //! - [`Remote`] talks to a running desktop app through its loopback JSON-lines control channel

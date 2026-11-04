@@ -3,7 +3,7 @@
 //! resources their art uses (patterns, symbols, swatches, graphic styles, images); saved, it is a
 //! native `.vectorcraft` file, which File › Open also opens. The built-in libraries are generated
 //! here ([`BUILTIN`]); User Defined ones are the `.vectorcraft` files in the user library folder
-//! ([`Libraries`]), and Other Library… loads the brushes of any document LocalVector opens.
+//! ([`Libraries`]), and Other Library… loads the brushes of any document Local Vector opens.
 //! `brush.addFromLibrary` copies brushes into the document; `brush.saveLibrary` writes the
 //! document's.
 
@@ -70,7 +70,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Other Library…",
             ["Window", "Brush Libraries"],
             None,
-            "{path? | data?: file text | dataBase64?, name?: file name (default: the path's)} load the brushes of any document LocalVector opens (see document.formats; one without brushes of its own has the default ones), a saved brush library included, for the library panel (Window → Brush Libraries lists it until the app quits; a file of the user library folder, or a file with the same bytes as one there, opens as that User Defined library) → {library: id, name, count}",
+            "{path? | data?: file text | dataBase64?, name?: file name (default: the path's)} load the brushes of any document Local Vector opens (see document.formats; one without brushes of its own has the default ones), a saved brush library included, for the library panel (Window → Brush Libraries lists it until the app quits; a file of the user library folder, or a file with the same bytes as one there, opens as that User Defined library) → {library: id, name, count}",
             always,
             load
         ),

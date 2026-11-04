@@ -1,4 +1,4 @@
-//! LocalVector path operations: booleans (Pathfinder), shape builder regions, offset, outline stroke,
+//! Local Vector path operations: booleans (Pathfinder), shape builder regions, offset, outline stroke,
 //! simplify and the other Object → Path commands.
 //!
 //! Booleans are curve-preserving: `linesweeper`'s robust sweep-line works directly on cubic

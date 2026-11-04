@@ -51,7 +51,7 @@ impl Builder {
         Some((obj, alpha))
     }
 
-    /// The opacity text takes from its characters' colour: LocalVector's characters have none of
+    /// The opacity text takes from its characters' colour: Local Vector's characters have none of
     /// their own, so text whose characters share one becomes an object with that opacity.
     fn text_alpha(&mut self, runs: &[af::TextRun]) -> f32 {
         let alphas: Vec<f64> =
@@ -75,7 +75,7 @@ impl Builder {
         let mut out: Vec<TextRun> = Vec::new();
         let mut paragraph = 0usize;
         // Whether each paragraph here continues the one before after a line break (U+2028):
-        // LocalVector has no line break inside a paragraph, so the lines become paragraphs.
+        // Local Vector has no line break inside a paragraph, so the lines become paragraphs.
         let mut continues = vec![false];
         for r in runs {
             for c in r.text.chars() {
@@ -114,7 +114,7 @@ impl Builder {
             }
             out.push(TextRun::new(text, style));
         }
-        // Affinity ends a story with a paragraph mark; LocalVector's last paragraph has none.
+        // Affinity ends a story with a paragraph mark; Local Vector's last paragraph has none.
         if let Some(last) = out.last_mut()
             && last.text.ends_with('\n')
         {
@@ -149,13 +149,13 @@ impl Builder {
             let f = formats.get(i).or(formats.last()).copied().unwrap_or_default();
             let pt = |x: f64, k: f64| if (x * k).is_finite() { (x * k).clamp(-5000.0, 5000.0) } else { 0.0 };
             let mut ps = localvector_doc::text::ParaStyle { justify: justify(f.align), ..Default::default() };
-            // Affinity places the first line and the others from the left edge; LocalVector's
+            // Affinity places the first line and the others from the left edge; Local Vector's
             // first-line indent is relative to its left indent.
             ps.left_indent = pt(f.left, h);
             ps.first_line_indent = pt(f.first - f.left, h);
             ps.right_indent = pt(f.right, h);
             // Between two paragraphs Affinity keeps the larger of the space after the first and
-            // before the second; LocalVector adds them.
+            // before the second; Local Vector adds them.
             let (mut before, mut after) = (pt(f.space_before, v).max(0.0), pt(f.space_after, v).max(0.0));
             // The lines of one Affinity paragraph: no space between them, and the first-line
             // indent only on its first.
@@ -177,7 +177,7 @@ impl Builder {
                 first_runs.get(i).and_then(|r| obj.runs.get(*r)).map_or(("", ""), |r| (r.style.font_family.as_str(), r.style.font_style.as_str()));
             let gap = *gaps.entry((family, style)).or_insert_with(|| line_gap(family, style));
             let ratio = (1.0 + gap) * f.auto_leading;
-            // Affinity documents use tiny factors for spacer paragraphs (0.15 of a line); LocalVector
+            // Affinity documents use tiny factors for spacer paragraphs (0.15 of a line); Local Vector
             // takes 0–500 %.
             if ratio.is_finite() && (0.01..=5.0).contains(&ratio) {
                 ps.justification.auto_leading = ratio * 100.0;
@@ -247,7 +247,7 @@ impl Builder {
         style
     }
 
-    /// A table: its cells as area type and the lines on their edges, as LocalVector has no
+    /// A table: its cells as area type and the lines on their edges, as Local Vector has no
     /// tables.
     pub(super) fn table(&mut self, t: &af::Table, to_doc: Affine) -> Vec<Arc<Node>> {
         let mut out = Vec::new();

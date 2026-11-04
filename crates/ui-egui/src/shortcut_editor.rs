@@ -21,10 +21,13 @@ use crate::state::{Dialog, UiState};
 use crate::theme::{self, Tokens};
 use crate::{LocalvectorApp, menus, widgets};
 
-pub const PRESETS: &[&str] = &["LocalVector Defaults", "Classic Defaults"];
+pub const PRESETS: &[&str] = &["Local Vector Defaults", "Classic Defaults"];
 pub const CUSTOM: &str = "Custom";
 /// Set names earlier versions saved: (old name, current name).
-pub const LEGACY_PRESETS: &[(&str, &str)] = &[("Illustrator Defaults", "Classic Defaults")]; // brand-ok: legacy preference value
+pub const LEGACY_PRESETS: &[(&str, &str)] = &[
+    ("Illustrator Defaults", "Classic Defaults"), // brand-ok: legacy preference value
+    ("LocalVector Defaults", "Local Vector Defaults"),
+];
 
 /// The current name of a shortcut set: names earlier versions saved map to today's.
 pub fn set_name(name: &str) -> &str {
@@ -687,7 +690,7 @@ pub fn export_json(set: &str, overrides: &Overrides) -> Value {
 }
 
 pub fn import_json(v: &Value) -> Result<(String, Overrides), String> {
-    let o = v.get("overrides").and_then(Value::as_object).ok_or("not a LocalVector shortcut set (missing `overrides`)")?;
+    let o = v.get("overrides").and_then(Value::as_object).ok_or("not a Local Vector shortcut set (missing `overrides`)")?;
     let mut out = Overrides::new();
     for (k, v) in o {
         let s = v.as_str().ok_or_else(|| format!("shortcut for `{k}` must be a string"))?;
@@ -783,7 +786,7 @@ pub fn run_command(app: &mut LocalvectorApp, id: &str, p: &Value) -> Option<Resu
             let bytes = serde_json::to_vec_pretty(&v).unwrap_or_default();
             let pick = crate::FilePick {
                 filters: vec![crate::FilePick::filter("Shortcut sets", &["json"])],
-                ..crate::FilePick::named("LocalVector Shortcuts.json")
+                ..crate::FilePick::named("Local Vector Shortcuts.json")
             };
             let path = s("path").or_else(|| crate::picks::save(app, &pick));
             match path {
@@ -794,7 +797,7 @@ pub fn run_command(app: &mut LocalvectorApp, id: &str, p: &Value) -> Option<Resu
                 // Its save dialog is open: the file is written when it answers.
                 None if app.file_dialog_open() => Err("cancelled".into()),
                 None => match app.services.download.as_mut() {
-                    Some(dl) => dl("LocalVector Shortcuts.json", &bytes).map(|()| Value::Null),
+                    Some(dl) => dl("Local Vector Shortcuts.json", &bytes).map(|()| Value::Null),
                     None => Ok(v),
                 },
             }

@@ -7,7 +7,7 @@ pub(crate) fn prefs_path() -> Option<std::path::PathBuf> {
 }
 
 /// The same place under the names the project had before (VectorCraft, then DrawCraft): read once
-/// if there are no LocalVector preferences yet, so settings survive the rename. Newest first, so a
+/// if there are no Local Vector preferences yet, so settings survive the rename. Newest first, so a
 /// VectorCraft installation migrates before a DrawCraft one.
 const FORMER_APP_DIRS: [(&str, &str); 2] = [("VectorCraft", "vectorcraft"), ("DrawCraft", "drawcraft")];
 
@@ -59,7 +59,7 @@ pub(crate) fn decode_saved_prefs(bytes: &[u8]) -> Option<localvector_ui_egui::Ui
 pub(crate) static KEEP_UI_PREFS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 /// Copy `ui.json` beside it as `<stem>.json` or the first free `<stem>-N.json`, before the next
-/// save replaces it: `ui.unreadable` when it could not be read in full (a newer LocalVector may
+/// save replaces it: `ui.unreadable` when it could not be read in full (a newer Local Vector may
 /// have written it), `ui.before-layout-migration` when its layouts were converted.
 pub(crate) fn keep_prefs_copy(path: &std::path::Path, bytes: &[u8], stem: &str) {
     use std::io::Write as _;
@@ -92,7 +92,7 @@ pub(crate) fn load_prefs(app: &mut LocalvectorApp, saved: Option<localvector_ui_
 }
 
 /// Save what this window changed since it last read or saved the preferences, merged into the
-/// file as it is now ([`merge_changes`]): another LocalVector window open at the same time, which
+/// file as it is now ([`merge_changes`]): another Local Vector window open at the same time, which
 /// read the file before this one saved, then keeps this window's changes when it saves or quits
 /// (#4625). Nothing is written when nothing changed.
 pub(crate) fn save_prefs(app: &LocalvectorApp) {

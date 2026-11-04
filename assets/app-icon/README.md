@@ -1,9 +1,9 @@
-# LocalVector app icon
+# Local Vector app icon
 
-<img src="localvector-small.svg" alt="LocalVector app icon: a white bezier curve with two solid anchor nodes and hollow handle tips, on a teal gradient tile" width="128">
+<img src="localvector-small.svg" alt="Local Vector app icon: a white bezier curve with two solid anchor nodes and hollow handle tips, on a teal gradient tile" width="128">
 
 **Figure:** a bezier S-curve with two solid anchor nodes and a handle line off each node — the
-pen-tool mark that tells LocalVector apart from the other apps of the suite.
+pen-tool mark that tells Local Vector apart from the other apps of the suite.
 
 **Style:** flat shapes on a full-bleed teal gradient tile — the same language as the rest of the
 Local suite's icons (flat glyph, gradient tile, sheen, the "Taylor" signature at the foot).

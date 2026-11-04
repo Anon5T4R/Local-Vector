@@ -1,4 +1,4 @@
-//! LocalVector text: font database, shaping, layout, glyph outlines.
+//! Local Vector text: font database, shaping, layout, glyph outlines.
 //!
 //! API contract used by `localvector-render`, `localvector-tools` and the UI:
 //! - [`FontDb::global`]: process-wide database preloaded with the bundled OFL fonts (feature

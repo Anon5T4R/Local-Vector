@@ -336,7 +336,7 @@ mod tests {
             name: "Untitled-1.vectorcraft".into(),
             folder: Some("/home/me/Art".into()),
             filters: vec![
-                FilePick::filter("LocalVector", &["vectorcraft"]),
+                FilePick::filter("Local Vector", &["vectorcraft"]),
                 FilePick::filter("SVG", &["svg"]),
                 FilePick::filter("PDF-compatible .ai", &["ai"]),
             ],
@@ -350,9 +350,9 @@ mod tests {
     fn the_request_names_the_file_type_the_dialog_starts_on() {
         let request = request();
         let o = options(&request, "t1");
-        assert_eq!(o.get("current_filter"), Some(&Value::from(("LocalVector".to_string(), vec![(0u32, "*.vectorcraft".to_string())]))));
+        assert_eq!(o.get("current_filter"), Some(&Value::from(("Local Vector".to_string(), vec![(0u32, "*.vectorcraft".to_string())]))));
         let filters = vec![
-            ("LocalVector".to_string(), vec![(0u32, "*.vectorcraft".to_string())]),
+            ("Local Vector".to_string(), vec![(0u32, "*.vectorcraft".to_string())]),
             ("SVG".to_string(), vec![(0u32, "*.svg".to_string())]),
             ("PDF-compatible .ai".to_string(), vec![(0u32, "*.ai".to_string())]),
         ];
@@ -587,7 +587,7 @@ mod tests {
         let labels: Vec<&str> = request.filters.iter().map(|(l, _)| l.as_str()).collect();
         let lang = localvector_ui_egui::i18n::current();
         let expected: Vec<&str> =
-            ["LocalVector", "SVG", "PDF-compatible .ai"].iter().map(|l| localvector_ui_egui::i18n::tr_ctx(lang, "file-filter", l)).collect();
+            ["Local Vector", "SVG", "PDF-compatible .ai"].iter().map(|l| localvector_ui_egui::i18n::tr_ctx(lang, "file-filter", l)).collect();
         assert_eq!(labels, expected);
         assert_eq!(request.parent, "x11:3a0000f");
     }

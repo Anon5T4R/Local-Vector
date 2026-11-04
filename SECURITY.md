@@ -1,6 +1,6 @@
 # Security Policy
 
-LocalVector processes complex document and image formats and exposes a CLI, a JSON control channel and an MCP server. Treat files, paths, metadata, automation requests and command parameters as potentially malicious.
+Local Vector processes complex document and image formats and exposes a CLI, a JSON control channel and an MCP server. Treat files, paths, metadata, automation requests and command parameters as potentially malicious.
 
 ## Reporting a vulnerability
 
@@ -14,7 +14,7 @@ If no private channel can be established, withhold weaponized material and repor
 
 A useful report includes:
 
-- affected LocalVector version, commit or release artifact;
+- affected Local Vector version, commit or release artifact;
 - operating system, architecture, build profile and relevant feature flags;
 - the affected component or path;
 - security impact and required attacker access;

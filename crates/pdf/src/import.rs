@@ -1,4 +1,4 @@
-//! PDF → Document (hayro-interpret device that builds a LocalVector node tree).
+//! PDF → Document (hayro-interpret device that builds a Local Vector node tree).
 
 use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, Ordering};

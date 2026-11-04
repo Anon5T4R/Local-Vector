@@ -139,12 +139,16 @@ pub mod macos {
 
     use super::{App, InstallSource, Installed, version};
 
-    /// Where a `.app` might be: the system and the user's Applications folders.
+    /// Where a `.app` might be: the system and the user's Applications folders. Every name the
+    /// app has had too: a renamed app still finds the bundle its earlier name installed.
     pub fn candidates(app: &App) -> Vec<PathBuf> {
-        let bundle = format!("{}.app", app.name);
-        let mut out = vec![Path::new("/Applications").join(&bundle)];
-        if let Some(home) = crate::folders::home_dir() {
-            out.push(home.join("Applications").join(&bundle));
+        let mut out = Vec::new();
+        for name in app.names() {
+            let bundle = format!("{name}.app");
+            out.push(Path::new("/Applications").join(&bundle));
+            if let Some(home) = crate::folders::home_dir() {
+                out.push(home.join("Applications").join(&bundle));
+            }
         }
         out
     }
@@ -161,10 +165,12 @@ pub mod macos {
             return None;
         }
         // `<App>Version` carries the full version including a pre-release suffix;
-        // CFBundleShortVersionString only has the numbers.
-        let full_key = format!("{}Version", app.name);
-        let text =
-            [full_key.as_str(), "CFBundleShortVersionString", "CFBundleVersion"].iter().find_map(|k| dict.get(k).and_then(plist::Value::as_string));
+        // CFBundleShortVersionString only has the numbers. Every name the app has had: the key
+        // keeps the name its `Info.plist` was written with.
+        let full_keys: Vec<String> = app.names().map(|name| format!("{name}Version")).collect();
+        let mut keys: Vec<&str> = full_keys.iter().map(String::as_str).collect();
+        keys.extend(["CFBundleShortVersionString", "CFBundleVersion"]);
+        let text = keys.iter().find_map(|k| dict.get(k).and_then(plist::Value::as_string));
         Some(Installed { version: text.and_then(version::parse), source: InstallSource::MacApp, location: path.display().to_string(), package: None })
     }
 }
@@ -237,8 +243,11 @@ pub mod windows {
     /// launcher chose the folder.
     fn install_dir(app: &App) -> Option<PathBuf> {
         [KEY_WOW64_64KEY, KEY_WOW64_32KEY].into_iter().find_map(|flags| {
-            let key = RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(format!(r"SOFTWARE\{}", app.name), KEY_READ | flags).ok()?;
-            key.get_value::<String, _>("InstallDir").ok().filter(|d| !d.is_empty()).map(PathBuf::from)
+            // Every name the app has had too: the key keeps the name the MSI was installed under.
+            app.names().find_map(|name| {
+                let key = RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(format!(r"SOFTWARE\{name}"), KEY_READ | flags).ok()?;
+                key.get_value::<String, _>("InstallDir").ok().filter(|d| !d.is_empty()).map(PathBuf::from)
+            })
         })
     }
 
@@ -721,8 +730,10 @@ mod tests {
     #[test]
     fn the_apps_installer_publisher_matches_its_wix_manufacturer() {
         let app = App::by_id("localvector").unwrap();
-        assert!(is_installer_entry(app, "LocalVector", "Anon5T4R"), "the WiX names Manufacturer=\"Anon5T4R\"");
-        assert!(!is_installer_entry(app, "LocalVector", LEARNING_MACHINES), "the upstream publisher is not this app's");
+        assert!(is_installer_entry(app, "Local Vector", "Local Vector contributors"), "the WiX names Manufacturer=\"Local Vector contributors\"");
+        assert!(is_installer_entry(app, "LocalVector", "Local Vector contributors"), "an MSI from before the rename is still this app's");
+        assert!(!is_installer_entry(app, "Local Vector", LEARNING_MACHINES), "the upstream publisher is not this app's");
+        assert!(!is_installer_entry(app, "Local Vector", "Anon5T4R"), "the old publisher is not this app's any more");
     }
 
     #[test]

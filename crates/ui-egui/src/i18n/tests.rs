@@ -376,7 +376,7 @@ fn language_command_sets_the_preference() {
     // Every registered language is in the Mac App menu's Language, by its own name (the in-window
     // bar has no Language menu).
     let layout = crate::native_menu::mac_layout(&app, &crate::native_menu::from_tree(&app, &crate::menus::menu_tree()), Lang::EN);
-    let app_menu = layout.bar.menus.into_iter().find(|m| m.title == "LocalVector").expect("App menu");
+    let app_menu = layout.bar.menus.into_iter().find(|m| m.title == "Local Vector").expect("App menu");
     fn items(nodes: &[crate::native_menu::Node], out: &mut Vec<String>) {
         for n in nodes {
             match n {
@@ -1051,7 +1051,7 @@ const KEEPS_MENU_NAMES: [&str; 19] =
 /// names and the perspective grid presets (names, shown untranslated wherever else they appear).
 /// Each language's own name in the Language menu is left alone too.
 const MENU_KEEP_AS_IS: &[&str] = &[
-    "LocalVector",
+    "Local Vector",
     "OpenType",
     "Essentials",
     "Essentials Classic",
@@ -2144,7 +2144,7 @@ fn render_site_labels_fall_back_to_english() {
     for (_, source) in RENDER_SITE_ROWS.iter().filter(|(ctx, _)| *ctx == "file-filter") {
         assert_eq!(tr_ctx(Lang::EN, "file-filter", source), *source);
     }
-    for source in ["SVG", "PNG", "LocalVector", "unregistered filter"] {
+    for source in ["SVG", "PNG", "Local Vector", "unregistered filter"] {
         assert_eq!(tr_ctx(cs(), "file-filter", source), tr(cs(), source));
     }
     assert_eq!(fmt(tr(Lang::EN, "Preset {number}"), &[("number", "12")]), "Preset 12");
@@ -2172,7 +2172,7 @@ const RENDER_SITE_ROWS: &[(&str, &str)] = &[
     ("file-filter", "Export presets"),
     ("file-filter", "SVG Compressed"),
     ("file-filter", "PDF-compatible .ai"),
-    ("file-filter", "LocalVector Template"),
+    ("file-filter", "Local Vector Template"),
     ("file-filter", "Templates"),
     ("anchor", "Points:"),
     ("diagnostics", "render"),

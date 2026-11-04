@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/app-icon/hicolor/256x256/apps/com.localvector.app.png" width="128" height="128" alt="LocalVector icon: a white bezier curve with two solid anchor nodes on a teal gradient tile">
+  <img src="assets/app-icon/hicolor/256x256/apps/com.localvector.app.png" width="128" height="128" alt="Local Vector icon: a white bezier curve with two solid anchor nodes on a teal gradient tile">
 </p>
 
-<h1 align="center">LocalVector</h1>
+<h1 align="center">Local Vector</h1>
 
 <p align="center">
   <b>Vector illustration; an open-source, clean-room vector editor built in pure Rust.</b><br>
@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Anon5T4R/Local-Vector"><b>LocalVector on GitHub</b></a> ·
+  <a href="https://github.com/Anon5T4R/Local-Vector"><b>Local Vector on GitHub</b></a> ·
   <a href="https://github.com/Anon5T4R/">Local</a> ·
   <a href="https://github.com/Anon5T4R">Anon5T4R</a>
 </p>
@@ -28,7 +28,7 @@
 ---
 
 <p align="center">
-  <img src="docs/images/shot-1-neon.png" alt="LocalVector editing the Neon Drive poster: the title is selected, the Appearance panel shows the settings of its live Outer Glow, and the Properties panel shows its character settings" width="100%">
+  <img src="docs/images/shot-1-neon.png" alt="Local Vector editing the Neon Drive poster: the title is selected, the Appearance panel shows the settings of its live Outer Glow, and the Properties panel shows its character settings" width="100%">
   <br><sub><b>Neon Drive</b>: a Pathfinder-cut sun, live Outer Glow on the type and grid, and clipping masks · <code>examples/neon-drive.vectorcraft</code></sub>
 </p>
 
@@ -41,7 +41,7 @@ endpoint (Help › Check for Updates runs one by hand).
 
 | Platform | Files |
 |---|---|
-| Windows 10+ x64 / x86 / arm64 | `localvector-<ver>-windows-<arch>.msi` (per-machine, installs in `Program Files\LocalVector`) and `localvector-<ver>-windows-<arch>-portable.zip` |
+| Windows 10+ x64 / x86 / arm64 | `localvector-<ver>-windows-<arch>.msi` (per-machine, installs in `Program Files\Local Vector`) and `localvector-<ver>-windows-<arch>-portable.zip` |
 | Linux x86_64 / aarch64 | `.AppImage`, `.deb`, `.rpm`, `.tar.gz`, and the single-file `.flatpak` (`packaging/linux/package.sh`) |
 | macOS, FreeBSD, web (WebAssembly) | built by the scripts in `packaging/` |
 
@@ -64,7 +64,7 @@ describes what the workflow builds and publishes. Contributors and agents start 
 
 ## Status
 
-LocalVector is under active development. [**ROADMAP.md**](ROADMAP.md) has the stage, the numbers by
+Local Vector is under active development. [**ROADMAP.md**](ROADMAP.md) has the stage, the numbers by
 dimension and what's next; [`docs/target-app-parity.md`](docs/target-app-parity.md) the full parity
 assessment and [`docs/gaps.md`](docs/gaps.md) the ranked list of what's missing.
 
@@ -77,7 +77,7 @@ Revolve, and scripting.
 
 ## The Local suite
 
-LocalVector is one of the **Local** apps: free, open-source creative tools from
+Local Vector is one of the **Local** apps: free, open-source creative tools from
 [Anon5T4R](https://github.com/Anon5T4R/), each written from scratch in Rust, each offline and each
 able to stand on its own. The vector app's siblings are **LocalPaint** (image editing),
 **LocalPhoto** (photo library and raw development), **LocalVideo** (video editing, colour and
@@ -86,8 +86,8 @@ and **LocalSlides** (documents, spreadsheets and presentations).
 
 ## License and credits
 
-LocalVector is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
-Copyright (c) 2026 Local Team and the LocalVector contributors; the upstream copyright line is kept in
+Local Vector is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
+Copyright (c) 2026 Local Team and the Local Vector contributors; the upstream copyright line is kept in
 [`LICENSE-MIT`](LICENSE-MIT), and the derivation from VectorCraft (ArtCraft) is credited in
 [NOTICE](NOTICE).
 

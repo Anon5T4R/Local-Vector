@@ -1,4 +1,4 @@
-//! LocalVector's built-in add-ons in the interface: each has a panel and a submenu at the top of
+//! Local Vector's built-in add-ons in the interface: each has a panel and a submenu at the top of
 //! Object › Plug-ins, and acts through its engine commands (`addon.<name>.*`).
 
 pub mod arrange;

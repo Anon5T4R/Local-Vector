@@ -1,4 +1,4 @@
-//! Desktop printer transport. LocalVector composes every page and copy before submission;
+//! Desktop printer transport. Local Vector composes every page and copy before submission;
 //! craft-print owns discovery and spooling.
 use localvector_ui_egui::print::{PrintJob, PrintService, Printer};
 use std::process::Command;

@@ -503,7 +503,7 @@ fn intertwine_tiers_are_read_within_the_node_budget() {
 
 /// #3587: fields read before an object's `type` are buffered value by value within
 /// [`with_buffered_value_budget`], each counted once: a group read back from the buffer buffers
-/// its own fields again without counting them twice. LocalVector writes `type` first, which
+/// its own fields again without counting them twice. Local Vector writes `type` first, which
 /// buffers nothing.
 #[test]
 fn fields_before_the_type_are_buffered_within_the_value_budget() {

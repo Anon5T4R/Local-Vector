@@ -6,8 +6,16 @@
 use crate::app::App;
 
 pub const PHOTOCRAFT: App = App::new("photocraft", "PhotoCraft", "Image editing", "storytold/photocraft");
-pub const LOCALPAINT: App = App::new("localpaint", "LocalPaint", "Image editing", "Anon5T4R/Local-Paint");
-pub const LOCALVECTOR: App = App { publisher: "Anon5T4R", ..App::new("localvector", "LocalVector", "Vector illustration", "Anon5T4R/Local-Vector") };
+pub const LOCALPAINT: App = App {
+    former_names: &["LocalPaint"],
+    publisher: "Local Paint contributors",
+    ..App::new("localpaint", "Local Paint", "Image editing", "Anon5T4R/Local-Paint")
+};
+pub const LOCALVECTOR: App = App {
+    former_names: &["LocalVector"],
+    publisher: "Local Vector contributors",
+    ..App::new("localvector", "Local Vector", "Vector illustration", "Anon5T4R/Local-Vector")
+};
 pub const VECTORCRAFT: App = App::new("vectorcraft", "VectorCraft", "Vector illustration", "storytold/vectorcraft");
 pub const FILMCRAFT: App = App::new("filmcraft", "FilmCraft", "Video editing, color and sound", "storytold/filmcraft");
 pub const LIGHTCRAFT: App = App::new("lightcraft", "LightCraft", "Photo library and raw development", "storytold/lightcraft");
@@ -65,7 +73,6 @@ mod tests {
         ids.dedup();
         assert_eq!(ids.len(), SUITE.len());
         for a in &SUITE {
-            assert_eq!(a.name.to_lowercase(), a.id);
             if a.id == LOCALPAINT.id {
                 assert_eq!(a.repo, "Anon5T4R/Local-Paint");
                 continue;
@@ -75,6 +82,12 @@ mod tests {
                 continue;
             }
             assert_eq!(a.repo, format!("storytold/{}", a.id));
+            assert_eq!(a.name.to_lowercase(), a.id);
+        }
+        // The suite's own apps spell their display name in two words, whatever their id says.
+        for a in [LOCALPAINT, LOCALVECTOR] {
+            assert!(a.name.starts_with("Local "), "{a:?}");
+            assert_eq!(a.names().count(), 2, "{a:?}: the name it had before the rename counts");
         }
         assert!(by_id(LAUNCHER.id).is_none());
         assert_eq!(by_id("localpaint").map(|a| a.repo), Some("Anon5T4R/Local-Paint"));

@@ -1,5 +1,5 @@
 //! Placing a Word 97-2003 document (`.doc`): its main text set as area type with the character and
-//! paragraph formatting LocalVector has, read as \[MS-DOC\] describes the Word Binary File Format
+//! paragraph formatting Local Vector has, read as \[MS-DOC\] describes the Word Binary File Format
 //! (<https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/262caa01-60a5-479e-b710-1e966936a524>)
 //! from the compound file \[MS-CFB\] describes
 //! (<https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cfb/53989ce4-7b05-4f8d-829b-d08d6148375b>).
@@ -208,7 +208,7 @@ impl Fib {
         if field(2)? < 0x00C1 {
             return Err(bad(
                 cmd,
-                "the Word document was saved by Word 6.0 or Word 95, which LocalVector doesn't read; save it as a Word 97-2003 document",
+                "the Word document was saved by Word 6.0 or Word 95, which Local Vector doesn't read; save it as a Word 97-2003 document",
             ));
         }
         let flags = field(10)?;
@@ -220,7 +220,7 @@ impl Fib {
         if flags & 0x0004 != 0 {
             return Err(bad(
                 cmd,
-                "the Word document was last saved with fast save, which LocalVector doesn't read; save it again with fast save turned off",
+                "the Word document was last saved with fast save, which Local Vector doesn't read; save it again with fast save turned off",
             ));
         }
         // csw (14 16-bit values) and cslw (22 32-bit values) are fixed.

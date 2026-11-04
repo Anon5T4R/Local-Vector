@@ -1,6 +1,6 @@
 //! MCP prompts (`prompts/list`, `prompts/get`) and `completion/complete`.
 //!
-//! A prompt is a reusable LocalVector workflow: `prompts/get` hands the model one templated user
+//! A prompt is a reusable Local Vector workflow: `prompts/get` hands the model one templated user
 //! message, so a client can offer "make a poster" the way it offers a slash command. Every prompt's
 //! arguments double as completion sources, and the resource templates in [`crate::resources`] share
 //! the same [`Live`] catalogues, so `completion/complete` can suggest real command ids, effect ids,
@@ -156,7 +156,7 @@ pub static PROMPTS: &[PromptDef] = &[
             },
         ],
         text: "\
-Design a poster in LocalVector.
+Design a poster in Local Vector.
 
 Brief: {brief}
 Palette: {palette}
@@ -208,7 +208,7 @@ rasterise unless the brief asks for it.",
             },
         ],
         text: "\
-Draw a set of {count} icons of {subject} in LocalVector, {detail}.
+Draw a set of {count} icons of {subject} in Local Vector, {detail}.
 
 Coordinates are points in document space (y down, origin at the first artboard's
 top-left).
@@ -251,7 +251,7 @@ Return the ids of the icons in a grid, and leave them as separate objects on one
             },
         ],
         text: "\
-Recolour the current selection in LocalVector with {palette}, using the `{method}` recolour method.
+Recolour the current selection in Local Vector with {palette}, using the `{method}` recolour method.
 
 Method:
 1. inspect_document to see what is selected and what colours it actually uses.
@@ -289,7 +289,7 @@ One undo step covers the whole change; gradients and linked swatches stay linked
             },
         ],
         text: "\
-Trace the image at {path} in LocalVector with the \"{preset}\" preset, then style the result
+Trace the image at {path} in Local Vector with the \"{preset}\" preset, then style the result
 with the {effect} effect.
 
 Method:
@@ -350,7 +350,7 @@ The trace is real geometry: every traced shape stays selectable and editable.",
             },
         ],
         text: "\
-Export the document in LocalVector to {formats}, into {directory}, at {scale} pixels per
+Export the document in Local Vector to {formats}, into {directory}, at {scale} pixels per
 point for the raster formats.
 
 Method:

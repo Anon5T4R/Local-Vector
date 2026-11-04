@@ -15,10 +15,10 @@ pub const ISSUES_URL: &str = "https://github.com/Anon5T4R/Local-Vector/issues";
 
 pub fn specs() -> Vec<CommandSpec> {
     vec![
-        cmd!(query "help.website", "LocalVector Website", ["Help"], None, "{} → {url}", always, |_, _| url(WEBSITE_URL.into())),
+        cmd!(query "help.website", "Local Vector Website", ["Help"], None, "{} → {url}", always, |_, _| url(WEBSITE_URL.into())),
         cmd!(
             query "help.github",
-            "LocalVector on GitHub",
+            "Local Vector on GitHub",
             ["Help"],
             None,
             "{} → {url} source code, issues and releases",

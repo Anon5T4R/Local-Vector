@@ -1,5 +1,5 @@
 //! Attributes in other applications' XML namespaces (https://www.w3.org/TR/xml-names/) survive a
-//! round trip through LocalVector: kept on import, written back on export with their namespaces
+//! round trip through Local Vector: kept on import, written back on export with their namespaces
 //! declared on the root.
 use localvector_doc::{Document, ForeignAttribute, Node, NodeKind};
 use localvector_svg::{ExportOptions, MAX_FOREIGN, MAX_FOREIGN_VALUE, export, export_full, import, import_with_report};

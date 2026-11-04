@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and package LocalVector for FreeBSD:
+# Build and package Local Vector for FreeBSD:
 #
 #   $DIST/localvector-<version>-freebsd-<arch>.tar.gz   a /usr/local-style tree:
 #       localvector-<version>-freebsd-<arch>/{bin, share/applications, share/icons, share/mime,
@@ -46,7 +46,7 @@ if [[ -n "${CARGO_BUILD_TARGET:-}" ]]; then
 fi
 BASENAME="localvector-$VERSION-freebsd-$ARCH"
 
-echo "==> LocalVector $VERSION for FreeBSD $ARCH"
+echo "==> Local Vector $VERSION for FreeBSD $ARCH"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   (cd "$ROOT" && cargo build --release --locked -p localvector -p localvector-cli ${CARGO_BUILD_TARGET:+--target "$CARGO_BUILD_TARGET"})

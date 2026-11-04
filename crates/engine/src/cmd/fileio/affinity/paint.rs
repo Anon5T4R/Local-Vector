@@ -8,8 +8,8 @@ use super::{
 };
 
 impl Builder {
-    /// Drop shadows, inner shadows and outer glows as LocalVector's Stylize effects. Affinity's
-    /// blur radius sets the same Gaussian as LocalVector's blur (σ = half of it), and its angle
+    /// Drop shadows, inner shadows and outer glows as Local Vector's Stylize effects. Affinity's
+    /// blur radius sets the same Gaussian as Local Vector's blur (σ = half of it), and its angle
     /// is the direction the shadow goes in.
     pub(super) fn effects(&mut self, effects: &[af::Effect]) -> Vec<Effect> {
         let k = self.k;

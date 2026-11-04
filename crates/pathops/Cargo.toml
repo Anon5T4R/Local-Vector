@@ -3,7 +3,7 @@ name = "localvector-pathops"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "LocalVector path operations: booleans (Pathfinder), shape builder regions, offset, outline stroke, simplify"
+description = "Local Vector path operations: booleans (Pathfinder), shape builder regions, offset, outline stroke, simplify"
 
 [lints]
 workspace = true
