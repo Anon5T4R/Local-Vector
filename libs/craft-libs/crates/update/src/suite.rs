@@ -7,7 +7,7 @@ use crate::app::App;
 
 pub const PHOTOCRAFT: App = App::new("photocraft", "PhotoCraft", "Image editing", "storytold/photocraft");
 pub const LOCALPAINT: App = App::new("localpaint", "LocalPaint", "Image editing", "Anon5T4R/Local-Paint");
-pub const LOCALVECTOR: App = App::new("localvector", "LocalVector", "Vector illustration", "Anon5T4R/Local-Vector");
+pub const LOCALVECTOR: App = App { publisher: "Anon5T4R", ..App::new("localvector", "LocalVector", "Vector illustration", "Anon5T4R/Local-Vector") };
 pub const VECTORCRAFT: App = App::new("vectorcraft", "VectorCraft", "Vector illustration", "storytold/vectorcraft");
 pub const FILMCRAFT: App = App::new("filmcraft", "FilmCraft", "Video editing, color and sound", "storytold/filmcraft");
 pub const LIGHTCRAFT: App = App::new("lightcraft", "LightCraft", "Photo library and raw development", "storytold/lightcraft");
