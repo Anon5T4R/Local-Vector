@@ -183,6 +183,15 @@
         <RegistryValue Root="HKLM" Key="Software\LocalVector\Shortcuts" Name="StartMenu" Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
+      <!-- Search alias: Start Menu search matches the shortcut's name, and every suite name
+           starts with Local — a plain "vector" finds nothing. Same exe, same icon, own
+           component so uninstall removes it. -->
+      <Component Id="LocalVectorAliasShortcut" Directory="ProgramMenuFolder" Guid="B4549751-C8F6-4E69-8399-6932B52CCF09">
+        <Shortcut Id="AliasShortcut" Name="Vector" Description="LocalVector vector illustration app"
+            Target="[#LocalVectorExe]" WorkingDirectory="INSTALLFOLDER" Icon="LocalVectorIcon.exe" IconIndex="0" />
+        <RegistryValue Root="HKLM" Key="Software\LocalVector\Shortcuts" Name="Alias" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
       <Component Id="LocalVectorDesktopShortcut" Directory="DesktopFolder" Guid="A39818C9-0B93-4470-AD12-30093F71D554">
         <Shortcut Id="DesktopShortcut" Name="LocalVector" Description="LocalVector vector illustration app"
             Target="[#LocalVectorExe]" WorkingDirectory="INSTALLFOLDER" Icon="LocalVectorIcon.exe" IconIndex="0" />
