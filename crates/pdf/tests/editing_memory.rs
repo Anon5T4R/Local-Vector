@@ -64,7 +64,7 @@ fn pages_sharing_one_stream_are_hashed_without_keeping_a_copy_each() {
         "<< /Type /Catalog /Pages 2 0 R /Names << /EmbeddedFiles 3 0 R >> >>".to_string(),
         format!("<< /Type /Pages /Kids [{}] /Count {PAGES} >>", (0..PAGES).map(|i| format!("{} 0 R ", i + 7)).collect::<String>()),
         "<< /Names [(a) 4 0 R] >>".to_string(),
-        format!("<< /Type /Filespec /UF ({EDITING_FILE}) /Desc (Local Vector editing data; page hash 0000000000000000) /EF << /F 5 0 R >> >>"),
+        format!("<< /Type /Filespec /UF ({EDITING_FILE}) /Desc (LocalVector editing data; page hash 0000000000000000) /EF << /F 5 0 R >> >>"),
         "<< /Length 5 >>\nstream\nhello\nendstream".to_string(),
         format!("<< /Length {STREAM} >>\nstream\n{}\nendstream", "q ".repeat(STREAM / 2)),
     ];
