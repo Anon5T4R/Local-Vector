@@ -27,11 +27,6 @@
 
 ---
 
-<p align="center">
-  <img src="docs/images/shot-1-neon.png" alt="Local Vector editing the Neon Drive poster: the title is selected, the Appearance panel shows the settings of its live Outer Glow, and the Properties panel shows its character settings" width="100%">
-  <br><sub><b>Neon Drive</b>: a Pathfinder-cut sun, live Outer Glow on the type and grid, and clipping masks · <code>examples/neon-drive.vectorcraft</code></sub>
-</p>
-
 ## Get it
 
 Installers are attached to each [GitHub release](https://github.com/Anon5T4R/Local-Vector/releases)
