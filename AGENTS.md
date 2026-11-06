@@ -178,3 +178,8 @@ testes, doctests, layers, wasm, e os gates `assets`, `brands` e `cursors`). Um i
 - Os workflows de `.github/workflows/` são deste repo: não chamam workflow compartilhado de outra
   organização. Não mexa em CI em PR de feature ou fix; se o CI não consegue buildar/testar a
   mudança, isso é uma tarefa própria.
+
+
+## Upstream e a pasta `C:\Dev\storytold`
+
+Menções a `storytold/*` em código, comentários, docs e atribuições (NOTICE/ATTRIBUTION) são referência histórica e obrigação de licença. **Nada** é lido de `C:\Dev\storytold` em build, teste ou release: tudo vem do próprio repo (crates.io pinado pelo lock + `libs/`/`vendor/` vendored + CI que busca craft-fonts/craft-i18n do GitHub). Essa pasta existe somente como referência local para a skill `sync-upstream`.
