@@ -92,6 +92,19 @@ if has tar; then
   echo "wrote $DIST/$BASENAME.tar.gz"
 fi
 
+# ---- CLI-only .tar.gz ---------------------------------------------------------------------------
+# The stripped localvector-cli with the licences, for machines that never open a
+# window. Like the other formats it needs glibc >= the build host's.
+if has cli; then
+  CLI_NAME="localvector-cli-$VERSION-linux-$ARCH"
+  CLI_DIR="$WORK/cli/$CLI_NAME"
+  mkdir -p "$CLI_DIR"
+  cp "$STAGE/usr/bin/localvector-cli" "$CLI_DIR/"
+  copy_docs "$CLI_DIR"
+  tar -C "$WORK/cli" -czf "$DIST/$CLI_NAME.tar.gz" "$CLI_NAME"
+  echo "wrote $DIST/$CLI_NAME.tar.gz"
+fi
+
 # ---- .deb / .rpm --------------------------------------------------------------------------------
 if has deb || has rpm; then
   command -v nfpm >/dev/null || { echo "error: nfpm not found (https://nfpm.goreleaser.com/install/)" >&2; exit 1; }
