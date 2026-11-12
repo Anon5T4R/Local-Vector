@@ -6,7 +6,7 @@
 #   makepkg -si   (local, com o tarball da release ao lado)
 
 pkgname=ai.storyteller.localvector
-pkgver=0.21.9
+pkgver=0.21.10
 pkgrel=1
 pkgdesc='Draw and edit vector illustrations, SVG and PDF'
 arch=(x86_64)
