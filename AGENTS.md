@@ -22,7 +22,7 @@ App de ilustração vetorial: roda nativo em macOS, Windows, Linux e FreeBSD, e 
 - `libs/` — forks vendored: `craft-libs`, `egui`, `winit`, `winprint.rs`
 - `assets/` — ícones, fontes (`craft-fonts` vendored), ícones Lucide; cada arquivo tem
   linha em `ASSETS.md`
-- `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar/Flatpak), macOS, FreeBSD, web
+- `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar FHS com `install.sh`), Arch (PKGBUILD), macOS, FreeBSD, web
 - `docs/` — arquitetura, formatos, paridade, release
 - `xtask/` — tarefas de build/CI (`cargo xtask ci`, `layers`, `wasm`, `assets`)
 
