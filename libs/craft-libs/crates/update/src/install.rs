@@ -1392,7 +1392,7 @@ pub mod macos {
         let bundle = app
             .names()
             .map(|name| format!("{name}.app"))
-            .find(|bundle| crate::detect::macos::read_bundle(app, &mount.join(bundle)).is_some())
+            .find(|bundle| crate::detect::macos::read_bundle(app, &mount.join(bundle.as_str())).is_some())
             .ok_or("the disk image doesn't contain the app")?;
         let src = mount.join(&bundle);
         let dir = applications_dir(existing, destination)?;

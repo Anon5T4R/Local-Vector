@@ -139,8 +139,8 @@ pub mod macos {
 
     use super::{App, InstallSource, Installed, version};
 
-    /// Where a `.app` might be: the system and the user's Applications folders. Every name the
-    /// app has had too: a renamed app still finds the bundle its earlier name installed.
+    /// Where a `.app` might be: the system and the user's Applications folders. Every name the app
+    /// has had, too: a renamed app still finds the bundle the earlier name installed.
     pub fn candidates(app: &App) -> Vec<PathBuf> {
         let mut out = Vec::new();
         for name in app.names() {
@@ -240,10 +240,10 @@ pub mod windows {
     }
 
     /// The folder the app's MSI remembers for its next upgrade, which is where it went when the
-    /// launcher chose the folder.
+    /// launcher chose the folder. Every name the app has had: the key keeps the name the MSI was
+    /// installed under.
     fn install_dir(app: &App) -> Option<PathBuf> {
         [KEY_WOW64_64KEY, KEY_WOW64_32KEY].into_iter().find_map(|flags| {
-            // Every name the app has had too: the key keeps the name the MSI was installed under.
             app.names().find_map(|name| {
                 let key = RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(format!(r"SOFTWARE\{name}"), KEY_READ | flags).ok()?;
                 key.get_value::<String, _>("InstallDir").ok().filter(|d| !d.is_empty()).map(PathBuf::from)
@@ -729,11 +729,11 @@ mod tests {
 
     #[test]
     fn the_apps_installer_publisher_matches_its_wix_manufacturer() {
-        let app = App::by_id("localvector").unwrap();
-        assert!(is_installer_entry(app, "Local Vector", "Local Vector contributors"), "the WiX names Manufacturer=\"Local Vector contributors\"");
-        assert!(is_installer_entry(app, "LocalVector", "Local Vector contributors"), "an MSI from before the rename is still this app's");
-        assert!(!is_installer_entry(app, "Local Vector", LEARNING_MACHINES), "the upstream publisher is not this app's");
-        assert!(!is_installer_entry(app, "Local Vector", "Anon5T4R"), "the old publisher is not this app's any more");
+        let app = App::by_id("localpaint").unwrap();
+        assert!(is_installer_entry(app, "Local Paint", "Local Paint contributors"), "the WiX names Manufacturer=\"Local Paint contributors\"");
+        assert!(is_installer_entry(app, "LocalPaint", "Local Paint contributors"), "an MSI from before the rename is still this app's");
+        assert!(!is_installer_entry(app, "Local Paint", LEARNING_MACHINES), "the upstream publisher is not this app's");
+        assert!(!is_installer_entry(app, "Local Paint", "Anon5T4R"), "the old publisher is not this app's any more");
     }
 
     #[test]
@@ -751,9 +751,13 @@ mod tests {
     #[test]
     fn printcraft_entries_match_nothing_else() {
         let pdf = App::by_id("pdfcraft").unwrap();
+        let local = App::by_id("localpdf").unwrap();
         assert!(!is_installer_entry(pdf, "PrintCraft", "Some Other Publisher"));
         assert!(!is_installer_entry(pdf, "PhotoCraft", LEARNING_MACHINES));
-        for a in SUITE.iter().filter(|a| a.id != "pdfcraft") {
+        // Local PDF is the fork of the same PrintCraft, so it claims those entries too (its own
+        // catalog did before the unification); nothing else may.
+        assert!(is_installer_entry(local, "PrintCraft", LEARNING_MACHINES), "the fork keeps detecting its upstream install");
+        for a in SUITE.iter().filter(|a| !matches!(a.id, "pdfcraft" | "localpdf")) {
             assert!(!is_installer_entry(a, "PrintCraft", LEARNING_MACHINES), "PrintCraft matched {}", a.name);
         }
     }

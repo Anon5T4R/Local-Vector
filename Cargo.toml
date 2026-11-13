@@ -23,7 +23,7 @@ craft-window = { path = "libs/craft-libs/crates/window/", features = ["egui"] }
 # The `.vectorcraft` envelope: its members, version, embedded images and the data after the JSON.
 craft-vectorcraft-format = { path = "libs/craft-libs/crates/vectorcraft-format/" }
 # craft-update: app-specific pretend versions apply to startup and manual checks.
-craft-update = { version = "=0.1.0", path = "libs/craft-libs/crates/update/", features = ["egui"] }
+craft-update = { version = "=0.1.0", path = "libs/craft-libs/crates/update/", features = ["egui", "icons"] }
 # internal
 localvector-geom = { path = "crates/geom" }
 localvector-color = { path = "crates/color" }
