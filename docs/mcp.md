@@ -8,7 +8,7 @@ It has two backends:
 
 | Mode | How | What works |
 |---|---|---|
-| **Remote** | `localvector-cli mcp --connect 127.0.0.1:7979` (the app must run with `localvector --control 7979`) | Everything. Tool calls are forwarded over the [control protocol](control-protocol.md), so you watch the app change live. |
+| **Remote** | `localvector-cli mcp --connect 127.0.0.1:7979`, or `--connect 7979` (a bare port means loopback; the app must run with `localvector --control 7979`) | Everything. Tool calls are forwarded over the [control protocol](control-protocol.md), so you watch the app change live. |
 | **Headless** | `localvector-cli mcp --headless` | An in-process engine session with a CPU renderer. Everything except the UI-only tools (`inspect_ui` or `ui_inspect`, `type_text`, `answer_dialog`, `open_panel`, `screenshot {window:true}` or `ui_screenshot`). |
 
 With no flag, the server tries `127.0.0.1:7979` and falls back to headless. Logs go to stderr; stdout carries
@@ -88,7 +88,48 @@ window is open before you start the MCP client. With `--connect`, a server that 
 prints `localvector-cli: cannot connect to 127.0.0.1:7979: ` followed by the system's connection error, for
 example `connection timed out`.
 
-## Confining file access
+## Driving Local Vector without an MCP client
+
+Two subcommands do the same work from a shell, a script or a CI job. Both are what the MCP server
+calls in headless mode, so a job that works from the command line works through an agent too.
+
+### `run --script job.json`
+
+`run` takes the job file as `--script` (the same option as `--commands`, which the
+[headless batch CLI](#headless-batch-cli) documents in full): a JSON array of steps or one step per
+line (JSON Lines), run in order, one JSON result per step. `--export FILE` writes the document in the
+format its extension picks:
+
+```json
+{"command": "file.new", "params": {"width": 400, "height": 300}}
+{"command": "shape.star", "params": {"cx": 200, "cy": 150, "radius1": 90, "radius2": 40, "points": 5}}
+{"command": "document.node", "params": {"id": "$1.id"}}
+```
+
+```sh
+localvector-cli run --script job.json --export out.png --scale 2
+```
+
+`"$N.path"` takes a value from step `N`'s result (0-based), `"$last.path"` from the step before, and
+`$$` starts a literal `$`. Errors name the step (`step 2 (shape.star): ...`). The parsing and the
+`$N` references are the suite's (`craft-mcp`), so one job file means the same thing in every Craft
+app.
+
+### `commands --search TEXT`
+
+Prints the command catalogue as JSON; `--search` keeps the commands whose id, label or menu path
+contains `TEXT` (case-insensitive), the same filter the `list_commands` tool takes:
+
+```sh
+localvector-cli commands --search star
+```
+
+### `mcp --connect PORT`
+
+`--connect` takes an address (`127.0.0.1:7979`) or a bare port (`7979`), which means loopback. A
+host that isn't loopback is refused before anything is sent: the control channel is a local one,
+and its port is not authentication (see the [control protocol](control-protocol.md)).
+
 
 ```sh
 localvector-cli mcp --automation-read-root /work/project --automation-write-root /work/project/out
@@ -947,6 +988,7 @@ printf '%s\n' \
 
 ```sh
 localvector-cli commands                          # command catalogue (JSON)
+localvector-cli commands --search star            # ... narrowed by id, label or menu path
 localvector-cli run --in in.svg \
   --cmd select.all --cmd paint.setFill --params '{"color":"#ff0000"}' \
   --export out.svg --export out.png --scale 2
@@ -963,8 +1005,9 @@ also accepts the host commands `file.open`, `file.save`, `file.export`, `file.ex
 ### Steps from a file or standard input
 
 A command line has a length limit (32,767 characters on Windows), which long parameters such as a placed file's
-`dataBase64` or a long list of ids soon reach (#3147). `--commands FILE` reads the steps from a file instead, and
-`--commands -` from standard input:
+`dataBase64` or a long list of ids soon reach (#3147). `--commands FILE` (or `--script FILE`: the same
+option, the name job files usually take) reads the steps from a file instead, and `--commands -` from
+standard input:
 
 ```sh
 localvector-cli run --in sheet.vectorcraft --commands steps.json --export out.pdf

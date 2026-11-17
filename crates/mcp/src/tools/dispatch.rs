@@ -11,7 +11,7 @@ pub(super) const MENU_FILTER: &str =
 
 /// The `brief` argument of the command listings.
 pub(super) const BRIEF: &str =
-    "Leave out each command's params description (the bulk of the catalogue); run command_list with the id as filter to read it";
+    "Leave out each command's params description (the bulk of the catalogue); run list_commands with the id as filter to read it";
 
 /// The `max_side` argument of the window captures.
 pub(super) const MAX_SIDE_WINDOW: &str =

@@ -23,6 +23,8 @@ localvector-svg = { workspace = true }
 localvector-mcp = { workspace = true }
 localvector-render = { workspace = true }
 localvector-text = { workspace = true }
+# The suite's shared MCP plumbing: `--script` steps, `--automation-*-root` and `--connect PORT`.
+craft-mcp = { workspace = true }
 serde_json = { workspace = true }
 log = { workspace = true }
 

@@ -80,7 +80,7 @@ fn progress_sink(out: SyncSender<String>, msg: &Value) -> Option<cancel::Progres
 const INSTRUCTIONS: &str = "Local Vector is a professional vector illustration app. Coordinates are \
 points in document space (y down, origin at the first artboard's top-left; a new document is 612×792). \
 Draw with draw_shape / draw_path, change colours with set_paint, look with render_preview and doc_inspect. \
-Every menu action is a command: find it with command_list and run it with command_run (or command_batch for several). New objects become \
+Every menu action is a command: find it with list_commands and run it with run_command (or command_batch for several). New objects become \
 the selection, and most commands act on the selection (or on explicit `ids`). prompts/list has ready-made \
 workflows, completion/complete finishes a command id, a format, an effect or a swatch name, and \
 localvector://object/{id}, localvector://command/{id}, localvector://effect/{id} and \

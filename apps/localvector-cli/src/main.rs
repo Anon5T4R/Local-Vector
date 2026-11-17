@@ -72,27 +72,30 @@ const USAGE: &str = "\
 localvector-cli — Local Vector automation
 
 USAGE:
-  localvector-cli mcp [--connect ADDR | --headless] [--automation-read-root DIR]... [--automation-write-root DIR]...
+  localvector-cli mcp [--connect ADDR|PORT | --headless] [--automation-read-root DIR]... [--automation-write-root DIR]...
       Run the MCP server on stdio. Default: connect to a running app at 127.0.0.1:7979
-      (localvector --control 7979), falling back to a headless in-process session.
-      --automation-read-root / --automation-write-root confine the files the agent's commands read
-      (open, place, relink, library loads…) and write (save, export, package, library saves…) to
-      DIR, links followed; each may be given more than once, a path inside any of its folders being
-      allowed, and a kind left out grants none of its access. They imply --headless: a running app
+      (localvector --control 7979), falling back to a headless in-process session. --connect takes
+      ADDR (127.0.0.1:7979) or a bare PORT (7979, which means loopback); a host that isn't loopback
+      is refused. The root flags are the suite's (craft-mcp), so one MCP client configuration works
+      in every Craft app: they confine the files the agent's commands read (open, place, relink,
+      library loads…) and write (save, export, package, library saves…) to DIR, links followed; each
+      may be given more than once, a path inside any of its folders being allowed, and a kind left
+      out grants none of its access. They imply --headless: a running app
       enforces its own (localvector --control PORT --automation-read-root DIR …).
 
-  localvector-cli run [--in FILE] [--cmd ID [--params JSON] | --commands FILE|-]... [--export FILE]... [--scale N]
+  localvector-cli run [--in FILE] [--cmd ID [--params JSON] | --commands FILE|- | --script FILE|-]... [--export FILE]... [--scale N]
       Headless batch: open FILE (any readable format) or start a new document, run commands in
       order, export each FILE in the format its extension picks (see Writable formats; a .ait FILE
       is a template, written as file.saveAsTemplate writes it). --scale sizes raster exports
       (pixels per point, default 1); other formats leave it out. Prints one JSON result per step.
-      --commands reads steps from FILE, or from standard input for -, where it stands among the
-      --cmd and --export steps: a JSON array of {\"command\": ID, \"params\": {...}} (or \"id\" for
-      \"command\"), or one such object per line (JSON Lines), at most 64 MiB and 100000 steps.
-      Errors name the step, counting from 0 as \"$N\" references do.
+      --commands (or --script, the same thing) reads steps from FILE, or from standard input for -,
+      where it stands among the --cmd and --export steps: a JSON array of {\"command\": ID, \"params\":
+      {...}} (or \"id\" for \"command\"), or one such object per line (JSON Lines), at most 64 MiB and
+      100000 steps. Errors name the step, counting from 0 as \"$N\" references do.
 
-  localvector-cli commands
-      Print the command catalogue as JSON.
+  localvector-cli commands [--search TEXT]
+      Print the command catalogue as JSON. --search keeps the commands whose id, label or menu path
+      contains TEXT (case-insensitive), as the MCP command_list filter does.
 
   localvector-cli convert IN OUT [--scale N] [--artboard I | --range R] [--outline-text] [--decimals N] [--replace-lossy] [--editing-data] [--preserve-editing] [--ai-version 7|pdf] [--hidden-objects layer|omit|visible] [--transparent-images flatten|omit]
       Open IN (any readable format) and export OUT in the format its extension picks (see Writable
@@ -176,12 +179,12 @@ fn main() -> ExitCode {
     prefs_dir::install_fonts();
     let args: Vec<String> = std::env::args().skip(1).collect();
     let r = match args.first().map(String::as_str) {
-        // `commands` and `info` take no options, so `--help` or `-h` anywhere after them prints the
-        // usage. The other subcommands check for it themselves.
-        Some("commands" | "info") if help_requested(&args[1..], &[]) => help(),
+        // `commands` and `info` take no options but `--search`, so `--help` or `-h` anywhere after
+        // them prints the usage. The other subcommands check for it themselves.
+        Some("commands" | "info") if help_requested(&args[1..], &["--search"]) => help(),
         Some("mcp") => mcp(&args[1..]),
         Some("run") => run(&args[1..]),
-        Some("commands") => commands(),
+        Some("commands") => commands(&args[1..]),
         Some("convert") => convert(&args[1..]),
         Some("info") => info(&args[1..]),
         Some("bench") => bench(&args[1..]),
@@ -216,26 +219,22 @@ fn mcp(args: &[String]) -> Result<(), String> {
     if help_requested(args, &["--connect", "--automation-read-root", "--automation-write-root"]) {
         return help();
     }
+    // The automation roots are the suite's (`craft_mcp::automation`), so one MCP client
+    // configuration reads the same flags in every Craft app.
+    let (root_flags, rest) = craft_mcp::automation::RootFlags::take(args)?;
     let mut connect: Option<String> = None;
     let mut headless = false;
-    let (mut read_roots, mut write_roots): (Vec<String>, Vec<String>) = (vec![], vec![]);
-    let mut it = args.iter();
+    let mut it = rest.into_iter();
     while let Some(a) = it.next() {
-        // The roots also come as `--flag=DIR`, as the other Craft apps take them.
-        let (flag, inline) = match a.split_once('=') {
-            Some((f, v)) if f.starts_with("--automation-") => (f, Some(v.to_string())),
-            _ => (a.as_str(), None),
-        };
-        match flag {
-            "--connect" => connect = Some(it.next().cloned().ok_or("--connect needs an address")?),
+        match a.as_str() {
+            // A bare port means loopback (`--connect 7979`); a host that isn't loopback is refused.
+            "--connect" => connect = Some(craft_mcp::remote::normalize_addr(&it.next().ok_or("--connect needs an address")?)?),
+            other if other.starts_with("--connect=") => connect = Some(craft_mcp::remote::normalize_addr(other.trim_start_matches("--connect="))?),
             "--headless" => headless = true,
-            "--automation-read-root" | "--automation-write-root" => {
-                let dir = inline.or_else(|| it.next().cloned()).ok_or_else(|| format!("{flag} needs a folder"))?;
-                if flag == "--automation-read-root" { read_roots.push(dir) } else { write_roots.push(dir) }
-            }
             other => return Err(format!("unknown mcp option `{other}`")),
         }
     }
+    let (read_roots, write_roots) = (root_flags.read, root_flags.write);
     if headless && connect.is_some() {
         return Err("use either --connect or --headless".into());
     }
@@ -271,9 +270,42 @@ fn mcp(args: &[String]) -> Result<(), String> {
     Server::new(backend).serve(std::io::BufReader::new(stdin), std::io::stdout()).map_err(|e| e.to_string())
 }
 
-fn commands() -> Result<(), String> {
+fn commands(args: &[String]) -> Result<(), String> {
+    if help_requested(args, &["--search"]) {
+        return help();
+    }
+    let mut search: Option<String> = None;
+    let mut it = args.iter();
+    while let Some(a) = it.next() {
+        match a.as_str() {
+            "--search" => search = Some(it.next().ok_or("--search needs text")?.clone()),
+            other => return Err(format!("unknown commands option `{other}`")),
+        }
+    }
     let mut h = Headless::new();
     let v = h.call("engine.commands", json!({}))?;
+    // `--search` narrows the catalogue by id, label or menu path, as the MCP `command_list`
+    // filter does; the shape stays the array `commands` prints, so scripts can pipe it.
+    let v = match search {
+        None => v,
+        Some(needle) => {
+            let needle = needle.to_lowercase();
+            let hit = |s: &str| s.to_lowercase().contains(&needle);
+            let kept: Vec<Value> = v
+                .as_array()
+                .map(|all| {
+                    all.iter()
+                        .filter(|c| {
+                            ["id", "label"].iter().any(|k| c.get(*k).and_then(Value::as_str).is_some_and(hit))
+                                || c.get("menu").and_then(Value::as_array).is_some_and(|m| m.iter().filter_map(Value::as_str).any(hit))
+                        })
+                        .cloned()
+                        .collect()
+                })
+                .unwrap_or_default();
+            Value::Array(kept)
+        }
+    };
     outln!("{}", serde_json::to_string_pretty(&v).unwrap_or_default());
     Ok(())
 }
@@ -404,88 +436,24 @@ enum Step {
     Export(String),
 }
 
-/// Most bytes `run --commands` reads from a file or standard input: the steps are untrusted input.
-const MAX_COMMANDS_BYTES: u64 = 64 * 1024 * 1024;
-/// Most steps one `run --commands` takes.
-const MAX_COMMANDS_STEPS: usize = 100_000;
-
-/// The text of `--commands source`: the file `source`, or standard input for `-`, refused past
-/// [`MAX_COMMANDS_BYTES`].
-fn read_commands(source: &str) -> Result<String, String> {
-    use std::io::Read;
-    let mut bytes = vec![];
-    let read = if source == "-" {
-        std::io::stdin().lock().take(MAX_COMMANDS_BYTES + 1).read_to_end(&mut bytes)
-    } else {
-        std::fs::File::open(source).and_then(|f| f.take(MAX_COMMANDS_BYTES + 1).read_to_end(&mut bytes))
-    };
-    read.map_err(|e| format!("--commands {source}: {e}"))?;
-    if bytes.len() as u64 > MAX_COMMANDS_BYTES {
-        return Err(format!("--commands {source}: more than {} MiB of steps", MAX_COMMANDS_BYTES / (1024 * 1024)));
-    }
-    String::from_utf8(bytes).map_err(|_| format!("--commands {source}: not UTF-8 text"))
+/// The text of a `--commands` / `--script` source: the file `source`, or standard input for `-`,
+/// refused past the suite's limit. `flag` names the option in errors (`--commands` or `--script`).
+fn read_commands(flag: &str, source: &str) -> Result<String, String> {
+    craft_mcp::script::read_source(source, craft_mcp::script::MAX_SOURCE_BYTES).map_err(|e| format!("{flag} {e}"))
 }
 
 /// The steps of `--commands source` from its `text`: a JSON array of `{"command": ID, "params":
 /// {…}}` objects (`"id"` may stand for `"command"`, as in MCP's `command_batch`), or one such object
 /// per line (JSON Lines, blank lines skipped). `first` is the run's index of the first of them
 /// (the `N` of `"$N"`), which an error names with the entry's place in the text.
-fn parse_commands(source: &str, text: &str, first: usize) -> Result<Vec<Step>, String> {
-    // Notepad on Windows starts UTF-8 files with a byte order mark.
-    let text = text.strip_prefix('\u{feff}').unwrap_or(text);
-    let too_many = || format!("--commands {source}: more than {MAX_COMMANDS_STEPS} steps");
-    // Each entry with where it is in the text: its line for JSON Lines.
-    let mut entries: Vec<(Option<usize>, Value)> = vec![];
-    if text.trim_start().starts_with('[') {
-        let v: Value = serde_json::from_str(text).map_err(|e| format!("--commands {source}: {e}"))?;
-        let Value::Array(items) = v else { return Err(format!("--commands {source}: not a JSON array")) };
-        if items.len() > MAX_COMMANDS_STEPS {
-            return Err(too_many());
-        }
-        entries.extend(items.into_iter().map(|v| (None, v)));
-    } else {
-        for (n, line) in text.lines().enumerate().filter(|(_, l)| !l.trim().is_empty()) {
-            if entries.len() == MAX_COMMANDS_STEPS {
-                return Err(too_many());
-            }
-            let v = serde_json::from_str(line).map_err(|e| format!("--commands {source}: step {} (line {}): {e}", first + entries.len(), n + 1))?;
-            entries.push((Some(n + 1), v));
-        }
-    }
-    entries
-        .into_iter()
-        .enumerate()
-        .map(|(k, (line, v))| {
-            command_step(v).map_err(|e| {
-                let place = line.map_or_else(|| format!("entry {}", k + 1), |l| format!("line {l}"));
-                format!("--commands {source}: step {} ({place}): {e}", first + k)
-            })
-        })
-        .collect()
-}
-
-/// The step of one `--commands` entry, `{"command": ID, "params": {…}}`.
-fn command_step(v: Value) -> Result<Step, String> {
-    let Value::Object(mut o) = v else { return Err("a step must be an object such as {\"command\": \"select.all\", \"params\": {}}".into()) };
-    let id = match (o.remove("command"), o.remove("id")) {
-        (Some(Value::String(id)), None) | (None, Some(Value::String(id))) => id,
-        (Some(_), Some(_)) => return Err("give `command` or `id`, not both".into()),
-        (None, None) => return Err("no `command`".into()),
-        _ => return Err("`command` must be a string, a command id".into()),
-    };
-    let params = match o.remove("params") {
-        None | Some(Value::Null) => json!({}),
-        Some(p @ Value::Object(_)) => p,
-        Some(_) => return Err(format!("`params` of {id} must be a JSON object")),
-    };
-    if let Some(key) = o.keys().next() {
-        return Err(format!("unknown key `{key}`: a step has `command` (or `id`) and `params`"));
-    }
-    Ok(Step::Cmd(id, params))
+fn parse_commands(flag: &str, source: &str, text: &str, first: usize) -> Result<Vec<Step>, String> {
+    let label = format!("{flag} {source}");
+    let steps = craft_mcp::script::parse_commands(&label, text, first)?;
+    Ok(steps.into_iter().map(|c| Step::Cmd(c.id, c.params)).collect())
 }
 
 fn run(args: &[String]) -> Result<(), String> {
-    let valued = ["--in", "-i", "--cmd", "-c", "--params", "-p", "--commands", "--export", "-o", "--scale", "-s"];
+    let valued = ["--in", "-i", "--cmd", "-c", "--params", "-p", "--commands", "--script", "--export", "-o", "--scale", "-s"];
     if help_requested(args, &valued) {
         return help();
     }
@@ -515,13 +483,14 @@ fn run(args: &[String]) -> Result<(), String> {
                     _ => return Err("--params must follow a --cmd".into()),
                 }
             }
-            "--commands" => {
+            "--commands" | "--script" => {
+                let flag = a.clone();
                 let source = val("a file, or - for standard input")?;
                 if source == "-" && std::mem::replace(&mut stdin_read, true) {
-                    return Err("--commands - is given twice: standard input is read once".into());
+                    return Err(format!("{flag} - is given twice: standard input is read once"));
                 }
-                let text = read_commands(&source)?;
-                let read = parse_commands(&source, &text, steps.len())?;
+                let text = read_commands(&flag, &source)?;
+                let read = parse_commands(&flag, &source, &text, steps.len())?;
                 steps.extend(read);
                 params_for = None;
             }

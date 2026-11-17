@@ -17,6 +17,9 @@ bundled-fonts = ["localvector-text/bundled-fonts"]
 [dependencies]
 # Which paths stored in documents may be opened.
 craft-docpath = { workspace = true }
+# The step references between batch steps (`"$N.path"`): one implementation for the CLI, the MCP
+# server and every other Craft app.
+craft-mcp = { workspace = true }
 localvector-geom = { workspace = true }
 localvector-color = { workspace = true }
 localvector-doc = { workspace = true }

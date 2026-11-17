@@ -744,3 +744,47 @@ fn runs_without_preferences_remember_nothing() {
     let r = run_in(&config, &[("pdf.preset.list", json!({}))]);
     assert!(r[0]["presets"].as_array().unwrap().iter().all(|p| p["builtIn"] == true));
 }
+
+/// `--script` is `--commands` under the name an agent's job file usually has: JSON Lines of
+/// steps, in order, each result printed as it ran.
+#[test]
+fn run_script_reads_a_job_file() {
+    let job = tmp("job.jsonl");
+    std::fs::write(&job, "{\"command\":\"file.new\",\"params\":{\"width\":120,\"height\":80}}\n{\"command\":\"select.all\"}\n").unwrap();
+    let out = Command::new(BIN).args(["run", "--script", job.to_str().unwrap()]).output().unwrap();
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    let printed = json_lines(&out.stdout);
+    assert_eq!(printed.len(), 2);
+    assert_eq!(printed[0]["command"], "file.new");
+    assert_eq!(printed[1]["command"], "select.all");
+}
+
+/// `commands --search` narrows the catalogue by id, label or menu path, keeping the array shape.
+#[test]
+fn commands_search_narrows_the_catalogue() {
+    let out = Command::new(BIN).arg("commands").output().unwrap();
+    assert!(out.status.success());
+    let all: Vec<Value> = serde_json::from_slice(&out.stdout).unwrap();
+    let out = Command::new(BIN).args(["commands", "--search", "star"]).output().unwrap();
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    let found: Vec<Value> = serde_json::from_slice(&out.stdout).unwrap();
+    assert!(!found.is_empty() && found.len() < all.len());
+    for cmd in &found {
+        let hit = |s: &str| s.to_lowercase().contains("star");
+        let matched = cmd["id"].as_str().is_some_and(hit)
+            || cmd["label"].as_str().is_some_and(hit)
+            || cmd["menu"].as_array().is_some_and(|m| m.iter().filter_map(Value::as_str).any(hit));
+        assert!(matched, "{} does not match `star`", cmd["id"]);
+    }
+}
+
+/// The suite's `--connect`: a bare port means loopback, and a host that isn't loopback is refused
+/// before anything is sent.
+#[test]
+fn mcp_connect_refuses_a_non_loopback_host() {
+    let out = Command::new(BIN).args(["mcp", "--connect", "0.0.0.0:7979"]).stdin(Stdio::null()).output().unwrap();
+    assert!(!out.status.success());
+    assert!(String::from_utf8_lossy(&out.stderr).contains("loopback only"));
+    let out = Command::new(BIN).args(["mcp", "--connect", "not-a-port"]).output().unwrap();
+    assert!(!out.status.success());
+}

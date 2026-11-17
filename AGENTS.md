@@ -105,6 +105,15 @@ doc de parâmetros, `enabled`, `run`) + testes. Tools emitem comandos (Begin/Pre
 Comandos só de UI vivem em `crates/ui-egui/src/menus.rs` (`UI_COMMANDS`). O control channel e o MCP
 alcançam todos eles.
 
+### Agent-native (MCP)
+Todo comando é alcançável por um agente pelo control channel e pelo MCP (`localvector-cli mcp`, ver
+`docs/mcp.md`). A plumbing compartilhada da suíte vive em `libs/craft-libs/crates/mcp` (crate
+`craft-mcp`, fonte no repo `local-libs`): framing JSON-RPC do servidor stdio, steps `"$N"` de
+batch/script, flags `--automation-read-root`/`--automation-write-root` e `--connect PORT`. Use-a em
+vez de escrever parser novo; continuam deste app o `crates/mcp` (tools, resources, prompts,
+cancelamento) e o confinement do engine. `run --script job.json` e `commands --search TEXT` são os
+mesmos caminhos sem cliente MCP.
+
 ### Cursor novo
 O app decide quais cursores existem. Para um estado de tool com cursor próprio: adicione a variante
 `Cursor` (`crates/tools/src/lib.rs`, com doc comment), devolva-a no `cursor()` da tool com teste,

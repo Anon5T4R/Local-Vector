@@ -1062,6 +1062,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "craft-mcp"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+]
+
+[[package]]
 name = "craft-pdf"
 version = "0.1.0"
 dependencies = [
@@ -3290,6 +3297,7 @@ dependencies = [
 name = "localvector-cli"
 version = "0.21.12"
 dependencies = [
+ "craft-mcp",
  "localvector-color",
  "localvector-doc",
  "localvector-engine",
@@ -3362,6 +3370,7 @@ dependencies = [
  "cfb",
  "chrono",
  "craft-docpath",
+ "craft-mcp",
  "crc32fast",
  "flate2",
  "hayro-jpeg2000",
