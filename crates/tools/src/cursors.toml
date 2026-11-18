@@ -2,7 +2,7 @@
 #
 # This is the source of truth for what each cursor is for, written for whoever draws them:
 # designers never decide what a cursor is for, this file does. `cargo xtask cursors` warns about
-# a `Cursor` value without an entry. Adding a cursor: CLAUDE.md › Adding a cursor.
+# a `Cursor` value without an entry. Adding a cursor: docs/development.md (cursors.toml).
 #
 #   app         the app's name as designers read it
 #   id          the `Cursor` variant's name (PenAdd), which names its drawing
