@@ -165,6 +165,35 @@
         <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".tiff" Value="" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Classes\Applications\localvector.exe\SupportedTypes" Name=".bmp" Value="" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\localvector.exe" Value="[#LocalVectorExe]" Type="string" />
+        <!-- Default Programs registration (Settings > Default apps): Capabilities + RegisteredApplications,
+             the same extensions as OpenWithProgids above. Only lists the app; never sets a default. -->
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities" Name="ApplicationName" Value="Local Vector" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities" Name="ApplicationDescription" Value="Open-source vector graphics editor" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities" Name="ApplicationIcon" Value="[#LocalVectorExe],0" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".vectorcraft" Value="LocalVector.Document" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".drawcraft" Value="LocalVector.Document" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".vctemplate" Value="LocalVector.Template" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".svg" Value="LocalVector.Svg" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".svgz" Value="LocalVector.Svg" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".pdf" Value="LocalVector.Pdf" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".ai" Value="LocalVector.Artwork" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".ait" Value="LocalVector.Artwork" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".eps" Value="LocalVector.Eps" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".af" Value="LocalVector.Affinity" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".afdesign" Value="LocalVector.Affinity" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".afpub" Value="LocalVector.Affinity" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".dxf" Value="LocalVector.Dxf" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".emf" Value="LocalVector.Metafile" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".wmf" Value="LocalVector.Metafile" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".png" Value="LocalVector.Image" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".jpg" Value="LocalVector.Image" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".jpeg" Value="LocalVector.Image" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".gif" Value="LocalVector.Image" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".webp" Value="LocalVector.Image" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".tif" Value="LocalVector.Image" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".tiff" Value="LocalVector.Image" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\LocalVector\Capabilities\FileAssociations" Name=".bmp" Value="LocalVector.Image" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\RegisteredApplications" Name="LocalVector" Value="Software\LocalVector\Capabilities" Type="string" />
         <!-- Where this MSI installed the app. The app's own updater reads it (HKLM here) under the
              suite's key to know this is an MSI install, so it updates with the new MSI rather than
              the portable zip. -->

@@ -57,6 +57,24 @@
   </supports>
   <provides>
     <binary>localvector</binary>
+    <mediatype>image/svg+xml</mediatype>
+    <mediatype>application/pdf</mediatype>
+    <mediatype>application/x-vectorcraft</mediatype>
+    <mediatype>image/svg+xml-compressed</mediatype>
+    <mediatype>application/illustrator</mediatype>
+    <mediatype>application/x-ai-template</mediatype>
+    <mediatype>image/png</mediatype>
+    <mediatype>image/jpeg</mediatype>
+    <mediatype>image/gif</mediatype>
+    <mediatype>image/webp</mediatype>
+    <mediatype>image/tiff</mediatype>
+    <mediatype>image/bmp</mediatype>
+    <mediatype>application/x-vectorcraft-template</mediatype>
+    <mediatype>image/vnd.dxf</mediatype>
+    <mediatype>image/emf</mediatype>
+    <mediatype>image/wmf</mediatype>
+    <mediatype>image/x-eps</mediatype>
+    <mediatype>application/x-affinity</mediatype>
   </provides>
   <content_rating type="oars-1.1"/>
   <releases>
