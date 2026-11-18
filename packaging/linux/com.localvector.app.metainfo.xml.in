@@ -61,7 +61,7 @@
     <mediatype>application/pdf</mediatype>
     <mediatype>application/x-vectorcraft</mediatype>
     <mediatype>image/svg+xml-compressed</mediatype>
-    <mediatype>application/illustrator</mediatype>
+    <mediatype>application/illustrator</mediatype> <!-- shared-mime-info type name, brand-ok -->
     <mediatype>application/x-ai-template</mediatype>
     <mediatype>image/png</mediatype>
     <mediatype>image/jpeg</mediatype>
