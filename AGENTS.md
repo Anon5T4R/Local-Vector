@@ -12,8 +12,8 @@ App de ilustração vetorial: roda nativo em macOS, Windows, Linux e FreeBSD, e 
   Tudo vem do crates.io (pinado pelo lock) ou de `libs/` (vendored).
 - **Commits:** português, sem Co-Authored-By.
 - **Release:** tag `vX.Y.Z` → o Actions builda e publica. Mínimo local.
-- **Disco local:** nunca deixe `target/` para trás — `cargo clean` após uso local;
-  builds pesados são do CI.
+- **Disco:** no workspace do João vale a política de `target/` do dev-notes (`MEMORY.md` §4 — limpa o que
+  está frio ou feito, mantém durante iteração ativa); fora dele, `cargo clean` ao terminar. Builds pesados são do CI.
 
 ## Estrutura
 - `crates/` — motor e módulos (`localvector-*`), em camadas L0–L6 (`cargo xtask layers`)
