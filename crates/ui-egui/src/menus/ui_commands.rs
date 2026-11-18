@@ -562,7 +562,7 @@ pub const UI_COMMANDS: &[(&str, &str, &str, &str)] = &[
         "",
         "{collapsed?: bool} collapse every expanded dock column to icons (true), expand the outer dock column, Properties | Layers | Libraries (false), or toggle the outer column (omitted), as the double arrow at the top of the dock does; returns the new state",
     ),
-    ("window.brightness", "UI Brightness", "", "{brightness: dark|mediumDark|mediumLight|light}"),
+    ("window.brightness", "UI Brightness", "", "{brightness: system|dark|mediumDark|mediumLight|light}"),
     (
         "window.workspace",
         "Workspace",

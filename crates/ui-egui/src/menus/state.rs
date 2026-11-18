@@ -86,7 +86,14 @@ pub fn checked(app: &LocalvectorApp, id: &str, p: &Value) -> Option<bool> {
         }
         "window.collapseDock" => crate::panel_docking::dock_collapsed(&app.ui),
         "window.workspace" => p.get("name").and_then(Value::as_str) == Some(app.ui.workspace.as_str()),
-        "window.brightness" => p.get("brightness").and_then(Value::as_str).and_then(Brightness::parse) == Some(app.ui.brightness),
+        "window.brightness" => {
+            let want = p.get("brightness").and_then(Value::as_str);
+            if app.session.prefs.ui_brightness == Brightness::SYSTEM_ID {
+                want.is_some_and(|b| b.eq_ignore_ascii_case(Brightness::SYSTEM_ID))
+            } else {
+                want.and_then(Brightness::parse) == Some(app.ui.brightness)
+            }
+        }
         "view.slices.lock" => app.session.slices_locked(),
         "object.slice.clipToArtboard" => app.session.active().is_some_and(|d| d.doc.slices_clip_to_artboard),
         "view.proofColors" => localvector_render::proof::view().proof_colors,

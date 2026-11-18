@@ -62,8 +62,11 @@ pub fn snapshot(app: &mut LocalvectorApp) {
 pub fn restore(app: &mut LocalvectorApp) {
     let mut p: Prefs = serde_json::from_value(app.ui.engine_prefs.clone()).unwrap_or_default();
     if app.ui.engine_prefs.is_null() {
-        // Older preference files: keep the saved brightness.
-        p.ui_brightness = app.ui.brightness.id().into();
+        // Older preference files: keep the saved brightness (a brightness never changed from the
+        // default reads as a first run, which follows the system).
+        if app.ui.brightness != Brightness::default() {
+            p.ui_brightness = app.ui.brightness.id().into();
+        }
     }
     // Older preference files kept the interface language with the UI state; English was the
     // default there, so only another language is carried over (onto an unset preference).
@@ -110,7 +113,10 @@ fn canvas_color(key: &str) -> Option<egui::Color32> {
 /// Per frame: push UI-side preferences into egui / the renderer when they change.
 pub fn apply_runtime(app: &mut LocalvectorApp, ctx: &egui::Context) {
     let p = &app.session.prefs;
-    if let Some(b) = Brightness::parse(&p.ui_brightness)
+    // "System" follows the OS (Dark or Light); it keeps the current brightness while the OS says nothing.
+    let wanted =
+        if p.ui_brightness == Brightness::SYSTEM_ID { ctx.system_theme().map(Brightness::for_system) } else { Brightness::parse(&p.ui_brightness) };
+    if let Some(b) = wanted
         && b != app.ui.brightness
     {
         app.ui.brightness = b;

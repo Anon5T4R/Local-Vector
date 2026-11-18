@@ -371,8 +371,10 @@ fn language_node(app: &LocalvectorApp, lang: Lang) -> Node {
 
 /// Appearance in the app menu (the UI-brightness theme, as Mac apps call it).
 fn appearance_node(app: &LocalvectorApp, lang: Lang) -> Node {
-    let children =
-        Brightness::ALL.iter().map(|b| Node::Item(native_item(app, b.label(), "window.brightness", json!({"brightness": b.id()})))).collect();
+    let system = Node::Item(native_item(app, "System", "window.brightness", json!({"brightness": Brightness::SYSTEM_ID})));
+    let children = std::iter::once(system)
+        .chain(Brightness::ALL.iter().map(|b| Node::Item(native_item(app, b.label(), "window.brightness", json!({"brightness": b.id()})))))
+        .collect();
     Node::Submenu { label: tr_ctx(lang, "theme", "Appearance").into(), children }
 }
 

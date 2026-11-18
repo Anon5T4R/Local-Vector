@@ -32,6 +32,16 @@ impl Brightness {
             Brightness::Light => "light",
         }
     }
+    /// The `uiBrightness` preference value that follows the operating system: Dark when it is dark, Light otherwise.
+    pub const SYSTEM_ID: &'static str = "system";
+
+    /// The brightness "System" resolves to for the OS's light/dark setting.
+    pub fn for_system(theme: egui::Theme) -> Self {
+        match theme {
+            egui::Theme::Dark => Brightness::Dark,
+            egui::Theme::Light => Brightness::Light,
+        }
+    }
     pub fn parse(s: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|b| b.id().eq_ignore_ascii_case(s) || b.label().eq_ignore_ascii_case(s))
     }

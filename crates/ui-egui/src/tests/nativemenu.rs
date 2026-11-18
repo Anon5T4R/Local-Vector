@@ -144,7 +144,7 @@ fn language_and_appearance_are_in_the_app_menu() {
         }
     }
     let appearance: Vec<(&'static str, Option<bool>)> = items(submenu(app_menu, "Appearance")).iter().map(|it| (it.source, it.checked)).collect();
-    assert_eq!(appearance.len(), crate::theme::Brightness::ALL.len());
+    assert_eq!(appearance.len(), crate::theme::Brightness::ALL.len() + 1, "System, then the four brightness levels");
     assert_eq!(appearance.iter().filter(|(_, c)| *c == Some(true)).count(), 1, "{appearance:?}");
     assert!(appearance.iter().all(|(_, c)| c.is_some()));
 }

@@ -535,6 +535,12 @@ fn run_ui_part6(app: &mut LocalvectorApp, id: &str, p: &Value) -> Option<Result<
             }
             Ok(json!(on))
         }
+        "window.brightness" if s("brightness").as_deref().is_some_and(|b| b.eq_ignore_ascii_case(Brightness::SYSTEM_ID)) => {
+            // The OS's light/dark setting decides; `apply_runtime` sets the brightness from it.
+            app.session.prefs.ui_brightness = Brightness::SYSTEM_ID.into();
+            app.canvas.key = None;
+            Ok(json!(Brightness::SYSTEM_ID))
+        }
         "window.brightness" => match s("brightness").as_deref().and_then(Brightness::parse) {
             Some(b) => {
                 app.ui.brightness = b;
