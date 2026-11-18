@@ -27,6 +27,9 @@ craft-update = { version = "=0.1.0", path = "libs/craft-libs/crates/update/", fe
 # Shared MCP plumbing (server skeleton, job/batch scripts, automation root flags); source of truth
 # in the suite's local-libs repo, vendored here and replicated by its sync.ps1.
 craft-mcp = { path = "libs/craft-libs/crates/mcp/" }
+# Linux: the desktop's light/dark choice reaches `ctx.system_theme()` (winit reports none there);
+# source of truth in local-libs, vendored here and replicated by its sync.ps1.
+craft-desktop-theme = { path = "libs/craft-libs/crates/desktop-theme/" }
 # internal
 localvector-geom = { path = "crates/geom" }
 localvector-color = { path = "crates/color" }

@@ -36,6 +36,7 @@ webbrowser = { workspace = true }
 # The window's monitors, size and position (the same winit eframe runs on).
 winit = { version = "0.30", default-features = false }
 craft-print = { workspace = true }
+craft-desktop-theme = { workspace = true }
 
 [target.'cfg(windows)'.dependencies]
 craft-update = { workspace = true }

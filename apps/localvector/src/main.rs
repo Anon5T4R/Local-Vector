@@ -385,6 +385,8 @@ fn main() -> std::process::ExitCode {
             options,
             Box::new(move |cc| {
                 LocalvectorApp::install_ime_reset_hooks(&cc.egui_ctx);
+                // Linux: the desktop's light/dark choice, which winit does not report.
+                craft_desktop_theme::follow(&cc.egui_ctx);
                 let mut session = Session::new();
                 // The profiles loaded before come back before the preferences name any of them.
                 prefs_dir::attach_profile_store(&mut session);
