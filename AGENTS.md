@@ -24,12 +24,14 @@ App de ilustração vetorial: roda nativo em macOS, Windows, Linux e FreeBSD, e 
   linha em `ASSETS.md`
 - `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar FHS com `install.sh`), Arch (PKGBUILD), macOS, FreeBSD, web
 - `docs/` — arquitetura, formatos, paridade, release
-- `xtask/` — tarefas de build/CI (`cargo xtask ci`, `layers`, `wasm`, `assets`)
+- `scripts/check-mirror.sh` — confere as crates e os assets (`craft-fonts`) espelhados do `local-libs` contra a fonte (CI e `xtask ci`)
+- `xtask/` — tarefas de build/CI (`cargo xtask ci`, `fmt`, `layers`, `wasm`, `assets`)
 
 ## Build
 ```
 cargo build --locked          # debug
-cargo test --locked           # testes
+cargo test --locked           # testes (as fontes vendored entram sempre: .cargo/config.toml, igual ao CI)
+cargo xtask ci                # o gate local: fmt, clippy, testes, fontes embutidas, assets, camadas, cargo-deny, espelhos do local-libs, wasm
 packaging/windows/package.ps1 # MSI + portable (Windows)
 packaging/linux/package.sh    # AppImage/deb/rpm/tar (Linux)
 ```
