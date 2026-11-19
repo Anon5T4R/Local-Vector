@@ -4,7 +4,7 @@ Status (2026-10-24): implemented locally and independently accepted with scope i
 Managed `egui037-fonts-devanagari-20261024-tests-01` passed 4 embedded-library and 30 font tests
 with all features and strict all-target/all-feature clippy. `egui037-fonts-devanagari-20261024-final-02`
 passed formatting, default workspace tests (3 library plus 30 font tests) and the explicit embedded
-configuration (4 library tests). PhotoCraft's required-font UI acceptance is tracked separately;
+configuration (4 library tests). LocalPaint's required-font UI acceptance is tracked separately;
 these results prove asset and glyph coverage, not native Devanagari shaping quality.
 
 This follows local prerequisite `b4ce3ee090ea4b06791e9501ea2f8e6f746d5cd3` and uses its own
@@ -15,7 +15,7 @@ Plan and implementation reviews are retained in the migration evidence as
 
 ## Failure evidence
 
-PhotoCraft's Camera Raw language-switch integration test recorded `131 passed; 1 failed; 1 ignored`
+LocalPaint's Camera Raw language-switch integration test recorded `131 passed; 1 failed; 1 ignored`
 because the strict font check cannot render Hindi `फ़ा` (U+092B U+093C U+093E):
 
 ```text
@@ -24,11 +24,11 @@ Installed fonts: ["Inter", ..., "craft-font-0", … "craft-font-11"]
 test result: FAILED. 131 passed; 1 failed; 1 ignored
 ```
 
-The failing job is `egui037-photocraft-candidate-20261024-integration-tests-19`; its status JSON is
-`/home/codex/work/ssd2/task-evidence/egui037-migration-20261022/egui037-photocraft-candidate-20261024-integration-tests-19-status.json`.
+The failing job is `egui037-localpaint-candidate-20261024-integration-tests-19`; its status JSON is
+`/home/codex/work/ssd2/task-evidence/egui037-migration-20261022/egui037-localpaint-candidate-20261024-integration-tests-19-status.json`.
 The test exercises real translated labels and preserves document/filter state. Keep it strict,
 keep every registered `i18n::Lang::all()` language (currently 22; the legacy test name
-`all_seven_languages…` is misleading). PhotoCraft forbids vendored font files, so the font belongs
+`all_seven_languages…` is misleading). LocalPaint forbids vendored font files, so the font belongs
 in this central repository and is consumed through `CRAFT_FONTS_DIR`.
 
 ## Font choice and provenance
@@ -76,8 +76,8 @@ Noto Sans Devanagari | Regular | fonts/noto-sans-devanagari/NotoSansDevanagari-R
 ```
 
 `Deva` is the correct scripts field; the font's family is exactly `Noto Sans Devanagari`, matching
-PhotoCraft's `DEVANAGARI_FAMILIES`. Appending after Hebrew preserves existing consumer
-`craft-font-N` indices; the new face becomes `craft-font-12` in PhotoCraft's eager registration.
+LocalPaint's `DEVANAGARI_FAMILIES`. Appending after Hebrew preserves existing consumer
+`craft-font-N` indices; the new face becomes `craft-font-12` in LocalPaint's eager registration.
 
 This follows the existing Arabic/Thai/Georgian/Hebrew script fallbacks: consumers that embed the
 default set gain 277,680 font bytes. Explicit app web allowlists stay explicit. Do not broaden
@@ -121,15 +121,15 @@ prefix so the managed filter can select them:
   draws no outline, so skip whitespace for the outline assertions). Optionally and additionally
   assert all `U+0900..=U+097F` map to drawn outlines; this is true for the pinned file.
 - State explicitly that these are glyph-coverage assertions, not proof of Devanagari
-  shaping/conjunct positioning; the PhotoCraft Camera Raw test exercises the real shaping path.
+  shaping/conjunct positioning; the LocalPaint Camera Raw test exercises the real shaping path.
 - Assert `Noto Sans Devanagari` is absent from `fonts/simplified-chinese-manifest.txt`, keeping the
   optional Chinese manifest independent.
 
-## PhotoCraft production-wiring check
+## LocalPaint production-wiring check
 
 Add a small assertion to the existing Camera Raw language-switch test, not a new broad test suite:
 
-- Assert `photocraft_text::craft_fonts::CRAFT_FONTS` contains exactly one
+- Assert `localpaint_text::craft_fonts::CRAFT_FONTS` contains exactly one
   `Noto Sans Devanagari` / `Regular` row with `Deva` scripts and non-empty bytes. This exact-row
   assertion prevents a system Devanagari font from masking a missing central row.
 - Assert the production UI stack has glyphs for `फ़ा` (for example with the context's font
@@ -141,7 +141,7 @@ Add a small assertion to the existing Camera Raw language-switch test, not a new
 
 ## Consumer pins
 
-PhotoCraft currently pins `craft-fonts-ref: abb83316d96aa59c1cf64784289e378fe9fa5695` in `ci.yml`,
+LocalPaint currently pins `craft-fonts-ref: abb83316d96aa59c1cf64784289e378fe9fa5695` in `ci.yml`,
 `release.yml` and `freebsd.yml`. Do not change those to an unpushed local SHA. After the reviewed
 central commit exists and is published with explicit approval, update all three pins to the
 published full SHA. The exact pin remains a publication gate; do not guess a path-only lock or
@@ -167,14 +167,14 @@ cargo test -p craft-fonts --features embed --locked
 cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
 cargo fmt --all --check
 
-# PhotoCraft, with the central checkout and required input
+# LocalPaint, with the central checkout and required input
 CRAFT_FONTS_DIR=<central-checkout> CRAFT_FONTS_REQUIRED=1 \
-  cargo test -p photocraft-ui-egui --test it \
+  cargo test -p localpaint-ui-egui --test it \
   camera_raw_localization::all_seven_languages_render_camera_raw_and_switch_without_resetting_view_or_filter -- --exact
 CRAFT_FONTS_DIR=<central-checkout> CRAFT_FONTS_REQUIRED=1 \
-  cargo test -p photocraft-ui-egui --test it
+  cargo test -p localpaint-ui-egui --test it
 CRAFT_FONTS_DIR=<central-checkout> CRAFT_FONTS_REQUIRED=1 \
-  cargo clippy -p photocraft-ui-egui --all-targets -- -D warnings
+  cargo clippy -p localpaint-ui-egui --all-targets -- -D warnings
 ```
 
 ## Limitations

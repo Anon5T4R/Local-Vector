@@ -130,6 +130,60 @@ include!(concat!(env!("OUT_DIR"), "/craft_fonts.rs"));
 `CRAFT_FONTS` is always defined, so there is no `cfg` to thread through: an empty slice means the
 app was built without craft-fonts. Code that uses it must work when it is empty.
 
+## Optional: the Latin presentation fonts (`fonts/latin-manifest.txt`)
+
+`fonts/latin-manifest.txt` is a **second, opt-in manifest** in exactly the same format as
+`fonts/manifest.txt` (same 8 fields, same parser in `crates/craft-fonts/src/parse.rs`). It lists
+the Latin presentation catalog: Inter, the metric-compatible Office substitutes (Carlito for
+Calibri, Caladea for Cambria, Liberation Sans / Serif / Mono for Arial / Times New Roman /
+Courier New), Source Sans 3, Source Serif 4, Montserrat, Lato, Open Sans, Roboto, Merriweather,
+Playfair Display, Poppins and Nunito Sans. The central catalog is **16 families, 51 faces, about
+19.5 MiB** (20,417,364 bytes of font files). The fonts are listed in `README.md` and
+`ATTRIBUTION.md`.
+
+The recipe above reads only `fonts/manifest.txt`, so **apps that don't opt in are unchanged**. An
+app that wants these fonts reads the second manifest too, in addition to the first. Generalise
+`craft_fonts` to take the manifest path and its web allowlist, and call it once per manifest:
+
+```rust
+/// Manifests this app embeds, each with the (family, style) pairs its wasm32 build keeps.
+const MANIFESTS: &[(&str, &[(&str, &str)])] = &[
+    ("fonts/manifest.txt", &[("BIZ UDPGothic", "Regular")]),
+    // Opt in to the Latin catalog; on the web keep only Inter Regular + Bold.
+    ("fonts/latin-manifest.txt", &[("Inter", "Regular"), ("Inter", "Bold")]),
+];
+
+// In main(), match on this instead of on craft_fonts(&dir) (same Ok/Err handling):
+//     MANIFESTS.iter().map(|(rel, web)| craft_fonts(&dir, rel, web)).collect::<Result<String, String>>()
+// and in craft_fonts(dir, rel, web): read dir.join(rel) instead of "fonts/manifest.txt",
+// and use `web` instead of WEB_FONTS.
+```
+
+- **Consumer filter (required for some apps).** Eight faces are Adobe-authored: Source Sans 3
+  (4) and Source Serif 4 (4), 2,594,420 bytes. They remain in the central catalog and are valid
+  OFL-1.1 assets, but a consumer that must not embed Adobe-authored faces skips those two
+  families, leaving **43** permitted Latin faces. DeckCraft already excludes them; FigCraft adds
+  the same family filter in its own `build.rs`. The main manifest is unaffected.
+- **Styles.** Most families are static files (`Regular`, `Bold`, `Italic`, `Bold Italic`,
+  `SemiBold` / `Semibold` as each family names it). Montserrat, Open Sans, Roboto, Playfair
+  Display and Nunito Sans are variable fonts, one file per upright/italic, listed with style
+  `Variable` or `Italic Variable`: register them once and select weights through the `wght` axis
+  (set it explicitly, e.g. 400 / 700: a variable font's default instance isn't always Regular).
+  The tests check that exactly these styles have a `wght` axis with a real range containing 400.
+- **Scripts.** Every line is tagged `Latn` (many also cover Greek and Cyrillic, but nothing
+  asserts that, so don't rely on it).
+- **Office documents.** When a document asks for Calibri, Cambria, Arial, Times New Roman or
+  Courier New and the system doesn't have it, substitute Carlito, Caladea, Liberation Sans,
+  Liberation Serif or Liberation Mono: same advance widths, so line breaks and text boxes match.
+- **Web (wasm32).** Embed only **Inter Regular and Inter Bold** (~0.8 MB) from this manifest, as
+  in the allowlist above; the full catalog would push a web build past typical per-file hosting
+  limits together with the main manifest's fonts.
+- **Licences.** All are OFL-1.1 and each family directory has its `OFL.txt`, so the packaging rule
+  below (copy `fonts/*/OFL.txt` for each embedded font) covers them unchanged.
+- From Rust tools that can depend on this repo, the same table is `craft_fonts::LATIN_FONTS`
+  (`load_latin`, feature `embed-latin`). The default `FONTS` table and `embed` feature remain
+  exactly `fonts/manifest.txt`.
+
 ## Optional native-only manifest
 
 `fonts/simplified-chinese-manifest.txt` uses the same eight-field format and parser, but it is a
@@ -144,9 +198,10 @@ separate opt-in input. Read it only for non-wasm builds, after the main manifest
   manifest. An optional-manifest error must never discard the main fonts.
 - **Required mode still needs a directory.** `CRAFT_FONTS_REQUIRED=1` with no `CRAFT_FONTS_DIR`
   is a build error, as in the recipe above.
-- **Not in `FONTS`/embed.** `craft-fonts`' static table and `embed` feature cover only
-  `fonts/manifest.txt`; the optional row does not appear there. Apps supply their own static
-  initializer from the parsed optional file.
+- **Not in `FONTS`/embed.** `craft-fonts`' default `FONTS` table and `embed` feature cover
+  only `fonts/manifest.txt`; the optional row appears in neither that table nor
+  `LATIN_FONTS`/`embed-latin`. Apps supply their own static initializer from the parsed
+  optional file.
 - **Native fallback order.** Append `LXGW WenKai Lite` / `Regular` after the existing native
   families, so it fills characters they lack without taking precedence over BIZ for characters
   BIZ already covers. It is a per-character fallback, not a promise of uniform Chinese
@@ -178,7 +233,7 @@ one static weight-400 face without `fvar`/`avar`/`STAT`, outlines for `简体中
   acceptance text is unpointed, e.g. `שלום deck 42`; shaping needs separate app-level checks.
   Devanagari coverage likewise means each codepoint has a drawn outline: the font-only tests
   do not qualify conjunct formation or mark positioning, which need app-level shaping checks
-  such as PhotoCraft's Camera Raw language-switch test with `फ़ा` (U+092B U+093C U+093E).
+  such as LocalPaint's Camera Raw language-switch test with `फ़ा` (U+092B U+093C U+093E).
 - **Document text engines:** register the same permitted script and symbol faces after the
   document's requested font and the app's existing fallback faces. Preserve the app's asset
   exclusions, and do not treat a script tag as proof that every character in that script exists.
@@ -227,9 +282,10 @@ craft-fonts' `ATTRIBUTION.md`.
 ## Adding a font
 
 1. Put the file and its licence under `fonts/<family>/`, from a pinned upstream commit.
-2. Add a manifest line (with its SHA-256) and an `ATTRIBUTION.md` row. A face that only some
-   native consumers should embed belongs in `fonts/simplified-chinese-manifest.txt`, not the
-   default `fonts/manifest.txt`.
+2. Add a manifest line (with its SHA-256) and an `ATTRIBUTION.md` row. A Latin presentation face
+   belongs in `fonts/latin-manifest.txt`; a face that only some native consumers should embed
+   belongs in `fonts/simplified-chinese-manifest.txt`; neither belongs in the default
+   `fonts/manifest.txt`.
 3. `cargo test --workspace`: `craft-fonts-tests` checks the checksum, licence, family and style
    names, and, for Japanese fonts, coverage and vertical-text support. Add exact ISO 15924
    script assertions for any new face. Coverage tests may claim only glyphs the face really
