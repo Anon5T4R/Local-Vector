@@ -3,6 +3,7 @@ name = "localvector-brush"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 description = "Local Vector brushes: calligraphic, scatter, art, pattern and bristle brush definitions and stroke geometry"
 
 [lints]

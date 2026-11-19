@@ -3,6 +3,7 @@ name = "localvector-tools"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 description = "Local Vector tool state machines: pointer events in, commands and overlays out"
 
 [lints]

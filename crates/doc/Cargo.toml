@@ -3,6 +3,7 @@ name = "localvector-doc"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 description = "Local Vector document model: artboards, layers, objects, appearance (pure data + serde)"
 
 [lints]

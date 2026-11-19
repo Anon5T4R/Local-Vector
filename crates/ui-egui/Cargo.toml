@@ -3,6 +3,7 @@ name = "localvector-ui-egui"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 description = "Local Vector egui frontend (menus, panels, tools and canvas); swappable — nothing below depends on it"
 
 [lints]

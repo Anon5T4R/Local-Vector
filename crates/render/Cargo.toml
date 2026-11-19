@@ -3,6 +3,7 @@ name = "localvector-render"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 description = "Local Vector renderer: document to pixels (vello_cpu backend)"
 
 [lints]

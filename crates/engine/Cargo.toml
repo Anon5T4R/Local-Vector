@@ -3,6 +3,7 @@ name = "localvector-engine"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 description = "Local Vector engine: sessions, history, selection, the command registry"
 
 [lints]
