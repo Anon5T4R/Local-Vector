@@ -1061,6 +1061,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "craft-icons"
+version = "0.1.0"
+dependencies = [
+ "egui",
+]
+
+[[package]]
 name = "craft-keymap"
 version = "0.1.0"
 dependencies = [
@@ -1074,6 +1081,13 @@ name = "craft-mcp"
 version = "0.1.0"
 dependencies = [
  "serde_json",
+]
+
+[[package]]
+name = "craft-palette"
+version = "0.1.0"
+dependencies = [
+ "egui",
 ]
 
 [[package]]
@@ -3712,7 +3726,9 @@ name = "localvector-ui-egui"
 version = "0.22.4"
 dependencies = [
  "bytemuck",
+ "craft-icons",
  "craft-keymap",
+ "craft-palette",
  "craft-ui",
  "craft-update",
  "egui",

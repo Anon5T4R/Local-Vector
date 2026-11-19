@@ -33,6 +33,10 @@ craft-mcp = { path = "libs/craft-libs/crates/mcp/" }
 # Linux: the desktop's light/dark choice reaches `ctx.system_theme()` (winit reports none there);
 # source of truth in local-libs, vendored here and replicated by its sync.ps1.
 craft-desktop-theme = { path = "libs/craft-libs/crates/desktop-theme/" }
+# The suite's icons for shared concepts (theme, settings, help, search…) and the theme button; the command
+# palette. Source of truth in local-libs, vendored here and replicated by its sync.ps1.
+craft-icons = { path = "libs/craft-libs/crates/icons/", features = ["egui"] }
+craft-palette = { path = "libs/craft-libs/crates/palette/" }
 # internal
 localvector-geom = { path = "crates/geom" }
 localvector-color = { path = "crates/color" }
