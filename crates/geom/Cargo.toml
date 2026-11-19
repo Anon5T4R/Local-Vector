@@ -12,7 +12,6 @@ workspace = true
 [dependencies]
 kurbo = { workspace = true }
 serde = { workspace = true }
-thiserror = { workspace = true }
 
 [dev-dependencies]
 localvector-testkit = { workspace = true }
