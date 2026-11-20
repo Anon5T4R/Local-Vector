@@ -188,6 +188,8 @@ pub struct LocalvectorApp {
     /// Last window title sent to the OS (`ViewportCommand::Title`, see `chrome::sync_window_title`):
     /// sent again only when it changes, so idle frames don't spam the backend.
     pub(crate) last_window_title: String,
+    /// The suite's command palette (`craft-palette`); `ui.palette_open` is its open flag for the rest of the app.
+    pub(crate) palette_box: craft_palette::Palette,
     /// Whether a screen mode put the window full screen (`chrome::sync_fullscreen`), so Normal
     /// Screen Mode takes it back out, and leaves a window the user made full screen as it is.
     pub(crate) fullscreen_for_mode: bool,

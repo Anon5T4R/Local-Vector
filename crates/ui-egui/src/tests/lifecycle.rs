@@ -438,7 +438,10 @@ fn stock_field_and_focus_loss_retire_custom_fences_without_consuming_stock_text(
     ime_frame(&mut app, &ctx, vec![], |_| {});
     let stock = ime_frame(&mut app, &ctx, vec![Event::ImeResetCompleted { request_id: first }, Event::Text("xyz".into())], |_| {})
         .expect("the palette's stock TextEdit publishes its descriptor");
-    assert!(app.ui.palette_query.contains("xyz"), "controls-only routing leaves stock text intact");
+    // The palette's field is the one with the keyboard: its caret stands after the three letters typed.
+    let field = ctx.memory(|memory| memory.focused()).expect("the palette's field has the keyboard");
+    let caret = egui::TextEdit::load_state(&ctx, field).and_then(|state| state.cursor.char_range()).map(|range| range.primary.index.0);
+    assert_eq!(caret, Some(3), "controls-only routing leaves stock text intact");
     let view = app.view_info();
     assert_ne!(stock.owner, crate::ime::target(&mut app.session, view).unwrap().owner);
     assert!(stock.reset_request.is_none(), "the stock descriptor never carries the custom fence");

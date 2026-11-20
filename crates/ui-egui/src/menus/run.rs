@@ -607,7 +607,6 @@ fn run_ui_part7(app: &mut LocalvectorApp, id: &str, p: &Value) -> Option<Result<
         "help.checkForUpdates" => crate::updates_ui::check(app),
         "help.commandPalette" => {
             app.ui.palette_open = !app.ui.palette_open;
-            app.ui.palette_query.clear();
             Ok(Value::Null)
         }
         // Closing asks Save / Don't Save / Cancel for modified documents first (`unsaved`).

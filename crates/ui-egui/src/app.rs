@@ -116,6 +116,7 @@ impl LocalvectorApp {
             hover_doc: None,
             custom_titlebar: false,
             last_window_title: String::new(),
+            palette_box: craft_palette::Palette::default(),
             fullscreen_for_mode: false,
             graphics_adapter: None,
             place: Default::default(),

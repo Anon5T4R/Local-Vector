@@ -452,8 +452,9 @@ pub struct UiState {
     /// Last tool shown for each toolbar group (flyout selection sticks).
     pub group_tool: Vec<String>,
     pub status: String,
+    /// The command palette is open: the flag the menus, the shortcuts and the control channel set; the box follows it
+    /// ([`crate::palette::show`]).
     pub palette_open: bool,
-    pub palette_query: String,
     /// Screen mode: 0 normal, 1 full screen with menu, 2 full screen, 3 presentation. Not saved:
     /// the app always starts in Normal Screen Mode, with its menus and panels (#472: a saved
     /// Presentation Mode came back on restart with no way out).
@@ -941,7 +942,6 @@ impl Default for UiState {
             group_tool: localvector_tools::TOOL_GROUPS.iter().map(|g| g[0].id.to_string()).collect(),
             status: String::new(),
             palette_open: false,
-            palette_query: String::new(),
             screen_mode: 0,
             tiled: false,
             draw_mode: 0,

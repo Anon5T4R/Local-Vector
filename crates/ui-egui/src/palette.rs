@@ -1,13 +1,16 @@
-//! The command palette: fuzzy search over every command and tool.
+//! The command palette (the search icon of the application bar, Help › Search Commands…): every command and tool,
+//! in the suite's `craft-palette` box. It lists what the menus list (and the commands that have no menu), with the
+//! menu path as the group, the shortcut and the enabled state the menu shows, and runs the pick through the same
+//! code as the menu ([`menus::invoke`]).
 
 use std::sync::Arc;
 
+use craft_palette::{Command, Labels};
 use serde_json::json;
 
-use crate::theme::Tokens;
 use crate::{LocalvectorApp, menus};
 
-/// Everything the palette searches: (label, command id or `tool:<id>`, shortcut).
+/// Everything the palette lists: (label with its menu path, command id or `tool:<id>`, shortcut).
 pub fn items() -> Vec<(String, String, String)> {
     let mut items = vec![];
     // Aliases kept for older scripts run a command that is listed already.
@@ -16,13 +19,50 @@ pub fn items() -> Vec<(String, String, String)> {
         let label = if path.is_empty() { c.label.to_string() } else { format!("{path} › {}", c.label) };
         items.push((label, c.id.to_string(), menus::shortcut_of(c.id).unwrap_or("").to_string()));
     }
-    for c in menus::UI_COMMANDS {
+    // UI Brightness takes the level as a parameter, which a pick cannot give: each level is listed on its own
+    // ([`BRIGHTNESS`]).
+    for c in menus::UI_COMMANDS.iter().filter(|c| c.0 != "window.brightness") {
         items.push((c.1.to_string(), c.0.to_string(), menus::shortcut_of(c.0).unwrap_or("").to_string()));
     }
+    items.extend(brightness_levels().map(|(label, id)| (label, id, String::new())));
     for tool in localvector_tools::catalog::all_tools() {
         items.push((tool.label.to_string(), format!("tool:{}", tool.id), crate::shortcut_editor::tool_shortcut(tool.id).unwrap_or("").to_string()));
     }
     items
+}
+
+/// Where the menus keep each command that takes no parameters: id → menu path.
+fn menu_paths() -> std::collections::HashMap<&'static str, String> {
+    fn walk(path: &[&'static str], items: &[menus::Item], out: &mut std::collections::HashMap<&'static str, String>) {
+        for item in items {
+            match item {
+                menus::Item::Cmd(_, id, params) if params.is_null() || params.as_object().is_some_and(serde_json::Map::is_empty) => {
+                    out.entry(*id).or_insert_with(|| path.join(" › "));
+                }
+                menus::Item::Sub(name, children) => {
+                    let mut deeper = path.to_vec();
+                    deeper.push(*name);
+                    walk(&deeper, children, out);
+                }
+                _ => {}
+            }
+        }
+    }
+    let mut out = std::collections::HashMap::new();
+    for (title, items) in menus::menu_tree() {
+        walk(&[title], &items, &mut out);
+    }
+    out
+}
+
+/// The id prefix of a palette entry that sets the UI brightness (`window.brightness:<level>`).
+const BRIGHTNESS: &str = "window.brightness:";
+
+/// Window › UI Brightness: Automatic, then the four levels, as (label with its path, palette id).
+fn brightness_levels() -> impl Iterator<Item = (String, String)> {
+    let path = "Window › UI Brightness › ";
+    std::iter::once((format!("{path}Automatic"), format!("{BRIGHTNESS}{}", crate::theme::Brightness::SYSTEM_ID)))
+        .chain(crate::theme::Brightness::ALL.into_iter().map(move |b| (format!("{path}{}", b.label()), format!("{BRIGHTNESS}{}", b.id()))))
 }
 
 /// A palette label in `lang`: each `›`-separated menu segment and the command label translate on
@@ -31,27 +71,15 @@ fn shown_label(lang: crate::i18n::Lang, label: &str) -> String {
     label.split(" › ").map(|s| crate::i18n::tr(lang, s)).collect::<Vec<_>>().join(" › ")
 }
 
-/// One palette entry, with what it shows and what a query matches worked out once.
-struct Entry {
-    id: String,
-    shortcut: String,
-    /// The label in the UI language.
-    shown: String,
-    /// The English label (what agents document), the shown label and the id, lowercased, one per
-    /// line: a query word (which has no line break) matches within one of them.
-    haystack: String,
-}
-
-/// The palette's entries in `lang`. They are built when the language, the installed plug-ins or
-/// the keyboard shortcuts (shown beside each entry) change, not on every frame while a query is
-/// typed.
 /// What the entries depend on: the language, the installed plug-ins and the shortcuts.
 fn cache_key(lang: crate::i18n::Lang) -> (&'static str, u64, u64) {
     (lang.code(), menus::plugin_revision(), crate::shortcut_editor::GENERATION.load(std::sync::atomic::Ordering::Relaxed))
 }
 
-fn entries(ctx: &egui::Context, lang: crate::i18n::Lang) -> Arc<Vec<Entry>> {
-    type Cached = ((&'static str, u64, u64), Arc<Vec<Entry>>);
+/// The palette's commands in `lang`, every one enabled. They are built when the language, the installed plug-ins or
+/// the keyboard shortcuts (shown beside each entry) change, not on every frame while a query is typed.
+fn entries(ctx: &egui::Context, lang: crate::i18n::Lang) -> Arc<Vec<Command>> {
+    type Cached = ((&'static str, u64, u64), Arc<Vec<Command>>);
     let key = cache_key(lang);
     let id = egui::Id::unique("palette-entries");
     if let Some((k, v)) = ctx.data(|d| d.get_temp::<Cached>(id))
@@ -59,13 +87,21 @@ fn entries(ctx: &egui::Context, lang: crate::i18n::Lang) -> Arc<Vec<Entry>> {
     {
         return v;
     }
-    let built: Arc<Vec<Entry>> = Arc::new(
+    let in_menus = menu_paths();
+    let built: Arc<Vec<Command>> = Arc::new(
         items()
             .into_iter()
             .map(|(label, id, shortcut)| {
-                let shown = shown_label(lang, &label);
-                let haystack = format!("{}\n{}\n{}", label.to_lowercase(), shown.to_lowercase(), id.to_lowercase());
-                Entry { id, shortcut, shown, haystack }
+                // The last segment is the command, the ones before it the menu it lives in; a command with no path of
+                // its own is listed under the menu that has it, when one does.
+                let shown = match (label.contains(" › "), in_menus.get(id.as_str())) {
+                    (false, Some(path)) if !path.is_empty() => format!("{path} › {label}"),
+                    _ => label,
+                };
+                let shown = shown_label(lang, &shown);
+                let (group, name) = shown.rsplit_once(" › ").unwrap_or(("", shown.as_str()));
+                let command = Command::new(id, name.trim_end_matches('…').to_string(), group.to_string());
+                if shortcut.is_empty() { command } else { command.shortcut(menus::shown_shortcut(&shortcut)) }
             })
             .collect(),
     );
@@ -73,74 +109,42 @@ fn entries(ctx: &egui::Context, lang: crate::i18n::Lang) -> Arc<Vec<Entry>> {
     built
 }
 
+/// The commands the palette lists now: [`entries`] with the menu's enabled state (a disabled command is listed, so the
+/// user learns it exists, but does not run).
+pub(crate) fn commands(app: &LocalvectorApp, ctx: &egui::Context, lang: crate::i18n::Lang) -> Vec<Command> {
+    entries(ctx, lang)
+        .iter()
+        .map(|c| {
+            let enabled = c.id.starts_with("tool:") || c.id.starts_with(BRIGHTNESS) || menus::enabled(app, &c.id);
+            Command { enabled, ..c.clone() }
+        })
+        .collect()
+}
+
+/// The palette, when open: runs what the user picked.
 pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
+    // `ui.palette_open` is the flag the menus, the shortcuts and the control channel set; the box follows it.
+    if app.ui.palette_open != app.palette_box.is_open() {
+        if app.ui.palette_open {
+            app.palette_box.open();
+        } else {
+            app.palette_box.close();
+        }
+    }
     if !app.ui.palette_open {
         return;
     }
-    let t = Tokens::get(ctx);
-    let q = app.ui.palette_query.to_lowercase();
-    let entries = entries(ctx, crate::i18n::current());
-    let matches: Vec<&Entry> = entries.iter().filter(|e| q.split_whitespace().all(|w| e.haystack.contains(w))).take(14).collect();
-    let mut run: Option<String> = None;
-    // The highlighted result (#1757): Up and Down move it (wrapping), the pointer over a result
-    // takes it, and a new query starts again from the first.
-    let sel_id = egui::Id::unique("palette-selected");
-    let (mut sel, last_q) = ctx.data(|d| d.get_temp::<(usize, String)>(sel_id)).unwrap_or_default();
-    if last_q != q {
-        sel = 0;
-    }
-    let n = matches.len();
-    if n > 0 {
-        let (down, up) =
-            ctx.input_mut(|i| (i.consume_key(egui::Modifiers::NONE, egui::Key::ArrowDown), i.consume_key(egui::Modifiers::NONE, egui::Key::ArrowUp)));
-        if down {
-            sel = (sel + 1) % n;
-        }
-        if up {
-            sel = (sel + n - 1) % n;
-        }
-        sel = sel.min(n - 1);
-    }
-    egui::Area::new(egui::Id::unique("palette")).order(egui::Order::Foreground).anchor(egui::Align2::CENTER_TOP, [0.0, 90.0]).show(ctx, |ui| {
-        egui::Frame::popup(ui.style()).fill(t.panel).inner_margin(egui::Margin::same(10)).show(ui, |ui| {
-            ui.set_width(520.0);
-            let r = ui.add(
-                egui::TextEdit::singleline(&mut app.ui.palette_query)
-                    .align(egui::Align2::LEFT_CENTER)
-                    .hint_text(tl!("Search commands and tools…"))
-                    .desired_width(500.0),
-            );
-            r.request_focus();
-            ui.add_space(6.0);
-            for (i, e) in matches.iter().enumerate() {
-                let resp = ui.add(
-                    egui::Button::new(e.shown.as_str())
-                        .shortcut_text(menus::shown_shortcut(&e.shortcut))
-                        .min_size(egui::vec2(500.0, 24.0))
-                        .selected(i == sel),
-                );
-                if resp.hovered() && ui.input(|i| i.pointer.delta() != egui::Vec2::ZERO) {
-                    sel = i;
-                }
-                if resp.clicked() {
-                    run = Some(e.id.clone());
-                }
-            }
-            if ui.input(|i| i.key_pressed(egui::Key::Enter))
-                && let Some(e) = matches.get(sel)
-            {
-                run = Some(e.id.clone());
-            }
-        });
-    });
-    ctx.data_mut(|d| d.insert_temp(sel_id, (sel, q)));
-    if let Some(id) = run {
-        app.ui.palette_open = false;
-        if let Some(tool) = id.strip_prefix("tool:") {
-            app.select_tool(tool);
-        } else {
-            menus::invoke(app, &id, json!({}));
-        }
+    let list = commands(app, ctx, crate::i18n::current());
+    let labels = Labels { placeholder: tl!("Search commands and tools…"), empty: tl!("No matching commands") };
+    let ran = app.palette_box.show(ctx, &labels, &list);
+    app.ui.palette_open = app.palette_box.is_open();
+    let Some(id) = ran else { return };
+    if let Some(tool) = id.strip_prefix("tool:") {
+        app.select_tool(tool);
+    } else if let Some(level) = id.strip_prefix(BRIGHTNESS) {
+        menus::invoke(app, "window.brightness", json!({ "brightness": level }));
+    } else {
+        menus::invoke(app, &id, json!({}));
     }
 }
 
@@ -150,7 +154,7 @@ mod tests {
     use crate::i18n::Lang;
 
     #[test]
-    fn entries_are_built_once_per_language_and_match_english_shown_text_and_ids() {
+    fn entries_are_built_once_per_language_and_translate_the_label_and_the_menu() {
         let ctx = egui::Context::default();
         let zh = Lang::from_code("zh-hant").unwrap();
         // Tests running alongside edit shortcuts and install plug-ins, which rebuilds the entries:
@@ -169,28 +173,25 @@ mod tests {
         crate::shortcut_editor::GENERATION.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         assert!(!Arc::ptr_eq(&zh_entries, &entries(&ctx, zh)), "rebuilt after a shortcut edit");
         let group = zh_entries.iter().find(|e| e.id == "object.group").unwrap();
-        assert!(group.shown.ends_with(crate::i18n::tr(zh, "Group")), "{}", group.shown);
-        // A query matches the English label, the shown label or the id.
-        for word in ["group", crate::i18n::tr(zh, "Group"), "object.group"] {
-            assert!(group.haystack.contains(&word.to_lowercase()), "{word}");
-        }
+        assert_eq!(group.label, crate::i18n::tr(zh, "Group"), "the label is the command's, in the UI language");
+        assert_eq!(group.group, crate::i18n::tr(zh, "Object"), "the group is the menu's, in the UI language");
+        // A query finds it by the label as shown.
+        assert!(craft_palette::filter(crate::i18n::tr(zh, "Group"), &zh_entries).iter().any(|&i| zh_entries[i].id == "object.group"));
     }
 
     /// Searching for the preference's name, Use Precise Cursors, finds the command that toggles it,
     /// and choosing the first result changes the preference.
     #[test]
     fn use_precise_cursors_palette_result_toggles_the_preference() {
-        let ctx = egui::Context::default();
-        let query = "use precise cursors";
-        let entries = entries(&ctx, Lang::EN);
-        let matches: Vec<&Entry> = entries.iter().filter(|e| query.split_whitespace().all(|word| e.haystack.contains(word))).take(14).collect();
-        assert!(matches.iter().any(|e| e.id == "view.preciseCursors"), "preference toggle appears for its name");
-        assert!(entries.iter().filter(|e| e.id == "view.capsLock").all(|e| e.shown != "Use Precise Cursors"));
-
         let mut app = LocalvectorApp::new(localvector_engine::Session::new(), crate::Services::default());
+        let ctx = egui::Context::default();
+        let list = commands(&app, &ctx, Lang::EN);
+        let found = craft_palette::filter("use precise cursors", &list);
+        assert!(found.iter().any(|&i| list[i].id == "view.preciseCursors"), "preference toggle appears for its name");
+        assert!(list.iter().filter(|e| e.id == "view.capsLock").all(|e| e.label != "Use Precise Cursors"));
         let before = app.session.prefs.use_precise_cursors;
-        let first = matches.first().expect("query has a result");
-        menus::invoke(&mut app, &first.id, json!({}));
+        let first = &list[*found.first().expect("query has a result")];
+        menus::invoke(&mut app, &first.id.clone(), json!({}));
         assert_ne!(app.session.prefs.use_precise_cursors, before, "first result toggles the preference");
     }
 
@@ -242,25 +243,66 @@ mod tests {
         }
     }
 
-    /// #1757: Up and Down move the highlighted result, wrapping at the ends; a new query starts
-    /// from the first again.
+    /// The palette's list: the menu's own enabled state and shortcut, the menu path as the group, a tool among them,
+    /// and the UI brightness levels one by one (the command itself needs a level).
     #[test]
-    fn arrow_keys_move_the_highlighted_result() {
-        let mut app = LocalvectorApp::new(localvector_engine::Session::new(), crate::Services::default());
-        app.ui.palette_open = true;
-        app.ui.palette_query = "zoom".into();
+    fn the_palette_lists_the_menus_the_shortcut_and_the_enabled_state() {
+        let app = LocalvectorApp::new(localvector_engine::Session::new(), crate::Services::default());
         let ctx = egui::Context::default();
+        let list = commands(&app, &ctx, Lang::EN);
+        let find = |id: &str| list.iter().find(|c| c.id == id).unwrap_or_else(|| panic!("{id} is listed"));
+        let settings = find("edit.preferences");
+        assert_eq!((settings.label.as_str(), settings.group.as_str()), ("Settings", "Edit"));
+        assert!(!settings.shortcut.is_empty(), "the menu's shortcut shows");
+        assert!(settings.enabled);
+        assert!(!find("file.save").enabled, "Save is disabled with no document, as in the menu");
+        assert!(find("help.about").enabled && find("help.checkForUpdates").enabled);
+        assert!(list.iter().any(|c| c.id.starts_with("tool:")), "the tools are listed");
+        assert!(list.iter().all(|c| c.id != "window.brightness"), "the brightness command alone cannot run without a level");
+        let levels: Vec<(&str, &str)> = list.iter().filter(|c| c.id.starts_with(BRIGHTNESS)).map(|c| (c.label.as_str(), c.group.as_str())).collect();
+        assert_eq!(
+            levels,
+            [
+                ("Automatic", "Window › UI Brightness"),
+                ("Dark", "Window › UI Brightness"),
+                ("Medium Dark", "Window › UI Brightness"),
+                ("Medium Light", "Window › UI Brightness"),
+                ("Light", "Window › UI Brightness"),
+            ]
+        );
+    }
+
+    /// The suite's box on a real frame: the search icon (or Help › Search Commands…) opens it, typing narrows it,
+    /// Enter runs the first match through the menu's code, and Escape closes it.
+    #[test]
+    fn the_palette_opens_filters_runs_a_command_and_closes() {
+        let mut app = LocalvectorApp::new(localvector_engine::Session::new(), crate::Services::default());
+        let ctx = egui::Context::default();
+        egui_extras::install_image_loaders(&ctx);
+        crate::theme::install_fonts(&ctx);
         let key = |k| egui::Event::Key { key: k, physical_key: None, pressed: true, repeat: false, modifiers: egui::Modifiers::NONE };
         let frame = |app: &mut LocalvectorApp, events: Vec<egui::Event>| {
             ctx.run_ui(egui::RawInput { events, ..Default::default() }, |ui| show(app, ui.ctx())).textures_delta.clear();
-            ctx.data(|d| d.get_temp::<(usize, String)>(egui::Id::unique("palette-selected"))).unwrap().0
         };
-        assert_eq!(frame(&mut app, vec![]), 0);
-        assert_eq!(frame(&mut app, vec![key(egui::Key::ArrowDown)]), 1);
-        assert_eq!(frame(&mut app, vec![key(egui::Key::ArrowUp)]), 0);
-        let last = frame(&mut app, vec![key(egui::Key::ArrowUp)]);
-        assert!(last > 1, "Up on the first result wraps to the last: {last}");
-        app.ui.palette_query = "zoom in".into();
-        assert_eq!(frame(&mut app, vec![]), 0);
+        frame(&mut app, vec![]);
+        assert!(!app.ui.palette_open && !app.palette_box.is_open());
+        app.run("help.commandPalette", json!({})).unwrap();
+        assert!(app.ui.palette_open, "Help › Search Commands… opens it");
+        frame(&mut app, vec![]);
+        assert!(app.palette_box.is_open());
+        frame(&mut app, vec![egui::Event::Text("about local".into())]);
+        frame(&mut app, vec![key(egui::Key::Enter)]);
+        assert!(app.ui.about && !app.ui.palette_open, "Enter ran Help › About and closed the box");
+        app.ui.about = false;
+        app.ui.palette_open = true;
+        frame(&mut app, vec![]);
+        frame(&mut app, vec![key(egui::Key::Escape)]);
+        assert!(!app.ui.palette_open, "Escape closes it");
+        // A level of the brightness is a palette entry of its own.
+        app.ui.palette_open = true;
+        frame(&mut app, vec![]);
+        frame(&mut app, vec![egui::Event::Text("medium light".into())]);
+        frame(&mut app, vec![key(egui::Key::Enter)]);
+        assert_eq!(app.session.prefs.ui_brightness, "mediumLight");
     }
 }
