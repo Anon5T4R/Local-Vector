@@ -633,7 +633,7 @@ fn destination(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) {
         let pick = app.services.pick_folder.is_some();
         ui.horizontal(|ui| {
             form::text(ui, d, "folder", if pick { RIGHT_W - 40.0 } else { RIGHT_W - 6.0 });
-            if pick && widgets::icon_button(ui, "folder-open", tl!("Choose a folder"), false, 26.0).clicked() {
+            if pick && widgets::icon_button(ui, crate::icons::OPEN, tl!("Choose a folder"), false, 26.0).clicked() {
                 crate::picks::folder_field(app, d, "folder");
             }
         });
@@ -924,7 +924,7 @@ pub(crate) fn formats(ui: &mut egui::Ui, d: &mut Dialog, mut menu: Option<Format
     ui.horizontal(|ui| {
         widgets::dim_label(ui, tl!("Formats:"));
         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-            if widgets::icon_button(ui, "settings", tl!("Format Settings"), false, 24.0).clicked() {
+            if widgets::icon_button(ui, crate::icons::SETTINGS, tl!("Format Settings"), false, 24.0).clicked() {
                 // Preserve row spellings; format settings use canonical IDs.
                 let first = rows
                     .first()
@@ -1011,7 +1011,7 @@ pub(crate) fn formats(ui: &mut egui::Ui, d: &mut Dialog, mut menu: Option<Format
                 edited = true;
             }
             ui.add_enabled_ui(!one, |ui| {
-                if widgets::icon_button(ui, "x", tl!("Remove"), false, 22.0).clicked() {
+                if widgets::icon_button(ui, crate::icons::CLOSE, tl!("Remove"), false, 22.0).clicked() {
                     remove = Some(i);
                 }
             });

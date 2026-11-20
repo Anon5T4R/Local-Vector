@@ -690,7 +690,7 @@ fn flyout_body(ui: &mut Ui, t: &Tokens, active: &str, tools: &[String], floating
         let grip = if floating {
             let x = egui::Rect::from_min_size(bar.min, vec2(BAR, CLOSE));
             let xr = ui.interact(x, bar_id.with("close"), Sense::click());
-            icons::paint(ui, "x", x.shrink2(vec2(1.0, 3.0)), if xr.hovered() { t.text_strong } else { t.text });
+            icons::paint(ui, crate::icons::CLOSE, x.shrink2(vec2(1.0, 3.0)), if xr.hovered() { t.text_strong } else { t.text });
             xr.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, ui.is_enabled(), tl!("Put back in the toolbar")));
             out.close = xr.on_hover_text(tl!("Put back in the toolbar")).clicked();
             egui::Rect::from_min_max(bar.min + vec2(0.0, CLOSE), bar.max)

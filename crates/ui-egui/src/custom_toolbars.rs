@@ -347,7 +347,7 @@ pub(crate) fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
                 let arrows = egui::Rect::from_min_size(pos2(title.right() - TITLE_BUTTON, title.top()), vec2(TITLE_BUTTON, GRIP));
                 let grip = egui::Rect::from_min_max(pos2(close.right(), title.top()), pos2(arrows.left(), title.bottom()));
                 let cresp = ui.interact(close, id.with("close"), Sense::click());
-                icons::paint(ui, "x", close.shrink2(vec2(1.5, 2.5)), if cresp.hovered() { t.text_strong } else { t.text });
+                icons::paint(ui, crate::icons::CLOSE, close.shrink2(vec2(1.5, 2.5)), if cresp.hovered() { t.text_strong } else { t.text });
                 cresp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, ui.is_enabled(), tl!("Close")));
                 if cresp.on_hover_text(tl!("Close")).clicked() {
                     actions.push(Action::Hide(bar.name.clone()));
@@ -400,7 +400,7 @@ pub(crate) fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
                     }
                     ui.add_space(4.0);
                     // Edit Toolbar: the All Tools drawer opens beside this toolbar, by this button.
-                    ui.vertical_centered(|ui| widgets::icon_button(ui, "ellipsis", "Edit Toolbar", edit_this, 26.0)).inner
+                    ui.vertical_centered(|ui| widgets::icon_button(ui, crate::icons::MORE, "Edit Toolbar", edit_this, 26.0)).inner
                 });
                 if edit.clicked() {
                     actions.push(Action::EditToolbar(bar.name.clone()));

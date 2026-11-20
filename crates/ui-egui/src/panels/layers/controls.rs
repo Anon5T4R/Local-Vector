@@ -95,7 +95,7 @@ pub(super) fn bottom_bar(app: &mut LocalvectorApp, ui: &mut Ui, view: &View, doc
     }
     // Create New Sublayer: Alt asks for its options first, and Ctrl/Cmd+Alt puts it under the
     // layer's contents.
-    if widgets::icon_button(&mut child, "plus", tl!("Create New Sublayer"), false, 24.0).clicked() {
+    if widgets::icon_button(&mut child, crate::icons::ADD, tl!("Create New Sublayer"), false, 24.0).clicked() {
         actions.push(match (m.alt, m.command) {
             (true, true) => ("layer.newSublayer".into(), json!({"bottom": true})),
             (true, false) => ("ui.newLayer".into(), json!({"sublayer": true})),

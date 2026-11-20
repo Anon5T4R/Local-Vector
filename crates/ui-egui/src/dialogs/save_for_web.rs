@@ -751,8 +751,9 @@ fn presets_row(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, s: O
             }
         }
         let user = current.filter(|i| *i + saved >= presets.len());
-        let del =
-            ui.add_enabled(user.is_some(), |ui: &mut egui::Ui| widgets::icon_button(ui, "trash-2", tl!("Delete this saved preset"), false, 24.0));
+        let del = ui.add_enabled(user.is_some(), |ui: &mut egui::Ui| {
+            widgets::icon_button(ui, crate::icons::DELETE, tl!("Delete this saved preset"), false, 24.0)
+        });
         if del.clicked()
             && let Some(name) = user.and_then(|i| names.get(i))
         {

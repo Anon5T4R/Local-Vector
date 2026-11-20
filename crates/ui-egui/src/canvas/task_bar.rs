@@ -90,7 +90,7 @@ pub(super) fn task_bar(app: &mut LocalvectorApp, ui: &mut Ui, xf: &Xf) {
         if st.doc.artboards.len() > 1 {
             items.push((tl!("Rearrange All"), "dc-rearrange", TASK_BAR_REARRANGE_ARTBOARDS, none()));
         }
-        items.push((tl!("Export"), "share-2", "file.exportForScreens", none()));
+        items.push((tl!("Export"), crate::icons::EXPORT, "file.exportForScreens", none()));
     } else {
         // Edit Path: the Direct Selection tool, to edit the path's anchors.
         let edit_path = || (tl!("Edit Path"), "dc-direct", "tool.select", json!({"tool": "directSelection"}));
@@ -282,7 +282,7 @@ pub(super) fn task_bar(app: &mut LocalvectorApp, ui: &mut Ui, xf: &Xf) {
                             }
                         }
                     }
-                    let more = widgets::icon_button(ui, "ellipsis", tl!("More Options"), false, 30.0);
+                    let more = widgets::icon_button(ui, crate::icons::MORE, tl!("More Options"), false, 30.0);
                     egui::Popup::menu(&more).show(|ui| {
                         ui.set_min_width(170.0);
                         let bar = [

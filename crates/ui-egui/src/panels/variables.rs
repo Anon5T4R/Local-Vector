@@ -222,7 +222,7 @@ pub fn show(app: &mut LocalvectorApp, ui: &mut Ui) {
         if widgets::icon_button_enabled(ui, "chart-column", tl!("Make Graph Dynamic"), false, selection_graph && !locked, 24.0).clicked() {
             app.run("variable.makeGraphDynamic", json!({})).ok();
         }
-        if widgets::icon_button_enabled(ui, "plus", tl!("New Variable…"), false, !locked, 24.0).clicked() {
+        if widgets::icon_button_enabled(ui, crate::icons::ADD, tl!("New Variable…"), false, !locked, 24.0).clicked() {
             crate::menus::invoke(app, "variable.define", json!({}));
         }
         if widgets::icon_button_enabled(ui, "link-2-off", tl!("Unbind Variable"), false, selection_bound, 24.0).clicked() {

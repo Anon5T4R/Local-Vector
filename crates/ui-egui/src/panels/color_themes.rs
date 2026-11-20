@@ -294,7 +294,7 @@ fn my_themes(app: &mut LocalvectorApp, ui: &mut Ui) {
             app.run("colorTheme.addToSwatches", json!({ "name": n })).ok();
         }
         ui.add_space((ui.available_width() - 28.0).max(0.0));
-        if widgets::icon_button_enabled(ui, "trash-2", tl!("Delete theme"), false, some, 24.0).clicked()
+        if widgets::icon_button_enabled(ui, crate::icons::DELETE, tl!("Delete theme"), false, some, 24.0).clicked()
             && let Some(n) = &pick
         {
             delete(app, &ctx, n);

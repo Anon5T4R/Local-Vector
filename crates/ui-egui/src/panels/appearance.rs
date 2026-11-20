@@ -1406,7 +1406,7 @@ fn bottom(app: &mut LocalvectorApp, ui: &mut Ui, node: Option<&Node>, sel: Sel) 
         if duplicate.clicked() {
             duplicate_selected(app, ui, node, sel);
         }
-        let delete = widgets::icon_button_enabled(ui, "trash-2", tl!("Delete Selected Item"), false, can, 24.0);
+        let delete = widgets::icon_button_enabled(ui, crate::icons::DELETE, tl!("Delete Selected Item"), false, can, 24.0);
         if delete.clicked() {
             delete_selected(app, ui, node, sel);
         }

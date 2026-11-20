@@ -69,7 +69,7 @@ pub(crate) fn control_bar(app: &mut LocalvectorApp, ui: &mut Ui) -> bool {
     if widgets::icon_button(ui, "dc-new-item", tl!("New Artboard"), false, 24.0).clicked() && app.run("artboard.new", json!({})).is_ok() {
         select(app, n);
     }
-    if widgets::icon_button_enabled(ui, "trash-2", tl!("Delete Artboard"), false, n > 1, 24.0).clicked() {
+    if widgets::icon_button_enabled(ui, crate::icons::DELETE, tl!("Delete Artboard"), false, n > 1, 24.0).clicked() {
         delete_selected(app);
     }
     ui.separator();
@@ -567,7 +567,9 @@ pub fn show(app: &mut LocalvectorApp, ui: &mut Ui) {
         } else if new.clicked() && app.run("artboard.new", json!({})).is_ok() {
             select(app, n);
         }
-        if widgets::icon_button_enabled(ui, "trash-2", tl!("Delete Artboard"), false, n > 1 && !deletable(app, n).is_empty(), 24.0).clicked() {
+        if widgets::icon_button_enabled(ui, crate::icons::DELETE, tl!("Delete Artboard"), false, n > 1 && !deletable(app, n).is_empty(), 24.0)
+            .clicked()
+        {
             delete_selected(app);
         }
     });

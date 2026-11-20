@@ -326,7 +326,7 @@ pub fn show(app: &mut LocalvectorApp, ui: &mut Ui) {
         if widgets::icon_button(ui, "group", tl!("New Group"), false, 24.0).clicked() {
             act = Some(Act::NewGroup(json!([])));
         }
-        let add = widgets::icon_button_enabled(ui, "plus", tl!("Add Content"), false, has_doc, 24.0);
+        let add = widgets::icon_button_enabled(ui, crate::icons::ADD, tl!("Add Content"), false, has_doc, 24.0);
         egui::Popup::menu(&add).show(|ui| {
             for (label, kind) in [
                 ("Graphic", "graphic"),

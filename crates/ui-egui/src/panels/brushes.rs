@@ -437,7 +437,7 @@ pub fn show(app: &mut LocalvectorApp, ui: &mut Ui) {
         {
             app.status(e);
         }
-        if widgets::icon_button_enabled(ui, "trash-2", tl!("Delete Brush"), false, !targets.is_empty(), 24.0).clicked() {
+        if widgets::icon_button_enabled(ui, crate::icons::DELETE, tl!("Delete Brush"), false, !targets.is_empty(), 24.0).clicked() {
             delete(app, &targets, ui.input(|i| i.modifiers.alt));
         }
     });

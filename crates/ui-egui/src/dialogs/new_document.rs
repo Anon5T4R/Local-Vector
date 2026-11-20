@@ -382,7 +382,7 @@ fn details(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, b: &mut 
 
 /// The Save Preset button beside the name: it shows or hides [`save_row`].
 fn save_button(app: &LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) {
-    if widgets::icon_button(ui, "save", tl!("Save Preset"), d.bool(SAVING), 26.0).clicked() {
+    if widgets::icon_button(ui, crate::icons::SAVE, tl!("Save Preset"), d.bool(SAVING), 26.0).clicked() {
         let saving = !d.bool(SAVING);
         d.fields.insert(SAVING.into(), json!(saving));
         if saving && d.str("presetName").is_empty() {

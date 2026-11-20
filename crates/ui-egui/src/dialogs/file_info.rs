@@ -176,7 +176,7 @@ fn chips(ui: &mut egui::Ui, d: &mut Dialog) {
             let resp = ui
                 .interact(x, ui.scope_id().with(("keyword-remove", i)), egui::Sense::click())
                 .on_hover_text(crate::i18n::fmt(tl!("Remove “{keyword}”"), &[("keyword", k.as_str())]));
-            icons::paint(ui, "x", x.shrink(2.0), if resp.hovered() { t.text_strong } else { t.text_dim });
+            icons::paint(ui, crate::icons::CLOSE, x.shrink(2.0), if resp.hovered() { t.text_strong } else { t.text_dim });
             if resp.clicked() {
                 remove = Some(i);
             }

@@ -595,7 +595,7 @@ fn assign_tab(app: &mut LocalvectorApp, ui: &mut Ui, d: &mut Dialog, rows: &mut 
                 d.fields.insert("limitTo".into(), json!(k));
             }
             // Import a library (.ase, .acb, .gpl, .vcswatches or a document's swatches) and limit to it.
-            if app.services.pick_open.is_some() && widgets::icon_button(ui, "folder-open", tl!("Other Library…"), false, 24.0).clicked() {
+            if app.services.pick_open.is_some() && widgets::icon_button(ui, crate::icons::OPEN, tl!("Other Library…"), false, 24.0).clicked() {
                 let r = crate::picks::in_dialog(app, d, |app, d| {
                     let pick =
                         crate::FilePick { filters: crate::FilePick::filters(localvector_engine::cmd::fileio::open_filters()), ..Default::default() };

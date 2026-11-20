@@ -5,12 +5,35 @@ use std::sync::OnceLock;
 use craft_ui::icons::{SvgIconSet, SvgStyle};
 use egui::{Color32, ImageSource, Rect, Ui, Vec2};
 
-fn table() -> &'static SvgIconSet {
-    static T: OnceLock<SvgIconSet> = OnceLock::new();
-    T.get_or_init(|| {
-        SvgIconSet::new(crate::icon_data::ICONS, SvgStyle { current_color: "white", stroke_width: Some("1.6") }, "bytes://icon/", "square-dashed")
+/// The app's own catalog plus the suite's ([`craft_icons::ALL`]): where both have a name the suite's wins, so a
+/// concept every app shares looks the same here as in the others. Tool icons (`dc-*` and the Lucide ones a tool
+/// uses) exist only in the app's own.
+fn catalog() -> &'static [(&'static str, &'static [u8])] {
+    static ALL: OnceLock<Vec<(&'static str, &'static [u8])>> = OnceLock::new();
+    ALL.get_or_init(|| {
+        let mut all: Vec<(&'static str, &'static [u8])> =
+            crate::icon_data::ICONS.iter().filter(|(name, _)| !craft_icons::ALL.iter().any(|(suite, _)| suite == name)).copied().collect();
+        all.extend_from_slice(craft_icons::ALL);
+        all
     })
 }
+
+fn table() -> &'static SvgIconSet {
+    static T: OnceLock<SvgIconSet> = OnceLock::new();
+    T.get_or_init(|| SvgIconSet::new(catalog(), SvgStyle { current_color: "white", stroke_width: Some("1.6") }, "bytes://icon/", "square-dashed"))
+}
+
+/// The names of the concepts the suite shares (`craft_icons::Icon`): panels and dialogs ask for these, never for a
+/// literal, so the suite's icon is the one drawn.
+pub const DELETE: &str = craft_icons::Icon::Delete.name();
+pub const CLOSE: &str = craft_icons::Icon::Close.name();
+pub const SEARCH: &str = craft_icons::Icon::Search.name();
+pub const SETTINGS: &str = craft_icons::Icon::Settings.name();
+pub const MORE: &str = craft_icons::Icon::More.name();
+pub const ADD: &str = craft_icons::Icon::Add.name();
+pub const SAVE: &str = craft_icons::Icon::Save.name();
+pub const OPEN: &str = craft_icons::Icon::Open.name();
+pub const EXPORT: &str = craft_icons::Icon::Export.name();
 
 pub fn exists(name: &str) -> bool {
     table().contains(name)
@@ -169,7 +192,11 @@ mod tests {
     /// icons. A shared-crate update must not silently change our stroke weight or cache keys.
     #[test]
     fn shared_catalog_preserves_existing_icons() {
-        for (name, original) in crate::icon_data::ICONS {
+        // The app's own icons stay, but where the suite has the same name the suite's SVG is the one drawn.
+        for (name, _) in crate::icon_data::ICONS {
+            assert!(exists(name), "{name}");
+        }
+        for (name, original) in catalog() {
             let expected = String::from_utf8_lossy(original).replace("currentColor", "white").replace("stroke-width=\"2\"", "stroke-width=\"1.6\"");
             let ImageSource::Bytes { uri, bytes } = source(name) else { panic!("expected SVG bytes") };
             assert_eq!(uri.as_ref(), format!("bytes://icon/{name}.svg"));
@@ -226,6 +253,21 @@ mod tests {
             assert!(name.starts_with("dc-"), "{name} is drawn for Local Vector");
             assert!(exists(name), "{name}");
         }
+    }
+
+    /// The suite's concepts are in the catalog and the app asks for them by `craft_icons::Icon`'s names.
+    #[test]
+    fn the_suite_icons_are_in_the_catalog() {
+        for icon in craft_icons::Icon::EVERY {
+            assert!(exists(icon.name()), "{}", icon.name());
+        }
+        for name in [DELETE, CLOSE, SEARCH, SETTINGS, MORE, ADD, SAVE, OPEN, EXPORT] {
+            assert!(craft_icons::ALL.iter().any(|(suite, _)| *suite == name), "{name}");
+        }
+        let ImageSource::Bytes { bytes, .. } = source(DELETE) else { panic!("expected SVG bytes") };
+        let suite = craft_icons::Icon::Delete.svg();
+        let expected = String::from_utf8_lossy(suite).replace("currentColor", "white").replace("stroke-width=\"2\"", "stroke-width=\"1.6\"");
+        assert_eq!(bytes.as_ref(), expected.as_bytes(), "the suite's trash is the one drawn");
     }
 
     #[test]

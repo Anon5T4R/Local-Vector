@@ -357,8 +357,9 @@ pub fn show(app: &mut LocalvectorApp, ui: &mut Ui) {
     widgets::bottom_bar(ui, |ui| {
         screens = widgets::icon_button(ui, "monitor", tl!("Export for Screens…"), false, 24.0).clicked();
         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-            remove = widgets::icon_button_enabled(ui, "trash-2", tl!("Remove Selected Assets"), false, !sel.is_empty(), 24.0).clicked();
-            add = widgets::icon_button_enabled(ui, "plus", tl!("Add Selected Artwork (Alt: as one asset)"), false, has_art, 24.0).clicked();
+            remove = widgets::icon_button_enabled(ui, crate::icons::DELETE, tl!("Remove Selected Assets"), false, !sel.is_empty(), 24.0).clicked();
+            add =
+                widgets::icon_button_enabled(ui, crate::icons::ADD, tl!("Add Selected Artwork (Alt: as one asset)"), false, has_art, 24.0).clicked();
         });
     });
     // Act on what the panel saw (the document is no longer borrowed).

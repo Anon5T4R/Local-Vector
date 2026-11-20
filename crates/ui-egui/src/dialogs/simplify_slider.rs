@@ -124,7 +124,7 @@ impl Strip {
                         let rail = t.input_border;
                         form::slider_rail_named(ui, &mut d, "level", tl!(self.label), 0.0..=100.0, &|_| rail);
                         if let Some(more) = self.more_options
-                            && widgets::icon_button(ui, "ellipsis", tl!("More Options"), false, 28.0).clicked()
+                            && widgets::icon_button(ui, crate::icons::MORE, tl!("More Options"), false, 28.0).clicked()
                         {
                             action = Some(more);
                         }

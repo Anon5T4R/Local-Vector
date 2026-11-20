@@ -453,7 +453,7 @@ pub fn show(app: &mut LocalvectorApp, ui: &mut egui::Ui) {
         if widgets::icon_button(ui, "dc-folder", tl!("Create New Set"), false, 24.0).clicked() {
             crate::dialogs::action_set_options::open_new(app);
         }
-        if widgets::icon_button(ui, "trash-2", tl!("Delete Selection"), false, 24.0).clicked() {
+        if widgets::icon_button(ui, crate::icons::DELETE, tl!("Delete Selection"), false, 24.0).clicked() {
             delete_selection(app, ui.ctx());
         }
         if recording {
