@@ -65,6 +65,7 @@ pub mod recovery;
 pub mod render_worker;
 pub mod screen_color;
 mod scrub;
+pub mod shell;
 pub mod shortcut_editor;
 pub mod shortcuts;
 pub mod state;
@@ -89,6 +90,8 @@ use tests::{
     background as tests_background, labels as tests_labels, picks as tests_picks, removeanchors as tests_removeanchors, svg as tests_svg,
     synthetic as tests_synthetic, sysclip as tests_sysclip,
 };
+#[cfg(test)]
+mod shell_tests;
 #[cfg(test)]
 mod tests;
 

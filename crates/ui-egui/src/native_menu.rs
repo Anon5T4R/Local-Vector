@@ -369,9 +369,9 @@ fn language_node(app: &LocalvectorApp, lang: Lang) -> Node {
     Node::Submenu { label: tr(lang, "Language").into(), children }
 }
 
-/// Appearance in the app menu (the UI-brightness theme, as Mac apps call it).
+/// Appearance in the app menu (the UI-brightness theme, as Mac apps call it): Automatic, then the four levels.
 fn appearance_node(app: &LocalvectorApp, lang: Lang) -> Node {
-    let system = Node::Item(native_item(app, "System", "window.brightness", json!({"brightness": Brightness::SYSTEM_ID})));
+    let system = Node::Item(native_item(app, "Automatic", "window.brightness", json!({"brightness": Brightness::SYSTEM_ID})));
     let children = std::iter::once(system)
         .chain(Brightness::ALL.iter().map(|b| Node::Item(native_item(app, b.label(), "window.brightness", json!({"brightness": b.id()})))))
         .collect();

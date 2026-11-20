@@ -38,6 +38,8 @@ pub const APP_BAR_HEIGHT: f32 = 32.0;
 const MARK: f32 = 18.0;
 /// Height of the workspace switcher.
 const WIDGET_H: f32 = 22.0;
+/// The gap between the suite's buttons in the application bar.
+const SHELL_GAP: f32 = 6.0;
 
 /// The application bar: brand mark, Home, menus, then search and the workspace switcher
 /// at the right. With [`LocalvectorApp::custom_titlebar`] it is also the window's title bar
@@ -71,9 +73,10 @@ pub fn app_bar(app: &mut LocalvectorApp, ui: &mut Ui) {
             ui.add_space(2.0);
             // With the macOS menu bar the menus are at the top of the screen instead.
             let menus_end = if app.services.native_menu.is_some() { ui.cursor().min.x } else { menus::menu_bar(app, ui) };
-            // The right-side group fills the space after the menus from the right; when it runs
-            // short, the search icon goes first (the palette stays under its shortcut), then the
-            // workspace switcher narrows.
+            // The right-side group fills the space after the menus from the right: the suite's three (from the
+            // edge: Settings, the theme, search) with the workspace switcher beside them. When it runs short, the
+            // theme button goes first (Window › UI Brightness has it), then search (the palette stays under its
+            // shortcut), and the switcher narrows before anything runs over.
             let full = ui.max_rect();
             let right_edge = if custom { full.right() - titlebar::WIDTH - 10.0 } else { full.right() };
             let right = egui::Rect::from_min_max(egui::pos2(menus_end + 8.0, full.top()), egui::pos2(right_edge, full.bottom()));
@@ -83,13 +86,30 @@ pub fn app_bar(app: &mut LocalvectorApp, ui: &mut Ui) {
                 if crate::workspaces::is_builtin(&app.ui.workspace) { tl!(&app.ui.workspace).to_string() } else { app.ui.workspace.clone() };
             let ws = ui.painter().layout_no_wrap(ws_name, egui::FontId::proportional(12.0), t.text);
             let ws_w = (ws.size().x + 36.0).clamp(112.0, 190.0);
-            let gap = ui.spacing().item_spacing.x;
-            // The search icon, as in PhotoCraft: shown while a minimal switcher fits beside it.
-            let icon = 28.0;
-            let search = room >= 64.0 + 8.0 + gap + icon;
-            let ws_w = ws_w.min(room - 8.0 - gap - if search { icon } else { 0.0 }).max(64.0);
+            // One suite icon button and the gap after it.
+            let gap = SHELL_GAP;
+            let slot = craft_icons::ui::SIZE + 2.0 * ui.spacing().button_padding.x + gap;
+            let shown: u8 = if room >= 64.0 + 8.0 + 3.0 * slot {
+                3
+            } else if room >= 64.0 + 8.0 + 2.0 * slot {
+                2
+            } else {
+                u8::from(room >= 64.0 + 8.0 + slot)
+            };
+            let ws_w = ws_w.min(room - 8.0 - f32::from(shown) * slot).max(64.0);
             let mut rui = ui.new_child(egui::UiBuilder::new().max_rect(right).layout(egui::Layout::right_to_left(egui::Align::Center)));
             let ui = &mut rui;
+            ui.spacing_mut().item_spacing.x = gap;
+            if shown >= 1 {
+                crate::shell::settings_button(app, ui);
+            }
+            if shown >= 3 {
+                crate::shell::theme_button(app, ui);
+            }
+            if shown >= 2 {
+                crate::shell::search_button(app, ui);
+            }
+            ui.add_space(8.0 - gap);
             // Workspace switcher: shows the current workspace, opens Window → Workspace.
             let (wr, wresp) = ui.allocate_exact_size(vec2(ws_w, WIDGET_H), Sense::click());
             ui.painter().rect_filled(wr, CornerRadius::same(4), if wresp.hovered() { t.hover } else { t.panel });
@@ -97,18 +117,6 @@ pub fn app_bar(app: &mut LocalvectorApp, ui: &mut Ui) {
             icons::paint(ui, "chevron-down", egui::Rect::from_center_size(wr.right_center() - vec2(12.0, 0.0), vec2(12.0, 12.0)), t.text_dim);
             let wresp = wresp.on_hover_text(tl!("Switch workspace"));
             egui::Popup::menu(&wresp).show(|ui| crate::workspaces::popup(app, ui));
-            ui.add_space(8.0);
-            // Search → command palette (its shortcut opens it too).
-            if search {
-                let tip = match menus::shortcut_of("help.commandPalette") {
-                    Some(sc) => format!("{}  ({})", tl!("Search commands and tools"), menus::shown_shortcut(sc)),
-                    None => tl!("Search commands and tools").to_string(),
-                };
-                if widgets::icon_button(ui, "search", &tip, app.ui.palette_open, icon).clicked() {
-                    app.ui.palette_open = !app.ui.palette_open;
-                    app.ui.palette_query.clear();
-                }
-            }
             if app.services.native_menu.is_some() {
                 let title = ui.painter().layout_no_wrap("Local Vector".into(), egui::FontId::proportional(13.5), t.text);
                 let title_rect = egui::Rect::from_center_size(full.center(), title.size());

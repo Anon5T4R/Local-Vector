@@ -618,6 +618,13 @@ pub fn menu_tree_named(english_names: bool) -> Vec<(&'static str, Vec<Item>)> {
                     ],
                 ),
                 sub("Workspace", crate::workspaces::menu_items()),
+                // The suite's theme (Automatic) over the four levels of the interface's brightness.
+                sub(
+                    "UI Brightness",
+                    std::iter::once(cp("Automatic", "window.brightness", json!({"brightness": crate::theme::Brightness::SYSTEM_ID})))
+                        .chain(crate::theme::Brightness::ALL.into_iter().map(|b| cp(b.label(), "window.brightness", json!({"brightness": b.id()}))))
+                        .collect(),
+                ),
                 Sep,
                 c("Control", "window.control"),
                 c("Contextual Task Bar", "window.taskBar"),
