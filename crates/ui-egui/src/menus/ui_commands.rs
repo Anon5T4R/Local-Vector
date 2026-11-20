@@ -154,7 +154,7 @@ pub const UI_COMMANDS: &[(&str, &str, &str, &str)] = &[
         "{} makes a document with the settings the New Document dialog opens on (the first Recent entry, else the Print category's Letter), named after the next untitled document, without opening the dialog → {index, previewMode}",
     ),
     ("app.home", "Home", "", "{} shows the Home screen (new file presets, Open) over the open documents; choosing a document tab returns to it"),
-    ("edit.preferences", "Preferences…", "Cmd+K", "{category?} open Preferences (engine: prefs.get / prefs.set / prefs.list)"),
+    ("edit.preferences", "Settings…", "Cmd+K", "{category?} open Settings (engine: prefs.get / prefs.set / prefs.list)"),
     ("edit.keyboardShortcuts", "Keyboard Shortcuts…", "Cmd+Alt+Shift+K", "{}"),
     ("shortcuts.set", "Set Keyboard Shortcut", "", "{id: command id or tool:<id>, shortcut: \"Cmd+Shift+K\" | \"\" (none) | null (default), force?}"),
     ("shortcuts.list", "List Keyboard Shortcuts", "", "{query?} → [{id, label, group, shortcut, default, overridden}]"),

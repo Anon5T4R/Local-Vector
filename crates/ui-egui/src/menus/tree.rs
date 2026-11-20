@@ -138,7 +138,7 @@ pub fn menu_tree_named(english_names: bool) -> Vec<(&'static str, Vec<Item>)> {
                 c("Assign Profile…", "edit.assignProfile"),
                 Sep,
                 c("Keyboard Shortcuts…", "edit.keyboardShortcuts"),
-                c("Preferences…", "edit.preferences"),
+                c("Settings…", "edit.preferences"),
             ],
         ),
         (

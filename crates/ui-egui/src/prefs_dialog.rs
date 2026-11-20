@@ -184,9 +184,9 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
     let (mut ok, mut cancel, mut reset) = (false, false, false);
     let cat = d.str("__category");
     let cat = PREF_CATEGORIES.iter().find(|c| **c == cat).copied().unwrap_or(PREF_CATEGORIES[0]);
-    crate::dialogs::modal::show(ctx, tl!("Preferences"), egui::Id::unique("dialog-preferences"), -20.0, 20, |ui| {
+    crate::dialogs::modal::show(ctx, tl!("Settings"), egui::Id::unique("dialog-preferences"), -20.0, 20, |ui| {
         ui.set_width(760.0);
-        crate::dialogs::modal::heading(ui, tl!("Preferences"));
+        crate::dialogs::modal::heading(ui, tl!("Settings"));
         ui.add_space(12.0);
         ui.horizontal_top(|ui| {
             // Category list.
@@ -218,7 +218,7 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
         });
         ui.add_space(14.0);
         ui.horizontal(|ui| {
-            if widgets::secondary_button(ui, tl!("Reset Preferences"))
+            if widgets::secondary_button(ui, tl!("Reset Settings"))
                 .on_hover_text(tl!("Restore every preference to its default (applied on OK)"))
                 .clicked()
             {

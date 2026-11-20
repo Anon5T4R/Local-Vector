@@ -49,7 +49,7 @@ same kind once the file is picked, and its Export button writes the file. **File
 a plug-in too (on the web this is how plug-ins get in). A heavy filter asks before it is installed, and runs in the
 background ([below](#heavy-filters)).
 
-**Preference folder.** Edit › Preferences › Plug-ins & Scratch Disks › *Additional Plug-ins Folder*: when set, every
+**Preference folder.** Edit › Settings › Plug-ins & Scratch Disks › *Additional Plug-ins Folder*: when set, every
 `*.wasm` in that folder (not recursive) is installed at startup and whenever the preference changes (desktop builds;
 the web build installs from bytes).
 

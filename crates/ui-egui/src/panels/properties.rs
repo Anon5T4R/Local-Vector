@@ -711,7 +711,10 @@ fn document_sections(app: &mut LocalvectorApp, ui: &mut Ui) {
     });
     let w = (ui.available_width() - 6.0) / 2.0;
     ui.horizontal(|ui| {
-        if widgets::flat_button(ui, tl!("Document Setup"), w).clicked() {
+        if widgets::flat_button(ui, tl!("Document Setup"), w)
+            .on_hover_text(crate::shell::with_shortcut(tl!("Document Setup"), "file.documentSetup"))
+            .clicked()
+        {
             app.run("file.documentSetup", json!({})).ok();
         }
         if widgets::flat_button(ui, tl!("Edit Artboards"), w).clicked() {
@@ -760,7 +763,7 @@ fn document_sections(app: &mut LocalvectorApp, ui: &mut Ui) {
         app.ui.view.snap_to_grid ^= true;
     }
     divider(ui);
-    section_header(ui, tl!("Preferences"));
+    section_header(ui, tl!("Settings"));
     let fw = super::field_width(ui);
     ui.horizontal(|ui| {
         dim_label(ui, tl!("Keyboard Increment"));
@@ -779,7 +782,7 @@ fn document_sections(app: &mut LocalvectorApp, ui: &mut Ui) {
         if widgets::flat_button(ui, tl!("Document Setup"), w).clicked() {
             app.run("file.documentSetup", json!({})).ok();
         }
-        if widgets::flat_button(ui, tl!("Preferences"), w).clicked() {
+        if widgets::flat_button(ui, tl!("Settings"), w).on_hover_text(crate::shell::settings_tip()).clicked() {
             app.run("edit.preferences", json!({})).ok();
         }
     });

@@ -241,10 +241,13 @@ pub fn control_bar(app: &mut LocalvectorApp, ui: &mut Ui) {
                 ui.separator();
                 crate::panels::character::control_bar(app, ui);
                 if sel.is_empty() {
-                    if widgets::flat_button(ui, tl!("Document Setup"), 112.0).clicked() {
+                    if widgets::flat_button(ui, tl!("Document Setup"), 112.0)
+                        .on_hover_text(crate::shell::with_shortcut(tl!("Document Setup"), "file.documentSetup"))
+                        .clicked()
+                    {
                         app.run("file.documentSetup", json!({})).ok();
                     }
-                    if widgets::flat_button(ui, tl!("Preferences"), 90.0).clicked() {
+                    if widgets::flat_button(ui, tl!("Settings"), 90.0).on_hover_text(crate::shell::settings_tip()).clicked() {
                         app.run("edit.preferences", json!({})).ok();
                     }
                     return;

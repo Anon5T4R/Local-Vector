@@ -321,7 +321,7 @@ Tile Edge Color: Object → Pattern → Tile Edge Color… (`ui.tileEdgeColor`) 
 Window title bar: on Windows and Linux the window has no OS decorations and the app bar is the title bar. Its
 caption buttons (Minimize, Maximize/Restore, Close) sit at the bar's right end, 46 pt each; they are window chrome,
 not commands, so drive them with `ui.click` if needed. Close runs `app.quit` (the same `saveChanges` questions for
-modified documents), and empty bar space and the 5 pt window edges move and resize the window. Preferences › User
+modified documents), and empty bar space and the 5 pt window edges move and resize the window. Settings › User
 Interface › System Title Bar (`systemTitleBar`, read when the app starts) gives the window its OS decorations back
 instead: the OS title then shows the active document (`*name — Local Vector` with unsaved changes) and the app bar
 drops its brand mark. On macOS the window buttons are centred on the app bar; the web build is unchanged.
@@ -360,7 +360,7 @@ toolbar and return its slots; the edits (`ui.toolbar_edits`) are saved with the 
 the tools one per row (icon, name, shortcut), each flyout group framed together under its heading; its ☰ menu
 has Reset and the Basic and Advanced toolbars. Its Show section (`toolbar.show {control?, on?}`, `control` one
 of `fillStroke`, `coloring`, `drawMode`, `screenMode`) shows or hides the controls under the toolbar's tools,
-saved with the preferences (`ui.toolbar_show`). The toolbar names its groups only with Preferences › User
+saved with the preferences (`ui.toolbar_show`). The toolbar names its groups only with Settings › User
 Interface › Show Tool Group Labels, off as it ships (#1736).
 
 New Toolbar: Window › Toolbars › New Toolbar… (or New Toolbar… in the drawer's ☰ menu) asks for a name, and

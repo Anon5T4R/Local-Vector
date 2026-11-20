@@ -1402,9 +1402,9 @@ mod tests {
     #[test]
     fn assign_detects_conflicts() {
         let mut ov = Overrides::new();
-        // ⌘K is Preferences.
+        // ⌘K is Settings.
         let err = assign(&mut ov, "file.revert", Some("Cmd+K"), false).unwrap_err();
-        assert!(err.contains("Preferences"), "{err}");
+        assert!(err.contains("Settings"), "{err}");
         assert!(ov.is_empty());
         assert_eq!(conflicts_with(&ov, "Cmd+K", "file.revert"), vec!["edit.preferences".to_string()]);
     }
