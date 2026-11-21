@@ -483,10 +483,14 @@ fn body(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
     }
     let settings = settings_of(app, d);
     let mut browser = false;
+    // The 620 pt preview sits beside the 296 pt settings column; a narrow window (the 800 pt
+    // minimum) narrows the preview instead of pushing the window past the screen.
+    let room = (ui.ctx().content_rect().width() - 2.0 * (f32::from(super::MARGIN) + super::EDGE_GAP) - GAP - SIDE_W).max(240.0);
+    let preview_w = PREVIEW_W.min(room);
     ui.horizontal_top(|ui| {
         ui.vertical(|ui| {
-            ui.set_width(PREVIEW_W);
-            browser = preview_area(app, ui, d, &settings);
+            ui.set_width(preview_w);
+            browser = preview_area(app, ui, d, &settings, preview_w);
         });
         ui.add_space(GAP);
         ui.vertical(|ui| {
@@ -502,14 +506,14 @@ fn body(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
 
 /// The view tabs, the panes and the zoom and speed row. Returns whether Preview in Browser was
 /// clicked.
-fn preview_area(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, settings: &Result<WebSettings, String>) -> bool {
+fn preview_area(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, settings: &Result<WebSettings, String>, width: f32) -> bool {
     let t = Tokens::get(ui.ctx());
     let view = VIEWS.iter().position(|v| *v == d.str("__view")).unwrap_or(2);
     if let Some(i) = widgets::tab_bar(ui, &VIEW_LABELS, view) {
         d.fields.insert("__view".into(), json!(VIEWS[i]));
     }
     ui.add_space(4.0);
-    let (area, resp) = ui.allocate_exact_size(egui::vec2(PREVIEW_W, PREVIEW_H), egui::Sense::click_and_drag());
+    let (area, resp) = ui.allocate_exact_size(egui::vec2(width, PREVIEW_H), egui::Sense::click_and_drag());
     let pan_id = egui::Id::unique("save-for-web-pan");
     let mut pan: egui::Vec2 = ui.ctx().data(|m| m.get_temp(pan_id)).unwrap_or_default();
     if resp.dragged() {

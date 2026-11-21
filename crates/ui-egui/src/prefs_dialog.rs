@@ -185,7 +185,10 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
     let cat = d.str("__category");
     let cat = PREF_CATEGORIES.iter().find(|c| **c == cat).copied().unwrap_or(PREF_CATEGORIES[0]);
     crate::dialogs::modal::show(ctx, tl!("Settings"), egui::Id::unique("dialog-preferences"), -20.0, 20, |ui| {
-        ui.set_width(760.0);
+        // Never wider than the window (the 800 pt minimum leaves 744): the fields column takes
+        // what is left of the category list.
+        let room = (ui.ctx().content_rect().width() - 2.0 * 28.0).max(240.0);
+        ui.set_width(760.0_f32.min(room));
         crate::dialogs::modal::heading(ui, tl!("Settings"));
         ui.add_space(12.0);
         ui.horizontal_top(|ui| {
@@ -208,7 +211,7 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
             ui.add_space(14.0);
             // Fields.
             ui.vertical(|ui| {
-                ui.set_width(530.0);
+                ui.set_width(530.0_f32.min(ui.available_width()));
                 ui.label(egui::RichText::new(tl!(cat)).font(theme::semibold(14.0)).color(t.text_strong));
                 ui.add_space(8.0);
                 egui::ScrollArea::vertical().id_salt(("prefs", cat)).max_height(400.0).auto_shrink([false, false]).show(ui, |ui| {
@@ -427,11 +430,13 @@ fn bool_row(ui: &mut egui::Ui, d: &mut Dialog, key: &str, label: &str) {
 fn labeled(ui: &mut egui::Ui, label: &str, add: impl FnOnce(&mut egui::Ui)) {
     let t = Tokens::get(ui.ctx());
     ui.horizontal(|ui| {
-        ui.allocate_ui_with_layout(egui::vec2(210.0, 22.0), egui::Layout::left_to_right(egui::Align::Center), |ui| {
+        let l = ui.allocate_ui_with_layout(egui::vec2(210.0, 22.0), egui::Layout::left_to_right(egui::Align::Center), |ui| {
             ui.set_min_width(210.0);
-            ui.add(egui::Label::new(egui::RichText::new(format!("{}{}", tl!(label), tl!(":"))).color(t.text)).truncate());
+            ui.add(egui::Label::new(egui::RichText::new(format!("{}{}", tl!(label), tl!(":"))).color(t.text)).truncate())
         });
-        add(ui);
+        // The field(s) after the label read as the label's: screen readers and the harness's
+        // accessibility guard both.
+        ui.label_inputs_by(l.inner.id, add);
     });
 }
 

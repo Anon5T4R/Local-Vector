@@ -87,6 +87,14 @@ pub(crate) fn tick(app: &mut LocalvectorApp, ctx: &egui::Context) {
     let _ = (app, ctx);
 }
 
+/// Test-only: offer a release the way a completed check would, and report whether the prompt is
+/// up (the update card the width guard checks).
+#[cfg(test)]
+pub(crate) fn offer_for_test(app: &mut LocalvectorApp, release: craft_update::Release) -> bool {
+    app.updates_rt.updater.offer(release);
+    app.updates_rt.updater.prompt_open()
+}
+
 pub(crate) fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
     #[cfg(not(target_arch = "wasm32"))]
     {
