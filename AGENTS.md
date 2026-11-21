@@ -23,7 +23,7 @@ App de ilustração vetorial: roda nativo em macOS, Windows, Linux e FreeBSD, e 
 - `assets/` — ícones, fontes (`craft-fonts` vendored), ícones Lucide; cada arquivo tem
   linha em `ASSETS.md`
 - `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar FHS com `install.sh`), Arch (PKGBUILD), macOS, FreeBSD, web
-- `docs/` — arquitetura, formatos, paridade, release
+- `docs/` - arquitetura, formatos, notas de design por área, release
 - `scripts/check-mirror.sh` — confere as crates e os assets (`craft-fonts`) espelhados do `local-libs` contra a fonte (CI e `xtask ci`)
 - `xtask/` — tarefas de build/CI (`cargo xtask ci`, `fmt`, `layers`, `wasm`, `assets`)
 
@@ -160,16 +160,11 @@ testes, doctests, layers, wasm, e os gates `assets`, `brands` e `cursors`). Um i
   `localvector-cli bench ARQUIVO`.
 
 ## Roadmap e docs de progresso
-- [`ROADMAP.md`](ROADMAP.md): estágio, números de manchete, dimensões, features, o que vem.
-- [`docs/target-app-parity.md`](docs/target-app-parity.md): a avaliação de paridade (tabela, método,
-  evidência). [`docs/gaps.md`](docs/gaps.md): toda lacuna conhecida, ranqueada.
-- Checklists: [`ui-parity.md`](docs/ui-parity.md), [`file-format-parity.md`](docs/file-format-parity.md),
-  [`hardware-parity.md`](docs/hardware-parity.md), [`localization-parity.md`](docs/localization-parity.md),
-  [`effects-parity.md`](docs/effects-parity.md), [`type-parity.md`](docs/type-parity.md);
-  [`architecture.md`](docs/architecture.md).
-- Quando uma tarefa entra, atualize no mesmo PR: a linha da área em `docs/target-app-parity.md` e
-  sua evidência, a entrada em `docs/gaps.md` se fechou ou encolheu, o checklist a que pertence, o
-  marco em `docs/roadmap.md`, e as tabelas e o log do ROADMAP quando um número de manchete muda.
+- [`ROADMAP.md`](ROADMAP.md): estágio, números de manchete e a fila do que falta — a casa única do
+  estado do app. Quando uma tarefa muda um número de manchete ou abre/fecha item da fila, atualize
+  lá no mesmo PR.
+- [`docs/architecture.md`](docs/architecture.md): a arquitetura. O restante de `docs/` são notas de
+  design e comportamento por área (`docs/*.md`).
 - Avalie por comportamento contra a documentação pública, não por existir item de menu. As notas
   são auto-avaliadas: erre para baixo; marque cada número como medido ou estimado.
 - Mantenha a seção Status do README em passo com o ROADMAP.
