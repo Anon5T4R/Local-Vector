@@ -91,6 +91,8 @@ use tests::{
     synthetic as tests_synthetic, sysclip as tests_sysclip,
 };
 #[cfg(test)]
+mod narrow_tests;
+#[cfg(test)]
 mod shell_tests;
 #[cfg(test)]
 mod tests;

@@ -204,9 +204,15 @@ fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
         // window.
         super::modal::drag_band(ui, ui.max_rect().top() + 44.0);
         ui.horizontal_top(|ui| {
+            // The presets column is 640 pt beside the 292 pt details; a narrow window (the 800 pt
+            // minimum) narrows it instead of pushing the window past the screen, and the preset
+            // cards wrap to as many per row as the narrower column holds. The screen's own width,
+            // not `available_width` (infinite while the window measures itself), decides.
+            let room = (ui.ctx().content_rect().width() - 2.0 * (f32::from(super::MARGIN) + super::EDGE_GAP)).max(super::EDGE_GAP);
+            let left = (room - DETAILS - 90.0).clamp(240.0, 640.0);
             egui::Frame::NONE.inner_margin(egui::Margin { left: 22, right: 14, top: 14, bottom: 18 }).show(ui, |ui| {
                 ui.vertical(|ui| {
-                    ui.set_width(640.0);
+                    ui.set_width(left);
                     ui.set_min_height(HEIGHT - 32.0);
                     b.create |= presets(app, ui, &mut d);
                 });
@@ -229,7 +235,7 @@ fn presets(app: &LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
     let t = Tokens::get(ui.ctx());
     let names: Vec<&str> = newdoc::category_names().collect();
     let cat = names.iter().position(|n| n.eq_ignore_ascii_case(&d.str("category"))).unwrap_or(0);
-    if let Some(i) = widgets::tab_bar(ui, &names, cat) {
+    if let Some(i) = widgets::tab_bar_wrapped(ui, &names, cat) {
         d.fields.insert("category".into(), json!(names[i]));
         // A tab opens on its first preset, so the details match its cards.
         if let Some(first) = names.get(i).and_then(|c| newdoc::category(&app.session, c)).and_then(|v| v.into_iter().next()) {
@@ -329,7 +335,7 @@ fn details(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, b: &mut 
     ui.label(egui::RichText::new(tl!("PRESET DETAILS")).font(theme::semibold(11.0)).color(t.text_dim));
     ui.add_space(8.0);
     ui.horizontal(|ui| {
-        form::text(ui, d, "name", DETAILS - 50.0);
+        form::text_named(ui, d, "name", tl!("Name"), DETAILS - 50.0);
         save_button(app, ui, d);
     });
     if d.bool(SAVING) {
@@ -339,14 +345,14 @@ fn details(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, b: &mut 
     let unit = unit(d);
     form::caption(ui, tl!("Width"));
     ui.horizontal(|ui| {
-        form::length(ui, d, "width", unit, DETAILS - 124.0);
+        form::length_named(ui, d, "width", tl!("Width"), unit, DETAILS - 124.0);
         units_dropdown(ui, d, 112.0);
     });
     ui.add_space(4.0);
     ui.horizontal_top(|ui| {
         ui.vertical(|ui| {
             form::caption(ui, tl!("Height"));
-            form::length(ui, d, "height", unit, 104.0);
+            form::length_named(ui, d, "height", tl!("Height"), unit, 104.0);
         });
         ui.add_space(6.0);
         ui.vertical(|ui| {
@@ -421,7 +427,7 @@ fn save_row(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) {
 
 fn units_dropdown(ui: &mut egui::Ui, d: &mut Dialog, width: f32) {
     let labels = UNITS.map(Unit::label);
-    if let Some(u) = widgets::dropdown(ui, "newdoc-units", unit(d).label(), &labels, width).and_then(|i| UNITS.get(i)) {
+    if let Some(u) = widgets::dropdown_named(ui, "newdoc-units", Some(tl!("Units")), unit(d).label(), &labels, width).and_then(|i| UNITS.get(i)) {
         d.fields.insert("units".into(), json!(u.label()));
     }
 }
@@ -452,7 +458,7 @@ fn orientation(ui: &mut egui::Ui, d: &mut Dialog) {
 fn artboards(ui: &mut egui::Ui, d: &mut Dialog, width: f32) {
     let n = d.f64("artboards", 1.0);
     ui.horizontal(|ui| {
-        if let Some(v) = widgets::spin_plain(ui, "newdoc-artboards", n, "", 0, width, 1.0, 1.0, &[]) {
+        if let Some(v) = widgets::spin_plain_named(ui, "newdoc-artboards", Some(tl!("Artboards")), n, "", 0, width, 1.0, 1.0, &[]) {
             d.fields.insert("artboards".into(), json!(v.round().clamp(1.0, MAX_ARTBOARDS as f64) as u64));
         }
     });
@@ -464,7 +470,10 @@ fn background(ui: &mut egui::Ui, d: &mut Dialog, width: f32) {
     let cur = d.str("backgroundContents");
     let shown = BACKGROUNDS.iter().find(|(v, _)| *v == cur).map_or(BACKGROUNDS[0].1, |(_, l)| l);
     ui.horizontal(|ui| {
-        if let Some((v, _)) = widgets::dropdown(ui, "newdoc-background", shown, &BACKGROUNDS.map(|b| b.1), width).and_then(|i| BACKGROUNDS.get(i)) {
+        if let Some((v, _)) =
+            widgets::dropdown_named(ui, "newdoc-background", Some(tl!("Background Contents")), shown, &BACKGROUNDS.map(|b| b.1), width)
+                .and_then(|i| BACKGROUNDS.get(i))
+        {
             d.fields.insert("backgroundContents".into(), json!(v));
         }
         let (chip, _) = ui.allocate_exact_size(egui::vec2(22.0, 22.0), egui::Sense::hover());
