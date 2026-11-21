@@ -453,7 +453,7 @@ fn rotate_and_shear_fields_are_named() {
     app.run("file.new", json!({"width": 300, "height": 300})).unwrap();
     app.run("shape.rectangle", json!({"x": 20, "y": 20, "width": 100, "height": 50})).unwrap();
     let mut fonts = false;
-    let mut h = egui_kittest::Harness::builder().with_size(egui::vec2(280.0, 500.0)).with_accessibility_check(false).build_ui_state(
+    let mut h = egui_kittest::Harness::builder().with_size(egui::vec2(280.0, 500.0)).build_ui_state(
         move |ui, app: &mut LocalvectorApp| {
             if !std::mem::replace(&mut fonts, true) {
                 crate::theme::install_fonts(ui.ctx());

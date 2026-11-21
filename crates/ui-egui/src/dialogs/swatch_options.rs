@@ -221,7 +221,7 @@ fn sliders(ui: &mut egui::Ui, d: &mut Dialog) -> bool {
                         new = Some((from_components(mode, &c2), c2));
                     }
                     let bounds = f64::from(mode.min(i))..=f64::from(mode.max(i));
-                    if let Some(fv) = widgets::range_field(ui, ("swatch-field", i), f64::from(v), bounds, mode.suffix(i), 0, 52.0) {
+                    if let Some(fv) = widgets::range_field_named(ui, ("swatch-field", i), Some(lbl), f64::from(v), bounds, mode.suffix(i), 0, 52.0) {
                         let mut c2 = comps.clone();
                         c2[i] = (fv as f32).clamp(mode.min(i), mode.max(i));
                         new = Some((from_components(mode, &c2), c2));
@@ -266,14 +266,15 @@ fn hex_field(ui: &mut egui::Ui, hex: &str) -> Option<Color> {
         .inner_margin(egui::Margin::symmetric(6, 4))
         .show(ui, |ui| {
             crate::theme::strong_selected_text(ui);
-            ui.add(
+            let r = ui.add(
                 egui::TextEdit::singleline(&mut buf)
                     .id(id)
                     .frame(egui::Frame::NONE)
                     .align(egui::Align2::LEFT_CENTER)
                     .desired_width(70.0)
                     .char_limit(7),
-            )
+            );
+            r.accessible_name(tl!("Color:"))
         })
         .inner;
     let focused = ui.memory(|m| m.has_focus(id));

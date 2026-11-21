@@ -665,9 +665,9 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
         crate::dialogs::modal::heading(ui, tl!("Import Shortcut Set"));
         ui.add_space(10.0);
         ui.horizontal(|ui| {
-            ui.label(egui::RichText::new(tl!("Name:")).color(t.text_dim));
+            let label = ui.label(egui::RichText::new(tl!("Name:")).color(t.text_dim));
             let mut name = d.str("name");
-            if ui.add(egui::TextEdit::singleline(&mut name).align(egui::Align2::LEFT_CENTER).desired_width(260.0)).changed() {
+            if ui.add(egui::TextEdit::singleline(&mut name).align(egui::Align2::LEFT_CENTER).desired_width(260.0)).labelled_by(label.id).changed() {
                 d.fields.insert("name".into(), json!(name));
             }
         });
@@ -813,7 +813,8 @@ fn keys_section(ui: &mut egui::Ui, d: &mut Dialog, review: &mut Review, height: 
                     let options: Vec<String> = MODIFIERS.iter().map(|m| pretty_mods(m)).collect();
                     let names: Vec<&str> = options.iter().map(String::as_str).collect();
                     if let Some(m) =
-                        widgets::dropdown_names(ui, ("shortcut-import-mods", code), &current, &names, 144.0).and_then(|i| MODIFIERS.get(i))
+                        widgets::dropdown_names_named(ui, ("shortcut-import-mods", code), Some(&format!("Modifiers {code}")), &current, &names, 144.0)
+                            .and_then(|i| MODIFIERS.get(i))
                     {
                         c.text = Some(m.to_string());
                         c.from = "you".into();
@@ -867,7 +868,11 @@ fn rows_section(ui: &mut egui::Ui, d: &mut Dialog, review: &mut Review, statuses
             }
             ui.add_space(8.0);
             let mut q = d.str("__query");
-            if ui.add(egui::TextEdit::singleline(&mut q).align(egui::Align2::LEFT_CENTER).hint_text(tl!("Search")).desired_width(180.0)).changed() {
+            if ui
+                .add(egui::TextEdit::singleline(&mut q).align(egui::Align2::LEFT_CENTER).hint_text(tl!("Search")).desired_width(180.0))
+                .accessible_name(tl!("Search"))
+                .changed()
+            {
                 d.fields.insert("__query".into(), json!(q));
             }
         });

@@ -222,9 +222,9 @@ pub(crate) fn show_dialog(app: &mut LocalvectorApp, ctx: &egui::Context) {
         crate::dialogs::modal::heading(ui, tl!("New Toolbar"));
         ui.add_space(12.0);
         ui.horizontal(|ui| {
-            ui.label(egui::RichText::new(tl!("Name:")).color(t.text_dim));
+            let label = ui.label(egui::RichText::new(tl!("Name:")).color(t.text_dim));
             let mut name = d.str("name");
-            if ui.add(egui::TextEdit::singleline(&mut name).desired_width(220.0)).changed() {
+            if ui.add(egui::TextEdit::singleline(&mut name).desired_width(220.0)).labelled_by(label.id).changed() {
                 d.fields.insert("name".into(), json!(name));
             }
         });

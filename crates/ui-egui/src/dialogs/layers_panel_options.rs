@@ -55,7 +55,10 @@ fn body(_: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
             }
             let v = d.f64("otherSize", f64::from(ROW_MEDIUM));
             let other = d.str("rowSize") == "other";
-            if let Some(v) = ui.add_enabled_ui(other, |ui| widgets::range_field(ui, "otherSize", v, 12.0..=100.0, " pt", 0, 60.0)).inner {
+            if let Some(v) = ui
+                .add_enabled_ui(other, |ui| widgets::range_field_named(ui, "otherSize", Some(tl!("Other Size:")), v, 12.0..=100.0, " pt", 0, 60.0))
+                .inner
+            {
                 d.fields.insert("otherSize".into(), json!(v));
             }
         });

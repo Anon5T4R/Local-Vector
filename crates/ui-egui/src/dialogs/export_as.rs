@@ -77,7 +77,7 @@ fn body(_: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
     let Some(f) = chosen(d) else { return false };
     let missing = unavailable(d);
     egui::Grid::new("export-as").num_columns(2).spacing([10.0, 8.0]).show(ui, |ui| {
-        ui.label(egui::RichText::new(tl!("Format:")).color(t.text_dim));
+        widgets::field_label(ui, egui::RichText::new(tl!("Format:")).color(t.text_dim));
         let shown = missing.map_or(f.label, |(label, _)| label);
         let all = formats();
         let labels: Vec<&str> = all.iter().map(|f| f.label).chain(UNAVAILABLE.iter().map(|u| u.1)).collect();
@@ -103,7 +103,11 @@ fn body(_: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
                 d.fields.insert("all".into(), json!(all));
             }
             let mut range = d.str("range");
-            if ui.add_enabled(!all, egui::TextEdit::singleline(&mut range).align(egui::Align2::LEFT_CENTER).desired_width(90.0)).changed() {
+            if ui
+                .add_enabled(!all, egui::TextEdit::singleline(&mut range).align(egui::Align2::LEFT_CENTER).desired_width(90.0))
+                .accessible_name(tl!("Range:"))
+                .changed()
+            {
                 d.fields.insert("range".into(), json!(range));
             }
         });

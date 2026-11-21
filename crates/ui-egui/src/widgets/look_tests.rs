@@ -320,10 +320,12 @@ fn a_label_rows_input_is_named_by_the_row_label() {
 fn a_label_does_not_name_a_field_after_another_widget() {
     use egui_kittest::kittest::Queryable;
     crate::i18n::set_current(crate::i18n::Lang::EN);
-    let mut h = egui_kittest::Harness::builder().with_size(vec2(400.0, 200.0)).with_accessibility_check(false).build_ui(|ui| {
+    let mut h = egui_kittest::Harness::builder().with_size(vec2(400.0, 200.0)).build_ui(|ui| {
         field_label(ui, "Opacity");
         let _ = check(ui, "Preview", true, true);
-        let _ = spin_field(ui, "unrelated", Some(50.0), Unit::Points, 80.0, 1.0, 0.0, &[]);
+        // Named by itself: the row under test is which label this field reads, not whether it
+        // has one, so the harness keeps its accessibility guard on.
+        let _ = spin_field_named(ui, "unrelated", Some("Unrelated"), Some(50.0), Unit::Points, 80.0, 1.0, 0.0, &[]);
     });
     h.run_steps(2);
     assert!(
@@ -385,6 +387,9 @@ fn a_combos_keyboard_guard_reads_the_combos_own_button_id() {
         let expected = combo_button_id(ui, &"combo-guard-test");
         let response = craft_ui::ComboBox::from_id_salt("combo-guard-test").selected_text("One").show_ui(ui, |_| ());
         seen.set(expected == response.response.id);
+        // The combo carries no visible label in this harness; name it so the row keeps the
+        // accessibility guard on.
+        response.response.accessible_name("One");
     });
     h.run_steps(2);
     assert!(same.get(), "the guard's id is the ComboBox button's id");

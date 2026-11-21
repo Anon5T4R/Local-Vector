@@ -84,6 +84,7 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
         let fam = d.str("family");
         ui.horizontal(|ui| {
             // Picks the font only: nothing is previewed on the document.
+            widgets::field_label(ui, tl!("Family"));
             let pick = font_menu::font_menu(ui, "ff-family", &fam, 220.0, sample.as_deref(), font_menu::MenuLook::of(app));
             if let Some((f, style)) = font_menu::picked(app, pick) {
                 d.fields.insert("family".into(), json!(f));
@@ -96,6 +97,7 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
             opts.extend(styles.iter().map(String::as_str));
             let style = d.str("style");
             let cur = if style.is_empty() { closest } else { style.as_str() };
+            widgets::field_label(ui, tl!("Style"));
             if let Some(i) = widgets::dropdown_names(ui, "ff-style", cur, &opts, 120.0) {
                 d.fields.insert("style".into(), json!(if i == 0 { String::new() } else { styles[i - 1].clone() }));
             }

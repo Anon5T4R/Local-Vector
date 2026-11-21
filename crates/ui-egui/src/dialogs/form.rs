@@ -47,6 +47,15 @@ pub(super) fn length(ui: &mut egui::Ui, d: &mut Dialog, key: &str, unit: Unit, w
     length_within(ui, d, key, unit, width, None)
 }
 
+/// [`length`] whose field carries `name`: the caption above it, which is not an adjacent label
+/// widget the field could read.
+pub(super) fn length_named(ui: &mut egui::Ui, d: &mut Dialog, key: &str, name: &str, unit: Unit, width: f32) -> bool {
+    let value = d.fields.contains_key(key).then(|| d.f64(key, 0.0));
+    let Some(v) = crate::widgets::num_field_named(ui, ("dlg-len", key), Some(name), value, unit, width) else { return false };
+    d.fields.insert(key.into(), json!(v));
+    true
+}
+
 /// [`length`] whose value is kept within `range` (points): a value typed outside it becomes the
 /// nearer end, so the field shows the distance the command applies (#4637).
 pub(crate) fn length_within(

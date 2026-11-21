@@ -160,7 +160,7 @@ fn choice<V: Into<Value> + Copy>(ui: &mut egui::Ui, d: &mut Dialog, key: &str, l
     let current = forced.map(Into::into).or_else(|| d.fields.get(key).cloned()).unwrap_or(Value::Null);
     let shown = choices.iter().find(|(v, _)| (*v).into() == current).or(choices.first()).map_or("", |(_, l)| *l);
     let labels: Vec<&str> = choices.iter().map(|(_, l)| *l).collect();
-    let picked = ui.add_enabled_ui(forced.is_none(), |ui| widgets::dropdown(ui, key, shown, &labels, 250.0)).inner;
+    let picked = ui.add_enabled_ui(forced.is_none(), |ui| widgets::dropdown_named(ui, key, Some(label), shown, &labels, 250.0)).inner;
     if let Some((v, _)) = picked.and_then(|i| choices.get(i)) {
         d.fields.insert(key.into(), (*v).into());
     }

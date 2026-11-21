@@ -693,7 +693,7 @@ fn inline_stroke_weight_and_effect_fields_are_named() {
     app.run("appearance.addStroke", json!({})).unwrap();
     app.run("effect.apply", json!({"effect": "stylize.dropShadow"})).unwrap();
     let mut first = true;
-    let mut h = egui_kittest::Harness::builder().with_size(egui::vec2(360.0, 760.0)).with_accessibility_check(false).build_ui_state(
+    let mut h = egui_kittest::Harness::builder().with_size(egui::vec2(360.0, 760.0)).build_ui_state(
         move |ui, app: &mut LocalvectorApp| {
             if std::mem::replace(&mut first, false) {
                 crate::theme::install_fonts(ui.ctx());

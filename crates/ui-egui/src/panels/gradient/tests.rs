@@ -585,7 +585,7 @@ fn angle_and_aspect_fields_are_named() {
     use egui_kittest::kittest::Queryable;
     let app = app(json!({"gradient": {}}));
     let mut fonts = false;
-    let mut h = egui_kittest::Harness::builder().with_size(egui::vec2(280.0, 640.0)).with_accessibility_check(false).build_ui_state(
+    let mut h = egui_kittest::Harness::builder().with_size(egui::vec2(280.0, 640.0)).build_ui_state(
         move |ui, app: &mut LocalvectorApp| {
             if !std::mem::replace(&mut fonts, true) {
                 crate::theme::install_fonts(ui.ctx());
@@ -608,7 +608,7 @@ fn the_stop_popover_has_an_eyedropper_for_a_stop() {
     const TIP: &str = "Eyedropper: click the art to sample the stop's colour";
     let harness = |app: LocalvectorApp| {
         let mut fonts = false;
-        egui_kittest::Harness::builder().with_size(egui::vec2(800.0, 700.0)).with_accessibility_check(false).build_ui_state(
+        egui_kittest::Harness::builder().with_size(egui::vec2(800.0, 700.0)).build_ui_state(
             move |ui, app: &mut LocalvectorApp| {
                 if !std::mem::replace(&mut fonts, true) {
                     crate::theme::install_fonts(ui.ctx());
