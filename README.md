@@ -60,8 +60,7 @@ describes what the workflow builds and publishes. Contributors and agents start 
 ## Status
 
 Local Vector is under active development. [**ROADMAP.md**](ROADMAP.md) has the stage, the numbers by
-dimension and what's next; [`docs/target-app-parity.md`](docs/target-app-parity.md) the full parity
-assessment and [`docs/gaps.md`](docs/gaps.md) the ranked list of what's missing.
+dimension and what's next.
 
 **Where we are: alpha.** Drawing and path tools, Pathfinder and Shape Builder, paint, gradients,
 appearance and transparency, type, artboards and files (SVG, PDF and PDF-compatible `.ai`, EPS, DXF,

@@ -42,15 +42,13 @@ the control channel, the CLI and MCP all reach the same registry, so anything a 
 
 The canvas is rasterized on the CPU by `vello_cpu` on worker threads, off the UI thread, with caches per object
 and per effect; the GPU (wgpu: Metal, DX12, Vulkan/GL; WebGPU/WebGL2 on the web) only composites the result. Raster
-effects are rendered offscreen per object and cached while panning. See
-[hardware-parity.md](hardware-parity.md).
+effects are rendered offscreen per object and cached while panning.
 
 ## Files
 
 The native `.vectorcraft` format is versioned, compressed JSON with embedded images, saved atomically, readable
 down to v1 and from the old `.drawcraft` name. The `FORMATS` table in `crates/engine/src/cmd/fileio/formats.rs`
-lists every format read or written; importers are fuzzed (`crates/engine/tests/import_fuzz.rs`). See
-[file-format-parity.md](file-format-parity.md).
+lists every format read or written; importers are fuzzed (`crates/engine/tests/import_fuzz.rs`).
 
 Desktop printer discovery and PDF submission use `craft-print`, pinned to an immutable
 craft-libs revision. The engine still owns sheet composition, copies, separations and colour
