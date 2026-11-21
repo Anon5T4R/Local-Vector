@@ -487,7 +487,9 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
             let sel = d.str("selected");
             ui.horizontal(|ui| {
                 let mut name = d.str("name");
-                if ui.add(egui::TextEdit::singleline(&mut name).align(egui::Align2::LEFT_CENTER).desired_width(180.0)).changed() {
+                let field =
+                    ui.add(egui::TextEdit::singleline(&mut name).align(egui::Align2::LEFT_CENTER).desired_width(180.0)).accessible_name(tl!("Name"));
+                if field.changed() {
                     d.fields.insert("name".into(), json!(name));
                 }
                 if ui.button(tl!("New")).on_hover_text(tl!("Save the current layout under this name")).clicked() {
@@ -504,9 +506,9 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
             });
         } else {
             ui.horizontal(|ui| {
-                ui.label(egui::RichText::new(tl!("Name:")).color(t.text_dim));
+                let label = ui.label(egui::RichText::new(tl!("Name:")).color(t.text_dim));
                 let mut name = d.str("name");
-                let r = ui.add(egui::TextEdit::singleline(&mut name).align(egui::Align2::LEFT_CENTER).desired_width(240.0));
+                let r = ui.add(egui::TextEdit::singleline(&mut name).align(egui::Align2::LEFT_CENTER).desired_width(240.0)).labelled_by(label.id);
                 if r.changed() {
                     d.fields.insert("name".into(), json!(name));
                 }
