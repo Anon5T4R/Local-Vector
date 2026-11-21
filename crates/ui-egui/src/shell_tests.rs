@@ -18,7 +18,7 @@ fn sized(size: egui::Vec2) -> Harness<'static, LocalvectorApp> {
     app.run("prefs.set", json!({"key": "interfaceLanguage", "value": "en"})).unwrap();
     app.run("prefs.set", json!({"key": "uiBrightness", "value": "system"})).unwrap();
     app.run("file.new", json!({"width": 200, "height": 200})).unwrap();
-    let mut h = Harness::builder().with_size(size).with_max_steps(64).with_accessibility_check(false).build_ui_state(
+    let mut h = Harness::builder().with_size(size).with_max_steps(64).build_ui_state(
         |ui, app: &mut LocalvectorApp| {
             app.begin_host_iteration();
             app.tick(ui.ctx());
@@ -209,6 +209,38 @@ fn the_palette_keeps_its_own_shortcut_and_escape_closes_it() {
     h.key_press(Key::Escape);
     h.run_steps(3);
     assert!(!h.state().ui.palette_open, "Escape closes it");
+}
+
+/// Like the suite's `craft-palette` (João's finding): a click outside the palette closes it, a
+/// click inside it does not. The box is 520 pt wide, anchored CENTER_TOP 72 pt down: in the
+/// 1280-pt harness it spans x 380–900, so the search field's row is inside and the window's
+/// corner is outside.
+#[test]
+fn the_palette_closes_on_a_click_outside_but_not_inside() {
+    fn click(h: &mut Harness<'static, LocalvectorApp>, pos: egui::Pos2) {
+        let push = |h: &mut Harness<'static, LocalvectorApp>, event: egui::Event| h.input_mut().events.push(event);
+        push(h, egui::Event::PointerMoved(pos));
+        h.run_steps(1);
+        let button = egui::PointerButton::Primary;
+        push(h, egui::Event::PointerButton { pos, button, pressed: true, modifiers: egui::Modifiers::NONE });
+        h.run_steps(1);
+        push(h, egui::Event::PointerButton { pos, button, pressed: false, modifiers: egui::Modifiers::NONE });
+        h.run_steps(2);
+    }
+
+    let mut h = harness();
+    h.state_mut().ui.palette_open = true;
+    h.run_steps(3);
+    assert!(h.state().palette_box.is_open(), "the palette is shown");
+
+    // Inside, on the search field's row: stays open.
+    click(&mut h, egui::pos2(640.0, 95.0));
+    assert!(h.state().ui.palette_open, "a click inside does not close the palette");
+
+    // Outside, at the window's top-left corner: closes, and the app's flag follows the box.
+    click(&mut h, egui::pos2(4.0, 4.0));
+    assert!(!h.state().ui.palette_open, "a click outside closes the palette");
+    assert!(!h.state().palette_box.is_open(), "the box closed with it");
 }
 
 /// A command the menu disables is listed (so it is learned) and does not run, as in the menu.
