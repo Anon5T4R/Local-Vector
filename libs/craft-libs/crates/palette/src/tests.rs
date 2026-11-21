@@ -98,3 +98,59 @@ fn nothing_found_says_so() {
     harness.run_steps(2);
     let _ = harness.get_by_label("Nada encontrado");
 }
+
+/// The box has the keyboard as soon as the palette opens, and a long list scrolls: the arrows bring the selected
+/// row into the visible part of the list (the wheel scrolls the same area).
+#[test]
+fn the_box_has_focus_and_a_long_list_scrolls_to_the_selection() {
+    let mut palette = Palette::default();
+    palette.open();
+    let commands: Vec<Command> = (0..60).map(|i| Command::new(format!("c{i}"), format!("Command {i:02}"), "Group")).collect();
+    let state = State { palette, commands, ran: Vec::new() };
+    let mut harness = Harness::builder().with_size(egui::vec2(800.0, 600.0)).build_ui_state(
+        |ui, state: &mut State| {
+            let labels = Labels { placeholder: "Buscar comandos", empty: "Nada encontrado" };
+            let ctx = ui.ctx().clone();
+            if let Some(id) = state.palette.show(&ctx, &labels, &state.commands) {
+                state.ran.push(id);
+            }
+        },
+        state,
+    );
+    harness.run_steps(3);
+    assert!(harness.get_by_role(egui::accesskit::Role::TextInput).is_focused(), "the search box takes the keyboard on open");
+    let top = harness.get_by_label("Command 00").rect().top();
+    for _ in 0..40 {
+        harness.key_press(egui::Key::ArrowDown);
+        harness.run_steps(1);
+    }
+    harness.run_steps(10);
+    let selected = harness.get_by_label("Command 40").rect();
+    let list_bottom = top + 320.0;
+    assert!(
+        selected.top() >= top - 1.0 && selected.bottom() <= list_bottom + 1.0,
+        "row 40 scrolled into view: {selected:?}, list {top}..{list_bottom}"
+    );
+    harness.key_press(egui::Key::Enter);
+    harness.run_steps(2);
+    assert_eq!(harness.state().ran, vec!["c40".to_string()]);
+}
+
+/// In a window narrower than the palette's measure, the box fits inside it (with the gutter) instead of being cut.
+#[test]
+fn the_palette_fits_a_narrow_window() {
+    let mut palette = Palette::default();
+    palette.open();
+    let state = State { palette, commands: commands(), ran: Vec::new() };
+    let mut harness = Harness::builder().with_size(egui::vec2(340.0, 500.0)).build_ui_state(
+        |ui, state: &mut State| {
+            let labels = Labels { placeholder: "Buscar comandos", empty: "Nada encontrado" };
+            let ctx = ui.ctx().clone();
+            let _ = state.palette.show(&ctx, &labels, &state.commands);
+        },
+        state,
+    );
+    harness.run_steps(3);
+    let input = harness.get_by_role(egui::accesskit::Role::TextInput).rect();
+    assert!(input.left() >= 0.0 && input.right() <= 340.0, "the box stays inside a 340 pt window: {input:?}");
+}
