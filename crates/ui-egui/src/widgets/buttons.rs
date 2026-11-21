@@ -124,14 +124,20 @@ fn primary_button_sized(ui: &mut Ui, text: &str, enabled: bool, min_width: f32) 
     let galley = ui.painter().layout_no_wrap(tl!(text).to_string(), theme::semibold(12.5), fg);
     let w = galley.size().x + 32.0;
     let (rect, resp) = ui.allocate_exact_size(vec2(w.max(min_width), 28.0), if enabled { Sense::click() } else { Sense::hover() });
-    let bg = match (enabled, resp.hovered()) {
+    let mut bg = match (enabled, resp.hovered()) {
         (false, _) => t.input,
-        (true, true) => t.accent,
-        (true, false) => t.accent_strong,
+        // The hover is a light ring, not a lighter fill: the lettering is white, and the plain
+        // accent under it reads under 4.5:1. The press darkens the fill instead.
+        (true, _) => t.accent_strong,
     };
+    if enabled && resp.is_pointer_button_down_on() {
+        bg = t.accent_strong.gamma_multiply(0.85);
+    }
     ui.painter().rect_filled(rect, CornerRadius::same(6), bg);
     if !enabled {
         ui.painter().rect_stroke(rect, CornerRadius::same(6), egui::Stroke::new(1.0, t.button_border), egui::StrokeKind::Inside);
+    } else if resp.hovered() && !resp.is_pointer_button_down_on() {
+        ui.painter().rect_stroke(rect, CornerRadius::same(6), egui::Stroke::new(1.0, Color32::WHITE.gamma_multiply(0.65)), egui::StrokeKind::Inside);
     }
     ui.painter().galley(rect.center() - galley.size() / 2.0, galley, fg);
     resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, enabled && ui.is_enabled(), tl!(text)));

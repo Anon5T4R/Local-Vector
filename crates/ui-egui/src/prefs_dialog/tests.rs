@@ -75,7 +75,8 @@ fn saved_scheme_accent_and_canvas_color_show_from_the_first_frame() {
         let (t, classic) = (Tokens::get(&ctx), Tokens::for_scheme(Scheme::Classic, app.ui.brightness, Accent::Pink));
         assert_eq!((t.accent, t.app_bar, t.panel), (classic.accent, classic.app_bar, classic.panel));
         assert_eq!(t.pasteboard, egui::Color32::WHITE);
-        assert_eq!(ctx.global_style().visuals.hyperlink_color, classic.accent);
+        // The link colour is the accent as text: the accent itself lifted to read on the panels.
+        assert_eq!(ctx.global_style().visuals.hyperlink_color, crate::theme::reads_on(classic.accent, [classic.panel, classic.app_bar]));
     }
 }
 
