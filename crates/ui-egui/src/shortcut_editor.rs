@@ -935,7 +935,8 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
             }
             // The sets listed are ours (translated); a set read from an imported file shows
             // its name as it is.
-            if let Some(&name) = crate::dialogs::mixed_dropdown(ui, "kbset", &cur, &opts, 200.0, |_| true).and_then(|i| opts.get(i))
+            if let Some(&name) =
+                crate::dialogs::mixed_dropdown_named(ui, "kbset", Some(tl!("Set:")), &cur, &opts, 200.0, |_| true).and_then(|i| opts.get(i))
                 && let Some(p) = preset(name)
             {
                 km.to_mut().set_overrides(p);
@@ -1059,7 +1060,7 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
         });
         let msg = d.str("__message");
         if !msg.is_empty() {
-            ui.label(egui::RichText::new(msg).color(t.accent_strong).size(11.5));
+            ui.label(egui::RichText::new(msg).color(crate::theme::reads_on(t.accent_strong, [t.panel])).size(11.5));
         }
         let n = match &km {
             Cow::Borrowed(_) => view.conflicts,

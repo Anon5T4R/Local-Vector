@@ -76,20 +76,20 @@ impl Accent {
         Self::ALL.into_iter().find(|a| a.id().eq_ignore_ascii_case(s))
     }
     /// (accent, accent_strong) on dark panels and on light ones; the strong one fills buttons
-    /// with white lettering.
+    /// with white lettering and is dark enough to hold WCAG AA (4.5:1) under it.
     fn colors(self, dark: bool) -> (u32, u32) {
         match (self, dark) {
-            (Accent::Coral, true) => (0xf06a52, 0xe8573f),
-            (Accent::Coral, false) => (0xd9472f, 0xd14a33),
-            (Accent::Blue, true) => (0x5b96ff, 0x2f74f0),
+            (Accent::Coral, true) => (0xf06a52, 0xc63e28),
+            (Accent::Coral, false) => (0xd9472f, 0xc64430),
+            (Accent::Blue, true) => (0x5b96ff, 0x2767dc),
             (Accent::Blue, false) => (0x2563eb, 0x1f5ad6),
             (Accent::Violet, true) => (0xa98bff, 0x7c55f0),
             (Accent::Violet, false) => (0x7146dc, 0x6a3fd4),
-            (Accent::Green, true) => (0x3fcf8e, 0x1f9d63),
+            (Accent::Green, true) => (0x3fcf8e, 0x168154),
             (Accent::Green, false) => (0x16955a, 0x14874f),
-            (Accent::Amber, true) => (0xf5b544, 0xc47f0e),
-            (Accent::Amber, false) => (0xb06d06, 0xb06d06),
-            (Accent::Pink, true) => (0xf36aa3, 0xdb3f7c),
+            (Accent::Amber, true) => (0xf5b544, 0x96620a),
+            (Accent::Amber, false) => (0xb06d06, 0x9c6005),
+            (Accent::Pink, true) => (0xf36aa3, 0xc42f6b),
             (Accent::Pink, false) => (0xcc3672, 0xc22e69),
         }
     }
@@ -201,7 +201,7 @@ impl Tokens {
             hover: hex(0x262b35),
             tool_active: hex(0x2f3541),
             accent: hex(0xf06a52),
-            accent_strong: hex(0xe8573f),
+            accent_strong: hex(0xc63e28),
             row_selected: hex(0x3a2a2c),
             pasteboard: hex(0x101217),
             ruler: hex(0x13161c),
@@ -274,7 +274,7 @@ impl Tokens {
                 hover: hex(0xc5ccd6),
                 tool_active: hex(0xb6bec9),
                 accent: hex(0xd9472f),
-                accent_strong: hex(0xd14a33),
+                accent_strong: hex(0xc64430),
                 flyout_active: hex(0xc23e28),
                 row_selected: hex(0xe7c4bd),
                 pasteboard: hex(0xb9c0cb),
@@ -303,7 +303,7 @@ impl Tokens {
                 hover: hex(0xe3e7ed),
                 tool_active: hex(0xd5dbe3),
                 accent: hex(0xd9472f),
-                accent_strong: hex(0xd14a33),
+                accent_strong: hex(0xc64430),
                 flyout_active: hex(0xc23e28),
                 row_selected: hex(0xf8d9d2),
                 pasteboard: hex(0xdfe3e9),
@@ -588,6 +588,36 @@ fn add_craft_fonts(fonts: &mut FontDefinitions) {
     }
 }
 
+/// WCAG 2 relative luminance of an opaque colour.
+fn wcag_luminance(c: Color32) -> f32 {
+    let lin = |v: u8| {
+        let x = f32::from(v) / 255.0;
+        if x <= 0.04045 { x / 12.92 } else { ((x + 0.055) / 1.055).powf(2.4) }
+    };
+    0.2126 * lin(c.r()) + 0.7152 * lin(c.g()) + 0.0722 * lin(c.b())
+}
+
+/// WCAG 2 contrast ratio between two opaque colours.
+fn wcag_contrast(a: Color32, b: Color32) -> f32 {
+    let (hi, lo) = if wcag_luminance(a) > wcag_luminance(b) { (a, b) } else { (b, a) };
+    (wcag_luminance(hi) + 0.05) / (wcag_luminance(lo) + 0.05)
+}
+
+/// `c` moved in lightness, away from every ground, until it holds WCAG's AA 4.5:1 on each: the
+/// theme's accent as text (links) on the surfaces it can't read on as-is. A colour with nowhere
+/// to go (white on a mid ground) comes back unchanged and fails the theme's own tests.
+pub(crate) fn reads_on(mut c: Color32, grounds: impl IntoIterator<Item = Color32>) -> Color32 {
+    let grounds: Vec<Color32> = grounds.into_iter().collect();
+    let up = grounds.iter().all(|g| wcag_luminance(c) > wcag_luminance(*g));
+    for _ in 0..64 {
+        if grounds.iter().all(|g| wcag_contrast(c, *g) >= 4.5) {
+            break;
+        }
+        c = c.lerp_to_gamma(if up { Color32::WHITE } else { Color32::BLACK }, 0.05);
+    }
+    c
+}
+
 /// Apply tokens to egui's global style.
 pub fn apply(ctx: &egui::Context, b: Brightness) {
     apply_with(ctx, b, Accent::default(), Scheme::default());
@@ -616,7 +646,7 @@ pub fn apply_with(ctx: &egui::Context, b: Brightness, accent: Accent, scheme: Sc
     v.menu_corner_radius = CornerRadius::same(8);
     v.selection.bg_fill = t.accent.gamma_multiply(0.55);
     v.selection.stroke = Stroke::new(1.0, t.accent);
-    v.hyperlink_color = t.accent;
+    v.hyperlink_color = reads_on(t.accent, [t.panel, t.app_bar]);
     v.override_text_color = Some(t.text);
     v.popup_shadow = egui::epaint::Shadow { offset: [0, 4], blur: 14, spread: 0, color: Color32::from_black_alpha(if t.dark { 120 } else { 60 }) };
     v.window_shadow = egui::epaint::Shadow { offset: [0, 8], blur: 28, spread: 0, color: Color32::from_black_alpha(if t.dark { 140 } else { 70 }) };
@@ -769,5 +799,29 @@ mod tests {
         apply(&ctx, Brightness::Light);
         assert_eq!(ctx.global_style().interaction.tooltip_delay, f32::INFINITY);
         assert_eq!(ctx.global_style().visuals.window_fill, Tokens::for_brightness(Brightness::Light).panel);
+    }
+
+    /// The accent as text (the applied hyperlink colour) and as the primary button's ground
+    /// (white lettering on `accent_strong`) hold WCAG AA (4.5:1) in every brightness level,
+    /// accent colour and colour scheme, resting and pressed (the press darkens the fill).
+    #[test]
+    fn accent_text_and_primary_button_read_everywhere() {
+        for scheme in Scheme::ALL {
+            for b in Brightness::ALL {
+                for accent in Accent::ALL {
+                    let t = Tokens::for_scheme(scheme, b, accent);
+                    let which = format!("{scheme:?}/{b:?}/{}", accent.id());
+                    for k in [1.0, 0.85] {
+                        assert!(contrast(egui::Color32::WHITE, t.accent_strong.gamma_multiply(k)) >= 4.5, "{which}: primary button lettering at {k}");
+                    }
+                    let ctx = egui::Context::default();
+                    apply_with(&ctx, b, accent, scheme);
+                    let link = ctx.global_style().visuals.hyperlink_color;
+                    for ground in [t.panel, t.app_bar] {
+                        assert!(contrast(link, ground) >= 4.5, "{which}: link {} on {ground:?}", contrast(link, ground));
+                    }
+                }
+            }
+        }
     }
 }
