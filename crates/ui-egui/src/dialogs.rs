@@ -748,9 +748,22 @@ pub(crate) fn mixed_dropdown(
     width: f32,
     builtin: impl Fn(usize) -> bool,
 ) -> Option<usize> {
+    mixed_dropdown_named(ui, id, None, current, names, width, builtin)
+}
+
+/// [`mixed_dropdown`] for a row whose visible label is not an adjacent label widget.
+pub(crate) fn mixed_dropdown_named(
+    ui: &mut egui::Ui,
+    id: impl std::hash::Hash + std::fmt::Debug,
+    name: Option<&str>,
+    current: &str,
+    names: &[&str],
+    width: f32,
+    builtin: impl Fn(usize) -> bool,
+) -> Option<usize> {
     let shown = shown_names(crate::i18n::current(), names, builtin);
     let current = names.iter().position(|n| *n == current).and_then(|i| shown.get(i).copied()).unwrap_or(current);
-    widgets::dropdown_names(ui, id, current, &shown, width)
+    widgets::dropdown_names_named(ui, id, name, current, &shown, width)
 }
 
 #[cfg(test)]

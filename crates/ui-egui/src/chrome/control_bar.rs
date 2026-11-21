@@ -217,7 +217,7 @@ pub fn control_bar(app: &mut LocalvectorApp, ui: &mut Ui) {
                 if ui.link(egui::RichText::new(tl!("Opacity:")).size(12.0).color(t.text).underline()).clicked() {
                     app.ui.open_panel = Some("transparency".into());
                 }
-                if let Some(o) = widgets::plain_field(ui, "cb-opacity", opacity as f64 * 100.0, "%", 0, 56.0)
+                if let Some(o) = widgets::plain_field_named(ui, "cb-opacity", Some(tl!("Opacity:")), opacity as f64 * 100.0, "%", 0, 56.0)
                     && !sel.is_empty()
                 {
                     app.run("transparency.set", json!({"opacity": o.clamp(0.0, 100.0)})).ok();

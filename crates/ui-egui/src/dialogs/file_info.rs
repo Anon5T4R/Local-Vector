@@ -69,7 +69,7 @@ fn body(_app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
         ui.add_space(4.0);
     }
     top_row(ui, tl!("Description:"), |ui| {
-        form::text_area(ui, d, "description", FIELD, 3);
+        form::text_area_named(ui, d, "description", Some(tl!("Description:")), FIELD, 3);
     });
     ui.add_space(4.0);
     widgets::label_row(ui, tl!("Rating:"), LABEL, |ui| rating(ui, d));
@@ -79,7 +79,7 @@ fn body(_app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
             ui.set_max_width(FIELD + 12.0);
             chips(ui, d);
             ui.horizontal(|ui| {
-                let r = form::text_edit(ui, d, PENDING, FIELD - 70.0);
+                let r = form::text_edit_named(ui, d, PENDING, tl!("Keywords"), FIELD - 70.0);
                 let enter = r.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter));
                 if enter {
                     // Enter adds the keyword (it doesn't press OK) and keeps typing in the field.
@@ -100,11 +100,11 @@ fn body(_app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
     choice(ui, d, "copyrightStatus", tl!("Copyright Status:"), &statuses);
     ui.add_space(4.0);
     top_row(ui, tl!("Copyright Notice:"), |ui| {
-        form::text_area(ui, d, "copyrightNotice", FIELD, 2);
+        form::text_area_named(ui, d, "copyrightNotice", Some(tl!("Copyright Notice:")), FIELD, 2);
     });
     ui.add_space(4.0);
     widgets::label_row(ui, tl!("Copyright Info URL:"), LABEL, |ui| {
-        form::text(ui, d, "copyrightUrl", FIELD);
+        form::text_named(ui, d, "copyrightUrl", tl!("Copyright Info URL:"), FIELD);
     });
     ui.add_space(10.0);
     widgets::subheader(ui, tl!("Dates"));

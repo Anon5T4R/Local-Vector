@@ -191,7 +191,12 @@ fn body(_: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
                     toggle(ui, d, "dimImages", tl!("Dim Images to:"), true);
                     let v = d.f64("dimPercent", 50.0);
                     let dim = d.bool("dimImages");
-                    if let Some(v) = ui.add_enabled_ui(dim, |ui| crate::widgets::range_field(ui, "dimPercent", v, 0.0..=100.0, "%", 0, 52.0)).inner {
+                    if let Some(v) = ui
+                        .add_enabled_ui(dim, |ui| {
+                            crate::widgets::range_field_named(ui, "dimPercent", Some(tl!("Dim Images to:")), v, 0.0..=100.0, "%", 0, 52.0)
+                        })
+                        .inner
+                    {
                         d.fields.insert("dimPercent".into(), json!(v));
                     }
                 });

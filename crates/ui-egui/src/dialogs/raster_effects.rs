@@ -59,7 +59,7 @@ fn body(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
             }
         }
         if preset.is_none()
-            && let Some(v) = widgets::plain_field(ui, "raster-ppi", ppi, " ppi", 0, 80.0)
+            && let Some(v) = widgets::plain_field_named(ui, "raster-ppi", Some(tl!("Resolution:")), ppi, " ppi", 0, 80.0)
         {
             d.fields.insert("resolution".into(), json!(v));
         }
@@ -86,7 +86,8 @@ fn body(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
     let t = crate::theme::Tokens::get(ui.ctx());
     ui.horizontal(|ui| {
         ui.label(egui::RichText::new(tl!("Add")).color(t.text));
-        if let Some(v) = widgets::num_field(ui, "raster-add-around", Some(d.f64("addAround", 0.0)), unit, 80.0) {
+        if let Some(v) = widgets::num_field_named(ui, "raster-add-around", Some(tl!("Add Around Object")), Some(d.f64("addAround", 0.0)), unit, 80.0)
+        {
             d.fields.insert("addAround".into(), json!(v));
         }
         ui.label(egui::RichText::new(tl!("Around Object")).color(t.text));

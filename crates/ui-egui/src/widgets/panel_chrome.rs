@@ -27,26 +27,39 @@ pub fn tab_bar(ui: &mut Ui, tabs: &[&str], current: usize) -> Option<usize> {
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = 18.0;
         for (i, tab) in tabs.iter().enumerate() {
-            let sel = i == current;
-            let font = if sel { theme::semibold(13.0) } else { egui::FontId::proportional(13.0) };
-            let galley = ui.painter().layout_no_wrap(tl!(tab).to_string(), font, t.text);
-            let (rect, resp) = ui.allocate_exact_size(vec2(galley.size().x, 30.0), Sense::click());
-            let color = if sel || resp.hovered() { t.text_strong } else { t.text_dim };
-            ui.painter().galley(pos2(rect.left(), rect.center().y - galley.size().y / 2.0 - 2.0), galley, color);
-            if sel {
-                ui.painter().rect_filled(
-                    Rect::from_min_max(pos2(rect.left(), rect.bottom() - 2.0), rect.right_bottom()),
-                    CornerRadius::same(1),
-                    t.accent,
-                );
-            }
-            resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, ui.is_enabled(), sel, tl!(tab)));
-            if resp.clicked() {
-                clicked = Some(i);
-            }
+            clicked = clicked.or(tab_button(ui, i, tab, current, &t));
         }
     });
     clicked
+}
+
+/// [`tab_bar`] that wraps to more rows when the column it sits in is narrower than the whole
+/// row (New Document's categories in the minimum-width window).
+pub fn tab_bar_wrapped(ui: &mut Ui, tabs: &[&str], current: usize) -> Option<usize> {
+    let t = Tokens::get(ui.ctx());
+    let mut clicked = None;
+    ui.horizontal_wrapped(|ui| {
+        ui.spacing_mut().item_spacing.x = 18.0;
+        for (i, tab) in tabs.iter().enumerate() {
+            clicked = clicked.or(tab_button(ui, i, tab, current, &t));
+        }
+    });
+    clicked
+}
+
+/// One tab of a tab bar: its label, the current tab's accent underline, and its click.
+fn tab_button(ui: &mut Ui, i: usize, label: &str, current: usize, t: &Tokens) -> Option<usize> {
+    let sel = i == current;
+    let font = if sel { theme::semibold(13.0) } else { egui::FontId::proportional(13.0) };
+    let galley = ui.painter().layout_no_wrap(tl!(label).to_string(), font, t.text);
+    let (rect, resp) = ui.allocate_exact_size(vec2(galley.size().x, 30.0), Sense::click());
+    let color = if sel || resp.hovered() { t.text_strong } else { t.text_dim };
+    ui.painter().galley(pos2(rect.left(), rect.center().y - galley.size().y / 2.0 - 2.0), galley, color);
+    if sel {
+        ui.painter().rect_filled(Rect::from_min_max(pos2(rect.left(), rect.bottom() - 2.0), rect.right_bottom()), CornerRadius::same(1), t.accent);
+    }
+    resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, ui.is_enabled(), sel, tl!(label)));
+    resp.clicked().then_some(i)
 }
 
 /// A page-orientation toggle drawn in code: a portrait or landscape sheet with a folded corner,

@@ -77,7 +77,8 @@ fn body(_: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
             set(d, "gradient", json!("objects"));
         }
         ui.add_enabled_ui(enabled && objects, |ui| {
-            if let Some(n) = widgets::plain_field(ui, "expand-steps", d.f64("steps", DEFAULT_STEPS as f64), "", 0, 52.0) {
+            if let Some(n) = widgets::plain_field_named(ui, "expand-steps", Some(tl!("Specify:")), d.f64("steps", DEFAULT_STEPS as f64), "", 0, 52.0)
+            {
                 set(d, "steps", json!(n.round().clamp(1.0, MAX_STEPS as f64)));
             }
             widgets::dim_label(ui, tl!("Objects"));
