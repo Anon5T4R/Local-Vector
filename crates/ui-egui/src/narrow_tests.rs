@@ -105,7 +105,6 @@ fn every_dialog_fits_the_narrow_window() {
         if seen_dialog {
             #[cfg(debug_assertions)]
             if std::env::var_os("NARROW_DEBUG").is_some() {
-                use egui_kittest::kittest::Queryable;
                 let mut outside = 0;
                 for node in h.root().children_recursive() {
                     if let Some(rect) = node.accesskit_node().bounding_box()
