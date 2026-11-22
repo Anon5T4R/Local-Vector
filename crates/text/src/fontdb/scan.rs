@@ -215,7 +215,7 @@ pub fn is_font_file(path: &Path) -> bool {
 }
 
 /// Whether the file at `path` is a suitcase font ([`crate::suitcase`]): on macOS, a file with
-/// nothing in its data and its fonts in its resource fork. Never on the web.
+/// nothing in its data and its fonts in its resource fork.
 pub fn is_suitcase(path: &Path) -> bool {
-    { crate::suitcase::is_suitcase(path) }
+    crate::suitcase::is_suitcase(path)
 }

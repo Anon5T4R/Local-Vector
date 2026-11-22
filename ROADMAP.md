@@ -12,7 +12,7 @@
 > **Last reviewed:** 2026-10-10 · **Last updated:** 2026-11-01 · **Change:** minor (Progress log row for the Color Effects add-on's Find Nearest Swatch; headline numbers unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 Local Vector is a clean-room, open-source, pure-Rust reimplementation of the Adobe Illustrator workflow. It runs
-on macOS, Windows, Linux, FreeBSD and the web (WASM), and agents can drive all of it over MCP, the CLI and a JSON
+on macOS, Windows, Linux and FreeBSD, and agents can drive all of it over MCP, the CLI and a JSON
 control channel. This page is the summary; the evidence is in [`docs/target-app-parity.md`](docs/target-app-parity.md)
 and the work list in [`docs/gaps.md`](docs/gaps.md).
 

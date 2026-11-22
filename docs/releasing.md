@@ -1,13 +1,13 @@
 # Releasing Local Vector
 
 Every tag `vX.Y.Z` runs `.github/workflows/release.yml`. The workflow builds the installers for
-macOS, Windows, Linux (AppImage, deb, rpm, tarball, Flatpak bundles and a RISC-V tarball), FreeBSD
-and the web build, then publishes them in the **GitHub Release** of that tag with generated notes.
+macOS, Windows, Linux (AppImage, deb, rpm, tarball, Flatpak bundles and a RISC-V tarball) and FreeBSD,
+then publishes them in the **GitHub Release** of that tag with generated notes.
 The pipeline is ours: it calls no shared workflow of another organisation and needs no secret to
 run.
 
-The other packagers — the Flatpak from-source manifest, FreeBSD and the web build — stay in
-`packaging/` and are run by hand when needed.
+The other packagers - the Flatpak from-source manifest and FreeBSD - stay in `packaging/` and are run
+by hand when needed.
 
 User-facing names say **Local Vector**. Files, binaries and ids stay lowercase
 (`localvector-<version>-<platform>-<arch>.<ext>`, `com.localvector.app`).
@@ -18,13 +18,12 @@ The native desktop app reads the public GitHub latest-release endpoint of
 `Anon5T4R/Local-Vector` in a background thread once, at launch, with no periodic checks or automatic
 retries; Help ▸ Check for Updates runs one by hand. A check needs no GitHub token and sends no
 document or personal data, and a network failure is quiet. Downloads are verified against the
-SHA-256 the release asset carries. The web build has no updater (its window says so), and
-package-manager installs update through their package manager.
+SHA-256 the release asset carries. Package-manager installs update through their package manager.
 
 Tags must be semantic versions (`v0.20.0` or `0.20.0`); only published stable versions newer than
 the installed workspace version trigger a notice. Prereleases do not trigger it. Flatpak builds also
 check for releases; repository-managed installations are updated through their package manager.
-Web/headless frontends have no update transport.
+Headless frontends have no update transport.
 
 ## Cutting a release
 
@@ -66,7 +65,6 @@ be offered as "latest".
 | Linux AppImage updates | `localvector-<v>-linux-{x86_64,aarch64}.AppImage.zsync` | with the AppImages |
 | Flatpak x86_64, aarch64 | `localvector-<v>-linux-{x86_64,aarch64}.flatpak` | `ubuntu-24.04`, `ubuntu-24.04-arm` (repackages the Linux tarball) |
 | FreeBSD 14 x86_64 | `localvector-<v>-freebsd-x86_64.tar.gz` | a FreeBSD 14.3 VM on `ubuntu-latest` |
-| Web | `localvector-web-<v>.zip`, a static site (see [`packaging/web/README.md`](../packaging/web/README.md)) | `ubuntu-latest` |
 
 `localvector --version` and `localvector-cli --version` print the version from `Cargo.toml`, the
 commit and the build date. The packaging scripts fill `LOCALVECTOR_BUILD_SHA` and
@@ -75,8 +73,7 @@ commit and the build date. The packaging scripts fill `LOCALVECTOR_BUILD_SHA` an
 
 **Fonts.** The fonts are vendored in this repository: every build job sets
 `CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/assets/craft-fonts` and `CRAFT_FONTS_REQUIRED=1`, so releases
-embed its Japanese fonts and fail rather than ship without them (the web build embeds only the UI
-font, BIZ UDPGothic Regular, to stay small). The packages carry each embedded font's licence as
+embed its Japanese fonts and fail rather than ship without them. The packages carry each embedded font's licence as
 `OFL-<family>.txt` (`copy_font_licences` in `packaging/env.sh`). A build without `CRAFT_FONTS_DIR`
 still compiles and falls back to the system's fonts. The build option is in
 [`docs/development.md`](development.md) › Fonts.
@@ -246,13 +243,6 @@ gtk3 fontconfig freetype2 alsa-lib`. `packaging/freebsd/package.sh` writes a
 `/usr/local`-style tree; users install it with
 `tar -xzf localvector-*-freebsd-x86_64.tar.gz --strip-components 1 -C /usr/local`.
 
-### Web
-
-The web job builds `apps/localvector-web` with trunk and zips the static site
-(`packaging/web/package.sh`). [`packaging/web/README.md`](../packaging/web/README.md) covers
-hosting: any path works, `.wasm` must be served as `application/wasm`, and the sample header files
-for common hosts.
-
 ## Signing
 
 This repository holds **no signing secrets**: with none in the environment the packaging scripts
@@ -290,7 +280,7 @@ directly. The outputs are committed, so packaging never needs those tools.
 
 ## Checks
 
-`cargo xtask ci` runs fmt, clippy, build and test, the layering and wasm checks, the no-panic lints
+`cargo xtask ci` runs fmt, clippy, build and test, the layering check, the no-panic lints
 and the asset attribution gate. The packaging scripts carry their own checks, which you run by hand
 on a change to `packaging/`: `packaging/windows/check-icons.ps1`,
 `packaging/check-app-specific.sh`, and `bash -n` on every script.

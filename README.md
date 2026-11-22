@@ -38,7 +38,7 @@ endpoint (Help › Check for Updates runs one by hand).
 |---|---|
 | Windows 10+ x64 / x86 / arm64 | `localvector-<ver>-windows-<arch>.msi` (per-machine, installs in `Program Files\Local Vector`) and `localvector-<ver>-windows-<arch>-portable.zip` |
 | Linux x86_64 / aarch64 | `.AppImage`, `.deb`, `.rpm`, `.tar.gz`, and the single-file `.flatpak` (`packaging/linux/package.sh`) |
-| macOS, FreeBSD, web (WebAssembly) | built by the scripts in `packaging/` |
+| macOS, FreeBSD | built by the scripts in `packaging/` |
 
 ## Build
 
