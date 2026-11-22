@@ -1,5 +1,5 @@
-//! The kittest width guard: with a document and art on screen, every dialog and window of the app
-//! fits the main window's minimum width (`window::MIN_SIZE`), and so do the application bar, the
+//! The kittest size guard: with a document and art on screen, every dialog and window of the app
+//! fits the main window's minimum size (`window::MIN_SIZE`), and so do the application bar, the
 //! command palette and the update card.
 
 use egui::accesskit::Role;
@@ -9,8 +9,9 @@ use serde_json::json;
 
 use crate::LocalvectorApp;
 
-/// The main window's minimum width (`apps/localvector/src/window.rs`).
+/// The main window's minimum width and height (`apps/localvector/src/window.rs`).
 const MIN_WIDTH: f32 = 800.0;
+const MIN_HEIGHT: f32 = 500.0;
 
 /// An app with a document and a shape selected: real content on the canvas.
 fn app_with_art() -> LocalvectorApp {
@@ -28,7 +29,7 @@ fn harness_at(width: f32, open: impl FnOnce(&mut LocalvectorApp)) -> Harness<'st
     open(&mut app);
     let mut fonts = false;
     let mut h = Harness::builder()
-        .with_size(egui::vec2(width, 700.0))
+        .with_size(egui::vec2(width, MIN_HEIGHT))
         .with_max_steps(64)
         .with_accessibility_check(cfg!(not(debug_assertions)) || std::env::var_os("NARROW_DEBUG").is_none())
         .build_ui_state(
@@ -46,20 +47,46 @@ fn harness_at(width: f32, open: impl FnOnce(&mut LocalvectorApp)) -> Harness<'st
     h
 }
 
-/// Every node, in accesskit coordinates, inside the window of `width` points. A text run may
-/// report the galley's full width before the clip egui paints; the field's node is the guard.
+/// Where a window's content may go past the bottom edge: the body of a dialog whose controls do not
+/// fit scrolls, with its title and its buttons outside the `ScrollArea`. The accesskit tree reports
+/// the scrolled content unclipped, so what hangs below is accepted only when it comes before a
+/// vertical scroll bar inside the window and in its column; the bar is drawn after the content and
+/// the buttons after it.
+fn below_is_scrolled(harness: &Harness<'_, LocalvectorApp>) -> impl Fn(usize, egui::accesskit::Rect) -> bool {
+    const TOL: f64 = 0.5;
+    let nodes: Vec<_> = harness.root().children_recursive().collect();
+    let bars: Vec<(usize, egui::accesskit::Rect)> = nodes
+        .iter()
+        .enumerate()
+        .filter_map(|(i, node)| {
+            let rect = node.accesskit_node().bounding_box()?;
+            let vertical = rect.y1 - rect.y0 > rect.x1 - rect.x0;
+            let inside = rect.x0 >= -TOL && rect.x1 <= f64::from(MIN_WIDTH) + TOL && rect.y0 >= -TOL && rect.y1 <= f64::from(MIN_HEIGHT) + TOL;
+            (node.accesskit_node().role() == Role::ScrollBar && vertical && inside).then_some((i, rect))
+        })
+        .collect();
+    move |i, rect| bars.iter().any(|&(bar_at, bar)| bar_at > i && rect.x1 <= bar.x1 + TOL && bar.y0 <= rect.y0 + TOL)
+}
+
+/// Every node, in accesskit coordinates, inside the window of `width`×[`MIN_HEIGHT`] points. A text
+/// run may report the galley's full width before the clip egui paints; the field's node is the
+/// guard.
 fn assert_inside(harness: &Harness<'_, LocalvectorApp>, what: &str, width: f32) {
-    for node in harness.root().children_recursive() {
+    let scrolled = below_is_scrolled(harness);
+    let (w, h) = (f64::from(width), f64::from(MIN_HEIGHT));
+    for (i, node) in harness.root().children_recursive().enumerate() {
         if node.accesskit_node().role() == Role::TextRun {
             continue;
         }
         let Some(rect) = node.accesskit_node().bounding_box() else { continue };
-        if rect.width() > 0.0 {
-            assert!(
-                rect.x0 >= -0.5 && rect.x1 <= f64::from(width) + 0.5,
-                "{what}: {role:?} outside the {width}-point window: {rect:?}",
-                role = node.accesskit_node().role()
-            );
+        if rect.width() <= 0.0 {
+            continue;
+        }
+        let role = node.accesskit_node().role();
+        assert!(rect.x0 >= -0.5 && rect.x1 <= w + 0.5, "{what}: {role:?} outside the {width}-point window: {rect:?}");
+        assert!(rect.y0 >= -0.5, "{what}: {role:?} above the window: {rect:?}");
+        if rect.y1 > h + 0.5 && !scrolled(i, rect) {
+            panic!("{what}: {role:?} below the {MIN_HEIGHT}-point window and outside a scrolling body: {rect:?}");
         }
     }
 }
@@ -91,6 +118,14 @@ const WINDOW_KINDS: &[&str] = &["preferences", "shortcuts", "newWorkspace", "man
 #[test]
 fn every_dialog_fits_the_narrow_window() {
     let mut checked = 0usize;
+    // One dialog's failure is reported with the rest instead of hiding them.
+    let mut problems: Vec<String> = Vec::new();
+    let failing = |problems: &mut Vec<String>, what: &str, outcome: std::thread::Result<()>| {
+        if let Err(panic) = outcome {
+            let message = panic.downcast_ref::<String>().map(String::as_str).or(panic.downcast_ref::<&str>().copied()).unwrap_or("?");
+            problems.push(format!("{what}: {message}"));
+        }
+    };
     // UI commands: the ones that open a dialog leave it in `ui.dialog`.
     for command in crate::menus::UI_COMMANDS.iter() {
         let mut seen_dialog = false;
@@ -125,7 +160,7 @@ fn every_dialog_fits_the_narrow_window() {
                 }
                 continue;
             }
-            assert_inside(&h, command.0, MIN_WIDTH);
+            failing(&mut problems, command.0, std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| assert_inside(&h, command.0, MIN_WIDTH))));
             checked += 1;
         }
     }
@@ -137,7 +172,7 @@ fn every_dialog_fits_the_narrow_window() {
             seen_dialog = app.ui.dialog.is_some();
         });
         assert!(seen_dialog, "{id} opens its dialog");
-        assert_inside(&h, id, MIN_WIDTH);
+        failing(&mut problems, id, std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| assert_inside(&h, id, MIN_WIDTH))));
         checked += 1;
     }
     // The registry's window dialogs, opened as the app's own code opens them.
@@ -146,7 +181,7 @@ fn every_dialog_fits_the_narrow_window() {
             app.ui.dialog = Some(crate::state::Dialog { kind: (*kind).into(), fields: serde_json::Map::new() });
         });
         assert!(h.state().ui.dialog.is_some(), "{kind} stays open");
-        assert_inside(&h, kind, MIN_WIDTH);
+        failing(&mut problems, kind, std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| assert_inside(&h, kind, MIN_WIDTH))));
         checked += 1;
     }
     #[cfg(debug_assertions)]
@@ -174,7 +209,7 @@ fn every_dialog_fits_the_narrow_window() {
         app.ui.palette_open = true;
     });
     assert!(h.state().ui.palette_open, "the palette is open");
-    assert_inside(&h, "palette", MIN_WIDTH);
+    failing(&mut problems, "palette", std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| assert_inside(&h, "palette", MIN_WIDTH))));
     checked += 1;
 
     let release = craft_update::Release {
@@ -188,8 +223,9 @@ fn every_dialog_fits_the_narrow_window() {
         assert!(crate::updates_ui::offer_for_test(app, release), "the update card is up");
     });
     h.run_steps(4);
-    assert_inside(&h, "update-card", MIN_WIDTH);
+    failing(&mut problems, "update-card", std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| assert_inside(&h, "update-card", MIN_WIDTH))));
     checked += 1;
+    assert!(problems.is_empty(), "{} diálogo(s) fora do padrão:\n{}", problems.len(), problems.join("\n"));
     assert!(checked > 40, "{checked} dialogs checked: the sweep found the app's dialogs");
 }
 
