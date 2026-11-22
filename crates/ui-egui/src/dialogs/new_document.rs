@@ -64,6 +64,8 @@ const COLOR_MODES: [(&str, &str); 2] = [("rgb", "RGB Color"), ("cmyk", "CMYK Col
 const DETAILS: f32 = 292.0;
 /// Height of the dialog's content.
 const HEIGHT: f32 = 600.0;
+/// What the window draws around that content: its margins, the two frames and the button row.
+const NEW_DOCUMENT_CHROME: f32 = 130.0;
 
 /// Open New Document on the most recent settings (or Letter), named after the next untitled
 /// document.
@@ -199,6 +201,9 @@ fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
     sync(app, &mut d);
     let t = Tokens::get(ctx);
     let mut b = Buttons::default();
+    // A short window gets a shorter dialog: the presets column and the details take what it leaves
+    // (`padrao-craft.md`, "Guardas"), and the preset cards scroll inside it.
+    let height = HEIGHT.min((ctx.content_rect().height() - NEW_DOCUMENT_CHROME).max(240.0));
     window(ctx, KIND, 0, |ui| {
         // No heading: the top margin (14) and the empty part of the category tabs' row (30) move the
         // window.
@@ -213,15 +218,15 @@ fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
             egui::Frame::NONE.inner_margin(egui::Margin { left: 22, right: 14, top: 14, bottom: 18 }).show(ui, |ui| {
                 ui.vertical(|ui| {
                     ui.set_width(left);
-                    ui.set_min_height(HEIGHT - 32.0);
-                    b.create |= presets(app, ui, &mut d);
+                    ui.set_min_height(height - 32.0);
+                    b.create |= presets(app, ui, &mut d, height);
                 });
             });
             egui::Frame::NONE.fill(t.panel_darker).inner_margin(egui::Margin::same(18)).show(ui, |ui| {
                 ui.vertical(|ui| {
                     ui.set_width(DETAILS);
-                    ui.set_min_height(HEIGHT);
-                    details(app, ui, &mut d, &mut b);
+                    ui.set_min_height(height);
+                    details(app, ui, &mut d, &mut b, height);
                 });
             });
         });
@@ -231,7 +236,7 @@ fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
 
 /// The category tabs and the chosen category's preset cards: a click chooses one, a double-click
 /// also creates it (true then).
-fn presets(app: &LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
+fn presets(app: &LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, height: f32) -> bool {
     let t = Tokens::get(ui.ctx());
     let names: Vec<&str> = newdoc::category_names().collect();
     let cat = names.iter().position(|n| n.eq_ignore_ascii_case(&d.str("category"))).unwrap_or(0);
@@ -259,7 +264,7 @@ fn presets(app: &LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog) -> bool {
         return false;
     }
     let mut create = false;
-    egui::ScrollArea::vertical().id_salt(("newdoc-presets", cat)).max_height(HEIGHT - 110.0).auto_shrink([false, false]).show(ui, |ui| {
+    egui::ScrollArea::vertical().id_salt(("newdoc-presets", cat)).max_height(height - 110.0).auto_shrink([false, false]).show(ui, |ui| {
         ui.horizontal_wrapped(|ui| {
             ui.spacing_mut().item_spacing = egui::vec2(12.0, 12.0);
             let (w, h, preset, units) = (d.f64("width", 0.0), d.f64("height", 0.0), d.str("preset"), unit(d));
@@ -328,7 +333,7 @@ pub fn preset_card(ui: &mut egui::Ui, s: &DocSettings, selected: bool) -> egui::
 }
 
 /// The Preset Details column.
-fn details(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, b: &mut Buttons) {
+fn details(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, b: &mut Buttons, height: f32) {
     let t = Tokens::get(ui.ctx());
     ui.spacing_mut().item_spacing = egui::vec2(6.0, 4.0);
     let top = ui.cursor().top();
@@ -378,7 +383,7 @@ fn details(app: &mut LocalvectorApp, ui: &mut egui::Ui, d: &mut Dialog, b: &mut 
         d.kind = MORE.into();
     }
     // Close and Create at the bottom right.
-    ui.add_space((HEIGHT - (ui.cursor().top() - top) - 28.0).max(12.0));
+    ui.add_space((height - (ui.cursor().top() - top) - 28.0).max(12.0));
     ui.allocate_ui_with_layout(egui::vec2(ui.available_width(), 28.0), egui::Layout::right_to_left(egui::Align::Center), |ui| {
         b.create |= widgets::primary_button(ui, tl!("Create")).clicked();
         ui.add_space(8.0);

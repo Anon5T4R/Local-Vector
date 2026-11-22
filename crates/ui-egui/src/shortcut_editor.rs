@@ -452,6 +452,10 @@ fn listed(overrides: &Overrides, e: &Entry) -> bool {
     !needs_a_value(&e.key) || overrides.get(&crate::keymap::stored_key(&e.key)).is_some_and(|t| !t.is_empty())
 }
 
+/// What the keyboard-shortcuts dialog draws around its list: the frame's margins, the heading, the
+/// set row, the tabs and the row of buttons.
+const SHORTCUTS_CHROME: f32 = 272.0;
+
 /// Commands whose params are all optional that do nothing, or fail, when a key press runs them
 /// with none, and that no item of the menu bar runs: Transparency and Opacity Mask Options need
 /// a value to set, Align and Distribute a direction, Delete Swatch and Move Swatch a swatch name,
@@ -987,7 +991,11 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
                 });
                 ui.label(egui::RichText::new(tl!("Shortcut")).color(t.text_dim).size(11.0));
             });
-            egui::ScrollArea::vertical().max_height(360.0).auto_shrink([false, false]).show(ui, |ui| {
+            // The list takes what the window leaves under the heading, the set row and the tabs and
+            // above the buttons, so the dialog fits a short window (`padrao-craft.md`, "Guardas"),
+            // and no more than it always took on a tall one.
+            let list_room = (ui.ctx().content_rect().height() - SHORTCUTS_CHROME).clamp(120.0, 360.0);
+            egui::ScrollArea::vertical().max_height(list_room).auto_shrink([false, false]).show(ui, |ui| {
                 for (i, e) in entries().iter().enumerate().filter(|(_, e)| e.is_tool == tools && listed(km.overrides(), e)) {
                     let sc = match &km {
                         Cow::Borrowed(_) => view.texts.get(i).cloned().flatten(),

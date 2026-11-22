@@ -497,7 +497,9 @@ pub(super) fn schema_rows(ui: &mut egui::Ui, d: &mut Dialog, m: &Manifest) -> (b
         .map(|(k, p)| ui.painter().layout_no_wrap(param_label(k, p), font.clone(), egui::Color32::WHITE).size().x)
         .fold(0.0, f32::max);
     let indent = if sections.iter().any(|(group, _)| group.is_some()) { ui.spacing().indent } else { 0.0 };
-    super::modal::scrolled_rows(ui, "plugin-fields", |ui| {
+    // The plugin's rows are part of the dialog body, which scrolls as a whole
+    // (`modal::scrolled_rows` in `dialogs::show`).
+    {
         for (section, (group, params)) in sections.into_iter().enumerate() {
             let shown: Vec<&(String, Param)> = params.into_iter().filter(|(k, _)| visible.contains(k.as_str())).collect();
             if shown.is_empty() {
@@ -521,7 +523,7 @@ pub(super) fn schema_rows(ui: &mut egui::Ui, d: &mut Dialog, m: &Manifest) -> (b
                 }
             }
         }
-    });
+    }
     (changed, help)
 }
 

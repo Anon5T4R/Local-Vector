@@ -1509,10 +1509,14 @@ fn dialog_sliders_report_the_numbers_their_fields_show() {
         .filter(|n| n.role() == Slider && n.label() == Some("Horizontal:"))
         .map(|n| (n.numeric_value(), n.min_numeric_value(), n.max_numeric_value(), n.value().map(str::to_string)))
         .collect();
-    assert_eq!(
-        horizontal,
-        [(Some(250.0), Some(0.0), Some(250.0), Some("250%".into())), (Some(-36.0), Some(-1000.0), Some(1000.0), Some("-36 pt".into()))]
-    );
+    // The dialog's body is drawn in a scroll area, which announces the two sliders in its own
+    // order: each one's numbers are what matter here, not which comes first.
+    assert_eq!(horizontal.len(), 2, "both Horizontal sliders: {horizontal:?}");
+    for want in
+        [(Some(250.0), Some(0.0), Some(250.0), Some("250%".to_string())), (Some(-36.0), Some(-1000.0), Some(1000.0), Some("-36 pt".to_string()))]
+    {
+        assert!(horizontal.contains(&want), "{want:?} in {horizontal:?}");
+    }
     app.ui.dialog = None;
     app.run("effect.dialog", json!({"effect": "distort.zigZag"})).unwrap();
     set(&mut app, "relative", json!(true));
@@ -1643,6 +1647,17 @@ impl Frames {
         let nodes = &out.platform_output.accesskit_update.as_ref().expect("an accessibility tree").nodes;
         let node = nodes.iter().find(|(_, n)| n.label() == Some(label) && n.role() == role);
         let b = node.unwrap_or_else(|| panic!("no {role:?} named {label:?}")).1.bounds().expect("bounds");
+        egui::pos2((b.x0 + b.x1) as f32 * 0.5, (b.y0 + b.y1) as f32 * 0.5)
+    }
+
+    /// [`Frames::control`] for a control whose name others share, told apart by the unit its value
+    /// ends with (two sliders called "Horizontal:", one in percent and one in points).
+    fn control_ending_with(&mut self, app: &mut LocalvectorApp, label: &str, role: egui::accesskit::Role, unit: &str) -> egui::Pos2 {
+        self.run(app, vec![]);
+        let out = self.run(app, vec![]);
+        let nodes = &out.platform_output.accesskit_update.as_ref().expect("an accessibility tree").nodes;
+        let node = nodes.iter().find(|(_, n)| n.label() == Some(label) && n.role() == role && n.value().is_some_and(|v| v.ends_with(unit)));
+        let b = node.unwrap_or_else(|| panic!("no {role:?} named {label:?} in {unit:?}")).1.bounds().expect("bounds");
         egui::pos2((b.x0 + b.x1) as f32 * 0.5, (b.y0 + b.y1) as f32 * 0.5)
     }
 
@@ -1882,7 +1897,7 @@ fn transform_each_sliders_step_the_numbers_their_fields_show() {
         |app: &mut LocalvectorApp, k: &str, v: serde_json::Value| app.ui.dialog.as_mut().expect("Transform Each is open").fields.insert(k.into(), v);
     let get = |app: &LocalvectorApp, k: &str| app.ui.dialog.as_ref().expect("Transform Each is open").f64(k, f64::NAN);
     let mut f = Frames::new();
-    let at = f.control(&mut app, "Horizontal:", egui::accesskit::Role::Slider);
+    let at = f.control_ending_with(&mut app, "Horizontal:", egui::accesskit::Role::Slider, "%");
     f.press(&mut app, at, true);
     f.press(&mut app, at, false);
     set(&mut app, "scaleH", json!(300));

@@ -652,14 +652,25 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
         if focus_first {
             ui.data_mut(|m| m.insert_temp(widgets::dialog_focus_flag(), true));
         }
-        if let Some(body) = spec.body_with_actions {
-            match body(app, ui, &mut d) {
-                DialogAction::None => {}
-                DialogAction::Confirm => ok = true,
-                DialogAction::Cancel => cancel = true,
+        // A body too tall for the screen scrolls inside the window, with its heading and buttons
+        // always in view (`padrao-craft.md`, "Guardas"). Recolor scrolls its own form.
+        let own_scroll = d.kind == recolor::KIND;
+        let body_salt = egui::Id::unique("dialog-body").with(d.kind.as_str());
+        let mut body = |ui: &mut egui::Ui| {
+            if let Some(body) = spec.body_with_actions {
+                match body(app, ui, &mut d) {
+                    DialogAction::None => {}
+                    DialogAction::Confirm => ok = true,
+                    DialogAction::Cancel => cancel = true,
+                }
+            } else {
+                cancel = (spec.body)(app, ui, &mut d);
             }
+        };
+        if own_scroll {
+            body(ui);
         } else {
-            cancel = (spec.body)(app, ui, &mut d);
+            modal::scrolled_rows(ui, body_salt, &mut body);
         }
         // Taken (the flag is gone): done. Still there (the window's measuring frame): next frame.
         if focus_first && ui.data_mut(|m| m.remove_temp::<bool>(widgets::dialog_focus_flag())).is_none() {

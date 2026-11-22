@@ -19,6 +19,10 @@ pub const UI_FIELDS: &[(&str, &str, &str)] = &[
     ("__taskBar", "General", "Enable Contextual Task Bar"),
 ];
 
+/// What the settings dialog draws around its body: the frame's margins, the heading and the row of
+/// buttons.
+const SETTINGS_CHROME: f32 = 156.0;
+
 pub fn open(app: &mut LocalvectorApp, category: Option<&str>) {
     // One field per preference key or group (the flattener presets have commands of their own).
     let mut fields: Map<String, Value> = app.session.prefs.to_json().as_object().cloned().unwrap_or_default();
@@ -191,22 +195,33 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
         ui.set_width(760.0_f32.min(room));
         crate::dialogs::modal::heading(ui, tl!("Settings"));
         ui.add_space(12.0);
+        // The category list and the fields take what the window leaves under the heading and above
+        // the buttons, so the dialog fits a short window (`padrao-craft.md`, "Guardas"), and no
+        // more than they always took on a tall one.
+        let body_room = (ui.ctx().content_rect().height() - SETTINGS_CHROME).clamp(140.0, 430.0);
         ui.horizontal_top(|ui| {
             // Category list.
             egui::Frame::NONE.fill(t.panel_darker).corner_radius(egui::CornerRadius::same(4)).inner_margin(egui::Margin::same(6)).show(ui, |ui| {
                 ui.set_width(196.0);
-                ui.set_min_height(430.0);
-                ui.vertical(|ui| {
-                    ui.spacing_mut().item_spacing.y = 1.0;
-                    for c in PREF_CATEGORIES {
-                        let sel = *c == cat;
-                        let text = egui::RichText::new(tl!(*c)).size(12.5).color(if sel { t.text_strong } else { t.text });
-                        let b = egui::Button::selectable(sel, text).min_size(egui::vec2(184.0, 24.0));
-                        if ui.add(b).clicked() {
-                            d.fields.insert("__category".into(), json!(c));
-                        }
-                    }
-                });
+                // The list scrolls when the window cannot show every category.
+                egui::ScrollArea::vertical()
+                    .id_salt("prefs-categories")
+                    .max_height(body_room)
+                    .min_scrolled_height(body_room)
+                    .auto_shrink([false, true])
+                    .show(ui, |ui| {
+                        ui.vertical(|ui| {
+                            ui.spacing_mut().item_spacing.y = 1.0;
+                            for c in PREF_CATEGORIES {
+                                let sel = *c == cat;
+                                let text = egui::RichText::new(tl!(*c)).size(12.5).color(if sel { t.text_strong } else { t.text });
+                                let b = egui::Button::selectable(sel, text).min_size(egui::vec2(184.0, 24.0));
+                                if ui.add(b).clicked() {
+                                    d.fields.insert("__category".into(), json!(c));
+                                }
+                            }
+                        });
+                    });
             });
             ui.add_space(14.0);
             // Fields.
@@ -214,9 +229,12 @@ pub fn show(app: &mut LocalvectorApp, ctx: &egui::Context) {
                 ui.set_width(530.0_f32.min(ui.available_width()));
                 ui.label(egui::RichText::new(tl!(cat)).font(theme::semibold(14.0)).color(t.text_strong));
                 ui.add_space(8.0);
-                egui::ScrollArea::vertical().id_salt(("prefs", cat)).max_height(400.0).auto_shrink([false, false]).show(ui, |ui| {
-                    category_fields(ui, &mut d, cat);
-                });
+                egui::ScrollArea::vertical().id_salt(("prefs", cat)).max_height((body_room - 28.0).min(400.0)).auto_shrink([false, false]).show(
+                    ui,
+                    |ui| {
+                        category_fields(ui, &mut d, cat);
+                    },
+                );
             });
         });
         ui.add_space(14.0);

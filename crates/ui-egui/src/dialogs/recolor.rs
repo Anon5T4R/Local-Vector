@@ -68,6 +68,10 @@ const WHEEL: f32 = 220.0;
 /// Height of the rows table, and of either tab (so switching tabs doesn't resize the dialog).
 const TABLE_H: f32 = 182.0;
 const TAB_H: f32 = 400.0;
+/// The window height the dialog's own layout needs; a shorter window scrolls its form instead.
+const RECOLOR_NEEDS: f32 = 560.0;
+/// What the dialog draws outside that form: its margins, the tabs row and the buttons.
+const RECOLOR_CHROME: f32 = 224.0;
 const PRESETS: [&str; 5] = ["Custom", "1 Color Job", "2 Color Job", "3 Color Job", "Color Library"];
 /// The id of row `i`'s new colour chip, with `i`.
 const NEW_CHIP: &str = "recolor-new";
@@ -285,6 +289,22 @@ fn apply_params(d: &Dialog) -> Value {
 }
 
 fn body(app: &mut LocalvectorApp, ui: &mut Ui, d: &mut Dialog) -> bool {
+    // The dialog's own layout needs this much window; below it the whole form scrolls, with the
+    // tabs and the buttons in view (`padrao-craft.md`, "Guardas").
+    if ui.ctx().content_rect().height() < RECOLOR_NEEDS {
+        let room = (ui.ctx().content_rect().height() - RECOLOR_CHROME).max(120.0);
+        return egui::ScrollArea::vertical()
+            .id_salt("recolor-body")
+            .max_height(room)
+            .min_scrolled_height(room)
+            .auto_shrink([false, true])
+            .show(ui, |ui| body_at(app, ui, d))
+            .inner;
+    }
+    body_at(app, ui, d)
+}
+
+fn body_at(app: &mut LocalvectorApp, ui: &mut Ui, d: &mut Dialog) -> bool {
     sync(app, d);
     let t = Tokens::get(ui.ctx());
     ui.horizontal(|ui| {
