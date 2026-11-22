@@ -220,14 +220,8 @@ impl Libraries {
         Ok(id)
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn file_exists(&self, id: &str) -> bool {
         self.path(id).is_some_and(|p| std::path::Path::new(&p).exists())
-    }
-
-    #[cfg(target_arch = "wasm32")]
-    fn file_exists(&self, _: &str) -> bool {
-        false
     }
 
     fn path(&self, id: &str) -> Option<String> {
@@ -476,7 +470,6 @@ fn thumbnail_ok(b64: &str) -> bool {
     head.starts_with(b"\x89PNG\r\n\x1a\n") && head.get(12..16) == Some(b"IHDR".as_slice()) && side(16) && side(20)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn library_paths(dir: &str) -> Vec<String> {
     let Ok(rd) = std::fs::read_dir(dir) else { return vec![] };
     let mut v: Vec<String> = rd
@@ -488,23 +481,12 @@ fn library_paths(dir: &str) -> Vec<String> {
     v
 }
 
-#[cfg(target_arch = "wasm32")]
-fn library_paths(_: &str) -> Vec<String> {
-    vec![]
-}
-
-#[cfg(not(target_arch = "wasm32"))]
 fn remove_file(path: &str) -> Result<()> {
     match std::fs::remove_file(path) {
         Ok(()) => Ok(()),
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
         Err(e) => Err(EngineError::Other(format!("{path}: {e}"))),
     }
-}
-
-#[cfg(target_arch = "wasm32")]
-fn remove_file(_: &str) -> Result<()> {
-    Ok(())
 }
 
 /// Library `name` as a file name without its extension: letters, digits, spaces, `-` and `_`

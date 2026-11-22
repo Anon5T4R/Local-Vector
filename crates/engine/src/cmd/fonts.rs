@@ -716,10 +716,7 @@ fn font_list(_: &mut Session, p: &Value) -> Result<Value> {
 
 pub(crate) fn rescan(s: &mut Session, _: &Value) -> Result<Value> {
     let db = localvector_text::FontDb::global();
-    #[cfg(not(target_arch = "wasm32"))]
     let faces = db.load_system_fonts();
-    #[cfg(target_arch = "wasm32")]
-    let faces = 0;
     // The canvas redraws type in the fonts available now (renderers lay it out again when the
     // fonts change), and the bounds follow; that isn't an edit to save.
     for d in &mut s.docs {
@@ -756,9 +753,7 @@ mod tests {
         let dir = std::env::temp_dir().join("localvector-fonts-folder-pref");
         s.execute("prefs.set", &json!({"key": "fontsFolder", "value": format!("  {}  ", dir.display())})).unwrap();
         assert_eq!(localvector_text::user_font_dirs(), std::slice::from_ref(&dir));
-        if !cfg!(target_arch = "wasm32") {
-            assert!(localvector_text::system_font_dirs().contains(&dir));
-        }
+        assert!(localvector_text::system_font_dirs().contains(&dir));
         s.execute("prefs.set", &json!({"key": "fontsFolder", "value": ""})).unwrap();
         assert!(localvector_text::user_font_dirs().is_empty() && !localvector_text::system_font_dirs().contains(&dir));
     }

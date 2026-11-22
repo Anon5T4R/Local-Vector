@@ -292,12 +292,9 @@ pub(crate) fn is_unspaced_script(c: char) -> bool {
 /// models on the web); empty when `text` has none of those scripts. Offsets elsewhere (around
 /// other text) are UAX #14's breaks.
 pub(crate) fn unspaced_word_breaks(text: &str) -> Vec<usize> {
-    #[cfg(not(target_arch = "wasm32"))]
     static SEGMENTER: std::sync::LazyLock<icu_segmenter::LineSegmenterBorrowed<'static>> =
         std::sync::LazyLock::new(|| icu_segmenter::LineSegmenter::new_dictionary(Default::default()));
-    #[cfg(target_arch = "wasm32")]
-    static SEGMENTER: std::sync::LazyLock<icu_segmenter::LineSegmenterBorrowed<'static>> =
-        std::sync::LazyLock::new(|| icu_segmenter::LineSegmenter::new_auto(Default::default()));
+    std::sync::LazyLock::new(|| icu_segmenter::LineSegmenter::new_auto(Default::default()));
     if !text.chars().any(is_unspaced_script) {
         return vec![];
     }

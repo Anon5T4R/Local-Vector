@@ -99,9 +99,9 @@ impl Serialize for Node {
 }
 
 /// Most objects [`with_node_budget`] lets a document read: 4M (about 1 GB of the smallest
-/// objects), 512K in the web build. Paths have their own anchor budget
+/// objects). Paths have their own anchor budget
 /// ([`localvector_geom::path::MAX_READ_ANCHORS`]); this one bounds the objects themselves.
-pub const MAX_READ_NODES: usize = if cfg!(target_arch = "wasm32") { 512 << 10 } else { 4 << 20 };
+pub const MAX_READ_NODES: usize = 4 << 20;
 
 std::thread_local! {
     /// Objects the document being read on this thread may still have, and the budget they come

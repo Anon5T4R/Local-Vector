@@ -314,17 +314,11 @@ fn inspect(_: &mut Session, p: &Value) -> Result<Value> {
 }
 
 /// The plug-in in the `.wasm` file `path`, and its module.
-#[cfg(not(target_arch = "wasm32"))]
 fn load_path(path: &str) -> Result<(Plugin, Vec<u8>)> {
     crate::file_access::check_read(path).map_err(EngineError::Other)?;
     let limits = localvector_plugins::Limits::default();
     let bytes = crate::store::read_capped(std::path::Path::new(path), limits.max_module_bytes as u64).map_err(EngineError::Other)?;
     Ok((Plugin::load(&bytes, limits).map_err(err)?.with_source(path), bytes))
-}
-
-#[cfg(target_arch = "wasm32")]
-fn load_path(_: &str) -> Result<(Plugin, Vec<u8>)> {
-    Err(EngineError::Other("installing from a path is not available on the web; pass the module as `dataBase64`".into()))
 }
 
 /// The plug-in folder last loaded from the preferences, and what happened.
@@ -344,7 +338,6 @@ pub(crate) fn sync_prefs(s: &Session) {
     *last = Some((folder.to_string(), load_folder(folder)));
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn load_folder(folder: &str) -> Value {
     if let Err(e) = crate::file_access::check_read(folder) {
         return json!({"folder": folder, "error": e});
@@ -361,11 +354,6 @@ fn load_folder(folder: &str) -> Value {
         }
         Err(e) => json!({"folder": folder, "error": e.to_string()}),
     }
-}
-
-#[cfg(target_arch = "wasm32")]
-fn load_folder(folder: &str) -> Value {
-    json!({"folder": folder, "error": "plug-in folders are not available on the web"})
 }
 
 fn reload(s: &mut Session, p: &Value) -> Result<Value> {

@@ -1,24 +1,17 @@
 use super::build::make_face;
-#[cfg(not(target_arch = "wasm32"))]
 use super::build::{style_italic, style_weight};
-#[cfg(not(target_arch = "wasm32"))]
 use super::cache::CatalogFace;
 use super::cache::{CanonicalNames, Catalog, GlyphCache, PostScriptNames};
-#[cfg(not(target_arch = "wasm32"))]
 use super::dirs::confined_font_dirs;
 use super::face::{BUNDLED, FontBytes, FontFace, Instances};
-#[cfg(not(target_arch = "wasm32"))]
 use super::names::SysFallback;
 use super::names::name;
 use super::scan::enumerate_faces;
-#[cfg(not(target_arch = "wasm32"))]
 use super::scan::{file_face_names, is_font_file};
 #[cfg(test)]
 use super::traits::faces_published;
-#[cfg(not(target_arch = "wasm32"))]
 use super::traits::{Alias, FaceStyle};
 use super::{Arc, AtomicU64, FontDb, FontPaths, HashMap, Mutex, Ordering, Path, PathBuf, RwLock, StringId};
-#[cfg(not(target_arch = "wasm32"))]
 use super::{ScanStamp, modified};
 
 impl FontDb {
@@ -57,16 +50,12 @@ impl FontDb {
             font_paths,
             aliases: RwLock::new(HashMap::new()),
             canonical_cache: Mutex::new(CanonicalNames::new()),
-            #[cfg(not(target_arch = "wasm32"))]
             cataloged: std::sync::OnceLock::new(),
-            #[cfg(not(target_arch = "wasm32"))]
             version_scanned: RwLock::new(std::collections::HashSet::new()),
             family_cache: Mutex::new(None),
             menu_cache: Mutex::new(None),
             generation: AtomicU64::new(0),
-            #[cfg(not(target_arch = "wasm32"))]
             sys: Mutex::new(SysFallback { enabled: true, ..Default::default() }),
-            #[cfg(not(target_arch = "wasm32"))]
             stamp: Mutex::new(None),
             instances: Mutex::new(Instances::default()),
         }
@@ -75,12 +64,9 @@ impl FontDb {
     /// Enable or disable the lazy system-font fallback for characters the loaded fonts lack
     /// (native only; on by default).
     pub fn set_system_fallback(&self, on: bool) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             self.sys.lock().unwrap_or_else(|e| e.into_inner()).enabled = on;
         }
-        #[cfg(target_arch = "wasm32")]
-        let _ = on;
     }
 
     /// Process-wide database: the bundled fonts, then the installed system fonts, cataloged the
@@ -248,7 +234,6 @@ impl FontDb {
     /// Catalog the installed fonts unless that has been done: the first caller scans the font
     /// folders, any other waits for that scan to finish. A no-op on wasm.
     pub(super) fn ensure_catalog(&self) {
-        #[cfg(not(target_arch = "wasm32"))]
         self.cataloged.get_or_init(|| {
             self.scan_font_dirs();
         });
@@ -258,7 +243,6 @@ impl FontDb {
     /// (opening a file, the font menus) doesn't wait for the scan. A no-op once they are
     /// cataloged, and on wasm.
     pub fn scan_in_background(&'static self) {
-        #[cfg(not(target_arch = "wasm32"))]
         if self.cataloged.get().is_none() {
             // A failed spawn leaves the scan to the first lookup that needs it.
             let _ = std::thread::Builder::new().name("font-scan".into()).spawn(move || self.ensure_catalog());
@@ -269,7 +253,6 @@ impl FontDb {
     /// found (native only). Font data is loaded when a cataloged family is first resolved. Faces
     /// loaded from files the scan no longer finds are dropped. Returns the number of faces
     /// cataloged.
-    #[cfg(not(target_arch = "wasm32"))]
     pub fn load_system_fonts(&self) -> usize {
         // The first scan, or a rescan once it is done (never both at once).
         let mut first = None;
@@ -282,17 +265,13 @@ impl FontDb {
     /// them. Costs a look at each folder the scan read, not a scan. `false` before the first scan
     /// and on wasm.
     pub fn installed_fonts_changed(&self) -> bool {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let paths = self.font_paths.get();
             let stamp = self.stamp.lock().unwrap_or_else(|e| e.into_inner());
             stamp.as_ref().is_some_and(|s| s.paths != paths || s.modified.iter().any(|(p, t)| modified(p) != *t))
         }
-        #[cfg(target_arch = "wasm32")]
-        false
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn scan_font_dirs(&self) -> usize {
         // Files may have been installed since: other versions are looked for again.
         self.version_scanned.write().unwrap_or_else(|e| e.into_inner()).clear();

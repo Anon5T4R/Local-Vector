@@ -24,7 +24,6 @@ pub(crate) struct UiFonts {
     /// The fonts added to egui, by name.
     added: HashSet<String>,
     /// The faces covering the characters being looked for (native: looked for on a thread).
-    #[cfg(not(target_arch = "wasm32"))]
     pending: Option<std::sync::mpsc::Receiver<Vec<Arc<FontFace>>>>,
 }
 
@@ -32,7 +31,6 @@ impl UiFonts {
     /// After a frame is laid out: add the fallback fonts found since the last frame, and look for
     /// fonts covering the characters this frame painted that the UI fonts lack.
     pub(crate) fn frame(&mut self, ctx: &egui::Context) {
-        #[cfg(not(target_arch = "wasm32"))]
         if let Some(faces) = self.pending.as_ref().and_then(|rx| rx.try_recv().ok()) {
             self.pending = None;
             self.install(ctx, &faces);
@@ -54,7 +52,6 @@ impl UiFonts {
         };
         // Native: the installed fonts are read off the UI thread. Characters met meanwhile wait for
         // the next search (they aren't marked seen until then).
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let (tx, rx) = std::sync::mpsc::channel();
             let repaint = ctx.clone();
@@ -68,14 +65,11 @@ impl UiFonts {
             }
         }
         // The web has only the loaded fonts to look through: quick, on this thread.
-        #[cfg(target_arch = "wasm32")]
-        self.install(ctx, &find());
     }
 
     /// Characters painted this frame that the UI fonts lack and haven't been looked for, now
     /// marked seen. None while a search is running.
     fn missing(&mut self, ctx: &egui::Context) -> Vec<char> {
-        #[cfg(not(target_arch = "wasm32"))]
         if self.pending.is_some() {
             return vec![];
         }

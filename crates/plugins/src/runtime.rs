@@ -97,21 +97,14 @@ impl std::fmt::Debug for Plugin {
 
 /// When a run must stop (native: a wall-clock deadline).
 struct Deadline {
-    #[cfg(not(target_arch = "wasm32"))]
     at: std::time::Instant,
 }
 
 impl Deadline {
     fn new(limits: &Limits) -> Self {
-        #[cfg(target_arch = "wasm32")]
-        let _ = limits;
-        Self {
-            #[cfg(not(target_arch = "wasm32"))]
-            at: std::time::Instant::now() + std::time::Duration::from_millis(limits.wall_time_ms),
-        }
+        Self { at: std::time::Instant::now() + std::time::Duration::from_millis(limits.wall_time_ms) }
     }
     fn check(&self) -> Result<()> {
-        #[cfg(not(target_arch = "wasm32"))]
         if std::time::Instant::now() >= self.at {
             return Err(Error::Limit("time budget".into()));
         }

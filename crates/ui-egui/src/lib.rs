@@ -7,7 +7,6 @@
 
 /// Local Vector as craft-update knows it, with its 128 px icon and accent colour: the update
 /// prompt shows both, and an AppImage's menu entry gets the icon.
-#[cfg(not(target_arch = "wasm32"))]
 pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {
     icon_png: Some(include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/com.localvector.app.png")),
     accent: Some([0x0f, 0x76, 0x6e]),
@@ -223,7 +222,6 @@ pub struct LocalvectorApp {
     /// the answer.
     font_check: Option<(std::sync::mpsc::Receiver<bool>, bool)>,
     /// When installed fonts were last checked in line (app time, s).
-    #[cfg(not(target_arch = "wasm32"))]
     font_install_check_at: f64,
     /// Keyboard pastes of something other than text (see [`shortcuts::PasteChord`]).
     pub(crate) paste_chord: shortcuts::PasteChord,

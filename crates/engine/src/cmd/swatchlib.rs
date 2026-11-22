@@ -352,7 +352,6 @@ pub fn library_file_name(name: &str, ext: &str) -> String {
 }
 
 /// The library files with extensions `exts` in folder `dir`, sorted by name.
-#[cfg(not(target_arch = "wasm32"))]
 fn library_files(dir: &str, exts: &[&str]) -> Vec<String> {
     let Ok(rd) = std::fs::read_dir(dir) else { return vec![] };
     let mut files: Vec<String> = rd
@@ -362,11 +361,6 @@ fn library_files(dir: &str, exts: &[&str]) -> Vec<String> {
         .collect();
     files.sort_by_key(|f| f.to_lowercase());
     files
-}
-
-#[cfg(target_arch = "wasm32")]
-fn library_files(_: &str, _: &[&str]) -> Vec<String> {
-    vec![]
 }
 
 fn file_name(path: &str) -> String {

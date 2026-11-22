@@ -207,18 +207,11 @@ impl StylusFeed {
         pen.latest.map(|_| pen.eraser)
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn wait_for_touch<'a>(&'a self, pen: MutexGuard<'a, Pen>, wait: Duration) -> MutexGuard<'a, Pen> {
         match self.0.set.wait_timeout_while(pen, wait, |p| p.hovering()) {
             Ok((pen, _)) => pen,
             Err(e) => e.into_inner().0,
         }
-    }
-
-    /// The browser's main thread can't wait, and the web build writes its feed on that thread.
-    #[cfg(target_arch = "wasm32")]
-    fn wait_for_touch<'a>(&'a self, pen: MutexGuard<'a, Pen>, _wait: Duration) -> MutexGuard<'a, Pen> {
-        pen
     }
 }
 

@@ -147,12 +147,9 @@ impl History {
 }
 
 /// The default [`History::byte_budget`]: an eighth of the machine's memory where it is known
-/// (Linux), at most 1 GiB (the figure elsewhere); 256 MiB on the web, whose memory is small.
+/// (Linux), at most 1 GiB (the figure elsewhere).
 pub fn default_history_budget() -> usize {
     const MAX: usize = 1 << 30;
-    if cfg!(target_arch = "wasm32") {
-        return 256 << 20;
-    }
     static BUDGET: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
     *BUDGET.get_or_init(|| physical_memory().map_or(MAX, |m| (m / 8).clamp(64 << 20, MAX)))
 }

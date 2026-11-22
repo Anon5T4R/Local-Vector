@@ -53,7 +53,6 @@ pub fn symbols_note() -> String {
 /// has 1 MB on Windows), or here where there are no threads (the web) or none can be started. For
 /// readers whose recursion is capped but heavy; a panic in `f` goes on to the caller.
 pub fn with_deep_stack<T: Send>(f: impl Fn() -> T + Sync) -> T {
-    #[cfg(not(target_arch = "wasm32"))]
     {
         let threaded = std::thread::scope(|s| {
             let thread = std::thread::Builder::new().stack_size(16 << 20).spawn_scoped(s, &f).ok()?;

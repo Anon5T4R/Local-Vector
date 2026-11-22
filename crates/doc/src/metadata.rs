@@ -115,14 +115,9 @@ fn stamp_from_env(get: impl Fn(&str) -> Option<String>) -> Option<i64> {
 }
 
 /// The current time as Unix seconds (UTC); `None` where the platform has no clock (the web build).
-#[cfg(not(target_arch = "wasm32"))]
 pub fn now_unix() -> Option<i64> {
     use std::time::{SystemTime, UNIX_EPOCH};
     SystemTime::now().duration_since(UNIX_EPOCH).ok().and_then(|d| i64::try_from(d.as_secs()).ok())
-}
-#[cfg(target_arch = "wasm32")]
-pub fn now_unix() -> Option<i64> {
-    None
 }
 
 /// Unix seconds (UTC) → `[year, month, day, hour, minute, second]` (proleptic Gregorian; years

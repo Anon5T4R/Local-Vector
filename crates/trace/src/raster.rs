@@ -114,7 +114,7 @@ impl Raster {
         // A deeper image (16 bits a channel) that needs more fails with a decode error.
         let mut reader = image::ImageReader::new(std::io::Cursor::new(bytes)).with_guessed_format().map_err(|e| TraceError::Decode(e.to_string()))?;
         let mut limits = image::Limits::default();
-        limits.max_alloc = Some(if cfg!(target_arch = "wasm32") { 512 << 20 } else { MAX_SOURCE_PIXELS * 4 });
+        limits.max_alloc = Some(MAX_SOURCE_PIXELS * 4);
         reader.limits(limits);
         let img = reader.decode().map_err(decode_err)?.into_rgba8();
         let (w, h) = img.dimensions();

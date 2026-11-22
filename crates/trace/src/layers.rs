@@ -458,7 +458,6 @@ pub(crate) fn parallel_map<T: Sync, R: Send>(items: &[T], f: impl Fn(&T) -> R + 
 }
 
 /// `f` of each of `items`, in order, spread over the available cores, at most `at_a_time` at once.
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn parallel_map_at_most<T: Sync, R: Send>(at_a_time: usize, items: &[T], f: impl Fn(&T) -> R + Sync) -> Vec<R> {
     let threads = std::thread::available_parallelism().map_or(1, |n| n.get()).min(items.len()).min(at_a_time);
     if threads <= 1 {
@@ -485,10 +484,4 @@ pub(crate) fn parallel_map_at_most<T: Sync, R: Send>(at_a_time: usize, items: &[
     });
     done.sort_by_key(|(i, _)| *i);
     done.into_iter().map(|(_, r)| r).collect()
-}
-
-/// `f` of each of `items`, in order (no threads on the web).
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn parallel_map_at_most<T: Sync, R: Send>(_: usize, items: &[T], f: impl Fn(&T) -> R + Sync) -> Vec<R> {
-    items.iter().map(f).collect()
 }

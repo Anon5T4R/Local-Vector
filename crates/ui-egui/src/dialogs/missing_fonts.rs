@@ -45,7 +45,7 @@ pub(super) const SPEC: DialogSpec = DialogSpec {
 /// dialog slot. On the web the status line shows how many fonts are missing instead, unless it
 /// shows the open's notes.
 pub fn after_open(app: &mut LocalvectorApp, r: &Value) {
-    after_open_for(app, r, cfg!(target_arch = "wasm32"));
+    after_open_for(app, r, false);
 }
 
 fn after_open_for(app: &mut LocalvectorApp, r: &Value, web: bool) {

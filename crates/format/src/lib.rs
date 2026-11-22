@@ -31,7 +31,6 @@
 //! newer than they support.
 #![forbid(unsafe_code)]
 
-#[cfg(not(target_arch = "wasm32"))]
 mod atomic;
 mod legacy;
 mod stream;
@@ -45,7 +44,6 @@ use craft_vectorcraft_format::{Contents, Head, Image, ReadError, Tail};
 use localvector_doc::{Document, ImageBlob};
 use serde::Serialize;
 
-#[cfg(not(target_arch = "wasm32"))]
 pub use atomic::{sync_file, write_atomic, write_atomic_with, write_new_with};
 pub use craft_vectorcraft_format::base64::{decode as base64_decode, encode as base64_encode};
 pub use craft_vectorcraft_format::{
@@ -56,17 +54,13 @@ use stream::{Gz, Indent, KeyScan, Out};
 
 /// Most bytes the JSON of a compressed file may unpack to (a guard against decompression bombs,
 /// as are [`MAX_BLOB`] and [`MAX_BLOBS`]). A compressed save refuses a document past any of them,
-/// so every file Local Vector writes reads back. On wasm32 the cap is a quarter of the native
-/// one: the JSON is deserialized into a document several times its size, and the 4 GiB address
-/// space also holds the file, the JSON, the document and the app (#3587).
-pub const MAX_JSON: u64 = if cfg!(target_arch = "wasm32") { 256 << 20 } else { 1 << 30 };
+/// so every file Local Vector writes reads back (#3587).
+pub const MAX_JSON: u64 = 1 << 30;
 /// Most bytes one entry of the data after the JSON (an image, a placed document, the PDF, a
 /// profile) may have in a compressed file.
 pub const MAX_BLOB: u64 = craft_vectorcraft_format::MAX_ENTRY;
-/// Most bytes the entries after the JSON may have together in a compressed file: 1 GiB in the web
-/// build, whose 4 GiB address space also holds the JSON, the document and the app, so 4 GiB of
-/// entries failed to allocate rather than being refused.
-pub const MAX_BLOBS: u64 = if cfg!(target_arch = "wasm32") { 1 << 30 } else { 4 << 30 };
+/// Most bytes the entries after the JSON may have together in a compressed file.
+pub const MAX_BLOBS: u64 = 4 << 30;
 /// Most bytes a compressed file whose JSON isn't followed by the marker where Local Vector puts it
 /// (hand-made or damaged files) may unpack to: it is unpacked whole.
 const MAX_UNPACKED: u64 = 512 << 20;
@@ -789,7 +783,7 @@ mod tests {
     /// with a message naming it, before the rest of the document is read.
     #[test]
     fn a_documents_objects_are_capped() {
-        assert_eq!(localvector_doc::node::MAX_READ_NODES, if cfg!(target_arch = "wasm32") { 512 << 10 } else { 4 << 20 });
+        assert_eq!(localvector_doc::node::MAX_READ_NODES, 4 << 20);
         let mut d = Document::new(100.0, 100.0);
         let l = d.add_layer(None);
         for i in 0..200 {

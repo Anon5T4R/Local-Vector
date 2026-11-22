@@ -1,6 +1,5 @@
 use super::{MetadataProvider, StringId};
 
-#[cfg(not(target_arch = "wasm32"))]
 #[derive(Default)]
 pub(super) struct SysFallback {
     pub(super) enabled: bool,
@@ -40,7 +39,6 @@ pub(super) fn script_families(c: char) -> &'static [&'static str] {
 }
 
 /// Families tried (when installed) for characters the loaded fonts lack: CJK, symbols, emoji.
-#[cfg(not(target_arch = "wasm32"))]
 pub(super) const SYSTEM_FALLBACKS: &[&str] = &[
     "Helvetica Neue",
     "Arial",

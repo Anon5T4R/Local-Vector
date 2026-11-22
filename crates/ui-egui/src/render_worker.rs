@@ -39,11 +39,8 @@ pub struct Worker {
 }
 
 impl Worker {
-    /// Spawn the worker thread (None on wasm, where rendering stays synchronous).
+    /// Spawn the worker thread.
     pub fn spawn(ctx: egui::Context) -> Option<Self> {
-        if cfg!(target_arch = "wasm32") {
-            return None;
-        }
         let (tx, jobs) = channel::<Job>();
         let (done_tx, rx) = channel::<Done>();
         std::thread::Builder::new()

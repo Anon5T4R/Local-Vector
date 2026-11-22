@@ -42,7 +42,7 @@ pub fn long_operation_busy(app: &LocalvectorApp) -> bool {
 /// Does opening happen off the UI thread here? Not on wasm (no threads), in unit tests (they look
 /// at the document right after asking for it), or with `LOCALVECTOR_SYNC_OPEN` set.
 pub fn available() -> bool {
-    !(cfg!(target_arch = "wasm32") || cfg!(test) || std::env::var_os("LOCALVECTOR_SYNC_OPEN").is_some())
+    !(cfg!(test) || std::env::var_os("LOCALVECTOR_SYNC_OPEN").is_some())
 }
 
 /// Decode `bytes`, the file at `path`, read its linked files and lay out its type on a thread of its

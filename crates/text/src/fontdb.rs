@@ -33,7 +33,7 @@ pub use build::style_weight;
 #[cfg(test)]
 use cache::GlyphCache;
 use cache::{CanonicalNames, Catalog, GlyphColours, GlyphImages, PostScriptNames};
-#[cfg(all(not(target_arch = "wasm32"), test))]
+#[cfg(test)]
 pub(crate) use dirs::fonts_outside;
 #[cfg(test)]
 pub(crate) use dirs::sfnt_of;
@@ -46,13 +46,12 @@ use face::Instances;
 pub(crate) use face::MAX_LIVE_INSTANCES;
 pub use face::{FALLBACK_FAMILY, FontFace, IcfMargins};
 pub(crate) use glyph_pen::FlipPen;
-#[cfg(not(target_arch = "wasm32"))]
 use names::SysFallback;
 #[cfg(test)]
 pub use names::THAI_FAMILIES;
 #[cfg(test)]
 use names::{native_family_name, norm, pick_native_label};
-#[cfg(all(not(target_arch = "wasm32"), test))]
+#[cfg(test)]
 pub(crate) use scan::file_face_names_within;
 #[cfg(test)]
 use scan::{MAX_FACES, enumerate_faces};
@@ -85,21 +84,17 @@ pub struct FontDb {
     canonical_cache: Mutex<CanonicalNames>,
     /// Set once the font folders have been scanned. Lookups by family name wait for the first
     /// scan, so what they find never depends on what ran before them.
-    #[cfg(not(target_arch = "wasm32"))]
     cataloged: std::sync::OnceLock<()>,
     /// Families (lowercased) whose installed files were all loaded to find other versions of their
     /// faces (see [`FontDb::versions`]); a rescan forgets them.
-    #[cfg(not(target_arch = "wasm32"))]
     version_scanned: RwLock<std::collections::HashSet<String>>,
     /// [`FontDb::family_list`], built on demand and dropped when fonts are added or rescanned.
     family_cache: Mutex<Option<Arc<[String]>>>,
     menu_cache: Mutex<Option<MenuFamilies>>,
     generation: AtomicU64,
     /// System fallback state: characters no system font covers.
-    #[cfg(not(target_arch = "wasm32"))]
     sys: Mutex<SysFallback>,
     /// What the last scan read, to tell when fonts were installed or removed since.
-    #[cfg(not(target_arch = "wasm32"))]
     stamp: Mutex<Option<ScanStamp>>,
     /// Faces instanced at the axis settings of type's Variable Font sliders ([`FontDb::instance`]).
     instances: Mutex<Instances>,
@@ -126,13 +121,11 @@ impl FontPaths {
 
 /// What a system font scan read: the paths it started from, and when each folder it listed (and
 /// font file named by itself) last changed. Installing or removing a font changes its folder's.
-#[cfg(not(target_arch = "wasm32"))]
 struct ScanStamp {
     paths: Vec<PathBuf>,
     modified: Vec<(PathBuf, Option<std::time::SystemTime>)>,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn modified(path: &Path) -> Option<std::time::SystemTime> {
     std::fs::metadata(path).and_then(|m| m.modified()).ok()
 }

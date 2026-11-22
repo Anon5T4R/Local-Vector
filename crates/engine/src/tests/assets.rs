@@ -396,7 +396,6 @@ fn export_for_screens_writes_chosen_assets_and_keeps_its_rules() {
     assert!(s.execute("assets.export", &json!({})).is_err());
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn assets_export_into_a_folder() {
     let dir = std::env::temp_dir().join(format!("vc-assets-{}", std::process::id()));

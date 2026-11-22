@@ -295,7 +295,7 @@ fn category_fields(ui: &mut egui::Ui, d: &mut Dialog, cat: &str) {
             }
             // Windows and Linux only: macOS always has the system's title bar, the web has none.
             PrefKind::Bool if sp.key == "systemTitleBar" => {
-                if cfg!(all(not(target_arch = "wasm32"), not(target_os = "macos"))) {
+                if cfg!(not(target_os = "macos")) {
                     bool_row(ui, d, sp.key, sp.label);
                     // The window's decorations are chosen once, when the app starts.
                     ui.label(egui::RichText::new(tl!("Applies the next time Local Vector starts.")).color(t.text_dim).size(11.0));

@@ -3,17 +3,9 @@
 /// pacing and deadlines use this, not egui's `InputState::time`: a logic-only pass replays the
 /// last shown frame's time, and a wall clock jumps with the system's.
 pub fn now_secs() -> f64 {
-    #[cfg(not(target_arch = "wasm32"))]
     {
         use std::sync::LazyLock;
         use std::time::Instant;
-        static START: LazyLock<Instant> = LazyLock::new(Instant::now);
-        START.elapsed().as_secs_f64()
-    }
-    #[cfg(target_arch = "wasm32")]
-    {
-        use std::sync::LazyLock;
-        use web_time::Instant;
         static START: LazyLock<Instant> = LazyLock::new(Instant::now);
         START.elapsed().as_secs_f64()
     }

@@ -25,7 +25,7 @@ pub(crate) use fx::BLEND;
 
 /// Most objects an imported SVG may expand to: a guard against `<use>` and nested-image
 /// expansion bombs (#3564).
-pub const MAX_NODES: usize = if cfg!(target_arch = "wasm32") { 500_000 } else { 2_000_000 };
+pub const MAX_NODES: usize = 2_000_000;
 
 mod convert;
 mod importer;

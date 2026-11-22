@@ -295,7 +295,6 @@ fn a_long_unknown_command_id_is_answered_at_once() {
     assert!(start.elapsed() < std::time::Duration::from_secs(2), "{:?}", start.elapsed());
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn action_batch_names_the_nearest_command_id() {
     let mut s = session();

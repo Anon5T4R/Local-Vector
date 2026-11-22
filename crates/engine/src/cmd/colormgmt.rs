@@ -17,7 +17,6 @@ use localvector_doc::ColorMode;
 use localvector_render::proof;
 use serde_json::{Value, json};
 
-#[cfg(not(target_arch = "wasm32"))]
 use super::EngineError;
 use super::{CommandSpec, Result, Session, always, bad, bool_or, cmd, color_value, has_doc, str_param, targets};
 
@@ -188,7 +187,6 @@ fn color_settings(s: &mut Session, p: &Value) -> Result<Value> {
     Ok(settings_json(&st))
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn load_profile(s: &mut Session, p: &Value) -> Result<Value> {
     const C: &str = "color.loadProfile";
     let path = str_param(p, "path").ok_or_else(|| bad(C, "missing `path`"))?;
@@ -224,11 +222,6 @@ fn remove_profile(s: &mut Session, p: &Value) -> Result<Value> {
     s.unstore_profile(&info.name);
     touch_all(s);
     Ok(json!({"removed": info.name}))
-}
-
-#[cfg(target_arch = "wasm32")]
-fn load_profile(_: &mut Session, _: &Value) -> Result<Value> {
-    Err(bad("color.loadProfile", "loading profiles from disk isn't available in the browser"))
 }
 
 /// The document's assigned profiles (`None` = working space).

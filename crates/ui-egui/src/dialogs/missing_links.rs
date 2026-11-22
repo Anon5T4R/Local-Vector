@@ -47,7 +47,7 @@ pub fn after_open(app: &mut LocalvectorApp, r: &Value) {
     super::missing_fonts::after_open(app, r);
     let rows = |k: &str| r[k].as_array().cloned().unwrap_or_default();
     let (missing, modified) = (rows("missingLinks"), ids(&rows("modifiedLinks")));
-    if missing.is_empty() || cfg!(target_arch = "wasm32") {
+    if missing.is_empty() {
         if !missing.is_empty() {
             app.status(crate::i18n::msg_n(
                 missing.len() as u64,
@@ -90,7 +90,6 @@ fn ask_update(app: &mut LocalvectorApp, ids: Vec<Value>) {
 
 /// The same offer for linked files another app changed while the document is open
 /// ([`localvector_engine::link_watch`]).
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn ask_update_changed(app: &mut LocalvectorApp, ids: Vec<Value>) {
     ask(app, ids, "{n} linked image changed on disk. Show the new version?", "{n} linked images changed on disk. Show the new versions?");
 }

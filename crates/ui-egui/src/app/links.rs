@@ -1,4 +1,3 @@
-#[cfg(not(target_arch = "wasm32"))]
 use super::dialogs;
 use super::{LocalvectorApp, browsable_url};
 
@@ -45,7 +44,6 @@ impl LocalvectorApp {
     /// worker thread and act on the changed ones as Preferences › File Handling › Update Links
     /// says ([`localvector_engine::link_watch`]). No look starts while a dialog is open, so an
     /// Ask When Modified question never goes unseen.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(super) fn tick_link_updates(&mut self, ctx: &egui::Context, now: f64) {
         if let Some(r) = self.session.poll_link_scan() {
             match r {

@@ -1,5 +1,4 @@
 use super::{Arc, LocalvectorApp, Ordering, graphics, native_menu, shortcuts, take_frame_once, tools_float};
-#[cfg(not(target_arch = "wasm32"))]
 use super::{fileio, place};
 
 impl LocalvectorApp {
@@ -24,13 +23,11 @@ impl LocalvectorApp {
         // path; it writes through `SystemClipboard` and leaves `clipboard_out` empty.
         self.flush_clipboard_out(ctx);
         // Native only: the web host reads dropped files asynchronously and feeds the inboxes.
-        #[cfg(not(target_arch = "wasm32"))]
         self.take_dropped_files(ctx);
     }
 
     /// Files dropped on the window: documents, libraries, presets, plug-ins and shortcut sets
     /// opened, pictures and text placed on the canvas ([`Self::drop_target`]).
-    #[cfg(not(target_arch = "wasm32"))]
     fn take_dropped_files(&mut self, ctx: &egui::Context) {
         let (dropped, shift) = ctx.input(|i| (i.raw.dropped_files.clone(), i.modifiers.shift));
         self.open_dropped_files(dropped, place::drag_pos(ctx), shift);
@@ -38,7 +35,6 @@ impl LocalvectorApp {
 
     /// Files dropped on the main window or on a floating panel's own OS window, opened or placed
     /// by kind; `pos` is the drop point in the main window, where the backend reports one.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn open_dropped_files(&mut self, dropped: Vec<egui::DroppedFileHandle>, pos: Option<egui::Pos2>, shift: bool) {
         if dropped.is_empty() {
             return;

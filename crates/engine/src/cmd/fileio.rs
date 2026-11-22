@@ -73,7 +73,6 @@ pub use load::{
 pub use load::{losses_summary, overwrite_losses};
 /// Atomic file writes (a temporary file renamed over the target: a failed write never damages the
 /// file it replaces), for the apps' own writers too.
-#[cfg(not(target_arch = "wasm32"))]
 pub use localvector_format::write_atomic;
 pub use naming::{NameParts as FileNameParts, parse_date as parse_file_date, render as render_file_name};
 pub(crate) use native::preview_png;
@@ -106,10 +105,8 @@ mod commands;
 mod export_names;
 mod formats;
 
-#[cfg(not(target_arch = "wasm32"))]
 use access::list_dir;
 pub use access::write_file_with;
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) use access::{Placed, copy_new, file_metadata};
 pub(crate) use access::{absolute_path, create_dir, document_path, file_created, file_stamp, read_file, read_file_head, write_file, write_new_file};
 #[cfg(all(test, windows))]
@@ -118,7 +115,6 @@ pub(crate) use access::{document_path_on, document_path_with};
 pub(crate) use access::{drive_share_of, share_of};
 #[cfg(test)]
 pub(crate) use access::{drive_share_path, share_path, touched};
-#[cfg(not(target_arch = "wasm32"))]
 use access::{may_read, may_write};
 pub use commands::specs;
 pub use export_names::artboard_file_names;

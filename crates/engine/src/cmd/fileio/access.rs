@@ -1,4 +1,3 @@
-#[cfg(not(target_arch = "wasm32"))]
 use super::write_atomic;
 use super::{EngineError, Result, Session, Value, bad, json};
 
@@ -9,7 +8,6 @@ use super::{EngineError, Result, Session, Value, bad, json};
 // `file_created`: no file), as is any path once roots are in force without its kind of access.
 
 /// `path` checked for reading against the automation roots in force.
-#[cfg(not(target_arch = "wasm32"))]
 pub(super) fn may_read(path: &str) -> Result<()> {
     #[cfg(test)]
     touch(path);
@@ -43,12 +41,10 @@ pub(crate) fn touched<T>(f: impl FnOnce() -> T) -> (T, Vec<String>) {
 }
 
 /// `path` checked for writing against the automation roots in force.
-#[cfg(not(target_arch = "wasm32"))]
 pub(super) fn may_write(path: &str) -> Result<()> {
     crate::file_access::check_write(path).map_err(EngineError::Other)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn read_file(path: &str) -> Result<Vec<u8>> {
     may_read(path)?;
     // A device or pipe may never end: only a regular file is read to its end.
@@ -60,7 +56,6 @@ pub(crate) fn read_file(path: &str) -> Result<Vec<u8>> {
 
 /// The first `max` bytes of the file at `path` (all of it when it is shorter). Anything but a
 /// regular file (a folder, a pipe, a device) is refused, also through a link.
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn read_file_head(path: &str, max: usize) -> Result<Vec<u8>> {
     use std::io::Read;
     may_read(path)?;
@@ -72,7 +67,6 @@ pub(crate) fn read_file_head(path: &str, max: usize) -> Result<Vec<u8>> {
     Ok(out)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn write_file(path: &str, bytes: &[u8]) -> Result<()> {
     // Work that stops early for a cancel can leave a truncated result: none of it is written.
     localvector_doc::cancel::check()?;
@@ -82,14 +76,12 @@ pub(crate) fn write_file(path: &str, bytes: &[u8]) -> Result<()> {
 }
 
 /// [`write_file`] with what `fill` writes into the file (a save streamed into it).
-#[cfg(not(target_arch = "wasm32"))]
 pub fn write_file_with(path: &str, fill: &mut dyn FnMut(&mut dyn std::io::Write) -> std::io::Result<()>) -> Result<()> {
     localvector_doc::cancel::check()?;
     may_write(path)?;
     localvector_format::write_atomic_with(std::path::Path::new(path), |f| fill(f)).map_err(|e| EngineError::Other(format!("{path}: {e}")))
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn create_dir(path: &str) -> Result<()> {
     may_write(path)?;
     std::fs::create_dir_all(path).map_err(|e| EngineError::Other(format!("{path}: {e}")))
@@ -97,7 +89,6 @@ pub(crate) fn create_dir(path: &str) -> Result<()> {
 
 /// Write `bytes` to a new file at `path`. A file already at `path` is an error and is never
 /// replaced. When the write fails part way, the file it started is removed.
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn write_new_file(path: &str, bytes: &[u8]) -> Result<()> {
     use std::io::Write as _;
     may_write(path)?;
@@ -113,11 +104,9 @@ pub(crate) fn write_new_file(path: &str, bytes: &[u8]) -> Result<()> {
 }
 
 /// The highest number [`copy_new`] gives a copy's name (`Name 99.png`).
-#[cfg(not(target_arch = "wasm32"))]
 const MAX_COPY_NUMBER: u32 = 99;
 
 /// Where [`copy_new`] put a file.
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) enum Placed {
     /// Copied to this new file.
     Copied(std::path::PathBuf),
@@ -131,7 +120,6 @@ pub(crate) enum Placed {
 /// file and its metadata), which is kept. When `create` fails with `AlreadyExists` (the name was
 /// taken meanwhile), it tries the next name. `None` when no name is free or holds the same
 /// contents; a name whose metadata can't be read counts as taken.
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn copy_new(
     from: &std::path::Path,
     dir: &std::path::Path,
@@ -168,7 +156,6 @@ pub(super) fn file_list(_: &mut Session, p: &Value) -> Result<Value> {
 
 /// The entries of folder `path`, sorted by name: at most `max`, and whether there were more. A
 /// link isn't followed: its target may lie outside the automation roots.
-#[cfg(not(target_arch = "wasm32"))]
 pub(super) fn list_dir(path: &str, max: usize) -> Result<(Vec<Value>, bool)> {
     may_read(path)?;
     let dir = std::fs::read_dir(path).map_err(|e| EngineError::Other(format!("{path}: {e}")))?;
@@ -194,14 +181,8 @@ pub(super) fn list_dir(path: &str, max: usize) -> Result<(Vec<Value>, bool)> {
     Ok((entries.into_iter().map(|(_, v)| v).collect(), truncated))
 }
 
-#[cfg(target_arch = "wasm32")]
-pub(super) fn list_dir(_: &str, _: usize) -> Result<(Vec<Value>, bool)> {
-    Err(EngineError::Other("no file system here".into()))
-}
-
 /// A file's size (bytes) and modification time (ms since the Unix epoch, when the file system
 /// keeps one); `None` when there is no file at `path` (or automation may not read it).
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn file_stamp(path: &str) -> Option<(u64, Option<u64>)> {
     let m = file_metadata(path).filter(std::fs::Metadata::is_file)?;
     let modified = m.modified().ok().and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok()).map(|d| d.as_millis() as u64);
@@ -210,27 +191,19 @@ pub(crate) fn file_stamp(path: &str) -> Option<(u64, Option<u64>)> {
 
 /// When the file at `path` was created (ms since the Unix epoch), when the file system keeps it
 /// (and automation may read it).
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn file_created(path: &str) -> Option<u64> {
     let t = file_metadata(path)?.created().ok()?;
     t.duration_since(std::time::UNIX_EPOCH).ok().map(|d| d.as_millis() as u64)
 }
 
 /// The file system's metadata of `path`, following links (when automation may read it).
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn file_metadata(path: &str) -> Option<std::fs::Metadata> {
     may_read(path).ok()?;
     std::fs::metadata(path).ok()
 }
 
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn file_created(_: &str) -> Option<u64> {
-    None
-}
-
 /// `path` made absolute against the working directory (as given when absolute already, or when
 /// that fails).
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn absolute_path(path: &str) -> String {
     if std::path::Path::new(path).is_absolute() {
         return path.to_string();
@@ -372,49 +345,4 @@ pub(crate) fn share_of(document: &str, final_path: impl FnOnce(&str) -> Option<s
         return None;
     }
     Some(format!(r"\\{unc}\{name}"))
-}
-
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn file_stamp(_: &str) -> Option<(u64, Option<u64>)> {
-    None
-}
-
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn absolute_path(path: &str) -> String {
-    path.to_string()
-}
-
-#[cfg(target_arch = "wasm32")]
-fn no_fs(path: &str) -> EngineError {
-    EngineError::Other(format!("{path}: no file system here (pass dataBase64 to open; omit the path to get dataBase64)"))
-}
-
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn read_file(path: &str) -> Result<Vec<u8>> {
-    Err(no_fs(path))
-}
-
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn read_file_head(path: &str, _: usize) -> Result<Vec<u8>> {
-    Err(no_fs(path))
-}
-
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn write_file(path: &str, _: &[u8]) -> Result<()> {
-    Err(no_fs(path))
-}
-
-#[cfg(target_arch = "wasm32")]
-pub fn write_file_with(path: &str, _: &mut dyn FnMut(&mut dyn std::io::Write) -> std::io::Result<()>) -> Result<()> {
-    Err(no_fs(path))
-}
-
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn create_dir(path: &str) -> Result<()> {
-    Err(no_fs(path))
-}
-
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn write_new_file(path: &str, _: &[u8]) -> Result<()> {
-    Err(no_fs(path))
 }

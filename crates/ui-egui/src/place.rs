@@ -456,10 +456,9 @@ impl LocalvectorApp {
 
 /// Where the pointer is during a file drag over the window, as far as egui knows: nowhere on the
 /// desktop, whose drags carry no position (the one egui had before is stale; files dropped there
-/// go by their kind, see [`LocalvectorApp::drop_target`]). On the web, egui's own position (for
-/// the highlight: the web host follows its drags itself for drops).
-pub fn drag_pos(ctx: &egui::Context) -> Option<egui::Pos2> {
-    if cfg!(target_arch = "wasm32") { ctx.input(|i| i.pointer.latest_pos()) } else { None }
+/// go by their kind, see [`LocalvectorApp::drop_target`]).
+pub fn drag_pos(_ctx: &egui::Context) -> Option<egui::Pos2> {
+    None
 }
 
 /// A file dropped on the window: its name, path (when it has one) and bytes.

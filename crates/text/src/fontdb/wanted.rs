@@ -1,5 +1,4 @@
 use super::names::norm;
-#[cfg(not(target_arch = "wasm32"))]
 use super::scan::{file_face_names_within, is_font_file};
 use super::traits::FaceStyle;
 use super::{HashMap, Path};
@@ -27,9 +26,7 @@ pub struct WantedFonts {
 
 impl WantedFonts {
     /// The most faces and bytes of one file a search reads.
-    #[cfg(not(target_arch = "wasm32"))]
     const SEARCH_FACES: u32 = 64;
-    #[cfg(not(target_arch = "wasm32"))]
     const SEARCH_READ: u64 = 8 << 20;
 
     pub fn new(fonts: &[WantedFont]) -> Self {
@@ -61,18 +58,12 @@ impl WantedFonts {
     /// it, when it is a font file by its extension ([`is_font_file`]) or a suitcase font whose
     /// resource fork is at most 8 MB long. Sorted; none on the web.
     pub fn provided_by(&self, path: &Path) -> Vec<usize> {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             if !is_font_file(path) && !crate::suitcase::is_suitcase(path) {
                 return Vec::new();
             }
             let faces = file_face_names_within(path, Self::SEARCH_FACES, Self::SEARCH_READ);
             self.provided_by_faces(&faces)
-        }
-        #[cfg(target_arch = "wasm32")]
-        {
-            let _ = path;
-            Vec::new()
         }
     }
 

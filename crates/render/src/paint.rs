@@ -69,7 +69,7 @@ pub(crate) fn set_fill_paint(ctx: &mut RenderContext, p: &Paint, bounds: Rect, f
 
 /// The most memory decoding one image may take: print rasters run to gigabytes (a 300 ppi roll,
 /// 6614 x 59055 px, is 1.56 GB as RGBA), past the decoder's 512 MB default. The web keeps it.
-const MAX_DECODE_ALLOC: u64 = if cfg!(target_arch = "wasm32") { 512 << 20 } else { 2 << 30 };
+const MAX_DECODE_ALLOC: u64 = 2 << 30;
 
 thread_local! {
     /// Images that couldn't be decoded (and so drew nothing) on this thread, counted for exports to

@@ -1115,7 +1115,6 @@ pub(crate) const SCREENSHOT_TIMEOUT_ERROR: &str =
 pub(crate) const SYSTEM_CLIPBOARD_POLL: f64 = 0.25;
 
 /// Seconds between looks for fonts a font manager activated while the app stays in front (#2576).
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) const FONT_INSTALL_POLL: f64 = 2.0;
 
 #[cfg(test)]
