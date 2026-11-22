@@ -24,20 +24,12 @@ use crate::ink::Ink;
 /// of memory (an eighth of it). [`set_image_cache_budget`] changes it.
 pub const IMAGE_CACHE_MAX: usize = 1 << 30;
 
-/// The default budget on the web (a tab's memory is tight).
-#[cfg(target_arch = "wasm32")]
-fn default_budget() -> usize {
-    256 << 20
-}
-
-#[cfg(not(target_arch = "wasm32"))]
 fn default_budget() -> usize {
     physical_memory().map_or(IMAGE_CACHE_MAX, budget_for)
 }
 
 /// The default budget on a machine with `memory` bytes installed: an eighth of it, at most
 /// [`IMAGE_CACHE_MAX`].
-#[cfg(not(target_arch = "wasm32"))]
 fn budget_for(memory: u64) -> usize {
     usize::try_from(memory / 8).unwrap_or(usize::MAX).min(IMAGE_CACHE_MAX)
 }
@@ -45,9 +37,6 @@ fn budget_for(memory: u64) -> usize {
 /// Installed memory in bytes, `None` where it isn't known (the web, other systems). Other crates
 /// size their own budgets from it.
 pub fn installed_memory() -> Option<u64> {
-    #[cfg(target_arch = "wasm32")]
-    return None;
-    #[cfg(not(target_arch = "wasm32"))]
     physical_memory()
 }
 
@@ -81,7 +70,7 @@ fn sysctl_bytes(out: &[u8]) -> Option<u64> {
     std::str::from_utf8(out).ok()?.trim().parse().ok()
 }
 
-#[cfg(not(any(target_os = "linux", windows, target_os = "macos", target_os = "freebsd", target_arch = "wasm32")))]
+#[cfg(not(any(target_os = "linux", windows, target_os = "macos", target_os = "freebsd")))]
 fn physical_memory() -> Option<u64> {
     None
 }
@@ -472,7 +461,6 @@ mod tests {
     }
 
     #[test]
-    #[cfg(not(target_arch = "wasm32"))]
     fn default_budget_is_an_eighth_of_installed_memory_at_most_1_gib() {
         assert_eq!(budget_for(4 << 30), 512 << 20);
         assert_eq!(budget_for(8 << 30), IMAGE_CACHE_MAX);

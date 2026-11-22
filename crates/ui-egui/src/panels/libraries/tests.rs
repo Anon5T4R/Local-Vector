@@ -394,7 +394,6 @@ fn group_dialogs_run_with_their_library_and_group() {
 }
 
 /// Export Library… writes the library's file and Import Library… adds it back as a new library.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn libraries_are_exported_and_imported_from_the_panel_menu() {
     let dir = localvector_testkit::temp_dir("libraries-panel");

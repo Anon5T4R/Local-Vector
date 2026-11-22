@@ -6,26 +6,16 @@
 //! <https://helpx.adobe.com/illustrator/desktop/automate-visualize-data/automate-actions/batch-options.html>
 
 use serde_json::Value;
-#[cfg(not(target_arch = "wasm32"))]
 use serde_json::json;
 
 use super::super::{Result, Session, bad};
-#[cfg(not(target_arch = "wasm32"))]
 use super::super::{bool_or, find_command, str_param};
 
-#[cfg(target_arch = "wasm32")]
-pub(super) fn action_batch(_: &mut Session, _: &Value) -> Result<Value> {
-    Err(bad("action.batch", "no file system here"))
-}
-
 /// Caps on a batch (folders and MCP payloads are untrusted).
-#[cfg(not(target_arch = "wasm32"))]
 const MAX_BATCH_FILES: usize = 500;
-#[cfg(not(target_arch = "wasm32"))]
 const MAX_BATCH_DEPTH: usize = 8;
 
 /// Shared Batch options for one run.
-#[cfg(not(target_arch = "wasm32"))]
 struct Run<'a> {
     label: &'a str,
     steps: &'a [Value],
@@ -38,7 +28,6 @@ struct Run<'a> {
 }
 
 /// Play `commands` on each source file or data set.
-#[cfg(not(target_arch = "wasm32"))]
 pub(super) fn action_batch(s: &mut Session, p: &Value) -> Result<Value> {
     use super::{absolute_path, may_write};
 
@@ -100,7 +89,6 @@ pub(super) fn action_batch(s: &mut Session, p: &Value) -> Result<Value> {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn batch_folder(s: &mut Session, cmd: &str, p: &Value, override_open: bool, run: &Run<'_>) -> Result<Value> {
     use super::{absolute_path, may_read};
 
@@ -135,7 +123,6 @@ fn batch_folder(s: &mut Session, cmd: &str, p: &Value, override_open: bool, run:
     Ok(json!({"processed": processed, "count": processed.len(), "failed": failed, "stopped": false}))
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn batch_datasets(s: &mut Session, cmd: &str, run: &Run<'_>) -> Result<Value> {
     let st = s.doc()?;
     let names: Vec<String> = st.doc.variables.datasets.iter().map(|d| d.name.clone()).collect();
@@ -167,7 +154,6 @@ fn batch_datasets(s: &mut Session, cmd: &str, run: &Run<'_>) -> Result<Value> {
 }
 
 /// Drop Open (and optionally Close) steps when the batch supplies the file itself.
-#[cfg(not(target_arch = "wasm32"))]
 fn filter_steps(cmds: &[Value], drop_open: bool, drop_close: bool) -> Vec<Value> {
     cmds.iter()
         .filter(|c| {
@@ -184,7 +170,6 @@ fn filter_steps(cmds: &[Value], drop_open: bool, drop_close: bool) -> Vec<Value>
         .collect()
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn process_one_file(s: &mut Session, run: &Run<'_>, path: &str, stem: &str, ext: &str) -> Result<Value> {
     s.execute("document.open", &json!({"path": path}))?;
     let rewritten = rewrite_paths(run.steps, run.override_save, run.override_export, run.dest_folder, stem, ext);
@@ -194,7 +179,6 @@ fn process_one_file(s: &mut Session, run: &Run<'_>, path: &str, stem: &str, ext:
     Ok(json!({"path": path, "result": batch}))
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn process_one_dataset(s: &mut Session, run: &Run<'_>, name: &str, stem: &str) -> Result<Value> {
     s.execute("dataset.select", &json!({"name": name}))?;
     let rewritten = rewrite_paths(run.steps, run.override_save, run.override_export, run.dest_folder, stem, "vectorcraft");
@@ -204,7 +188,6 @@ fn process_one_dataset(s: &mut Session, run: &Run<'_>, name: &str, stem: &str) -
     Ok(json!({"dataset": name, "result": batch}))
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn finish_destination(s: &mut Session, run: &Run<'_>, stem: &str, ext: &str, source_path: &str, close: bool) -> Result<()> {
     match run.destination {
         "none" => Ok(()),
@@ -238,7 +221,6 @@ fn finish_destination(s: &mut Session, run: &Run<'_>, stem: &str, ext: &str, sou
 /// Builds the three data set naming forms, replaces unsafe name characters, and adds `-2`, `-3`
 /// suffixes when a stem was used earlier or its output already exists in a folder the batch may
 /// read and write.
-#[cfg(not(target_arch = "wasm32"))]
 fn dataset_stems(names: &[String], doc_stem: &str, naming: &str, run: &Run<'_>, doc: &localvector_doc::Document) -> Result<Vec<String>> {
     use super::screens::{file_part, safe_file_name};
 
@@ -285,7 +267,6 @@ fn dataset_stems(names: &[String], doc_stem: &str, naming: &str, run: &Run<'_>, 
     Ok(stems)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 struct DatasetOutput {
     ext: String,
     artboards: bool,
@@ -295,7 +276,6 @@ struct DatasetOutput {
 /// Lists step output extensions and reserves artboard file names for saves with any artboard or
 /// exports with multiple artboards. Per-artboard names count for vectorcraft, template, AI and AIT
 /// saves and SVG, SVGZ, EPS, raster, DXF, EMF, WMF and AI exports.
-#[cfg(not(target_arch = "wasm32"))]
 fn dataset_output_extensions(run: &Run<'_>, doc: &localvector_doc::Document) -> Vec<DatasetOutput> {
     let mut outputs = Vec::new();
     if run.destination == "folder" {
@@ -347,7 +327,6 @@ fn dataset_output_extensions(run: &Run<'_>, doc: &localvector_doc::Document) -> 
     outputs
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn dataset_output_exists(folder: Option<&str>, stem: &str, outputs: &[DatasetOutput], doc: &localvector_doc::Document) -> bool {
     let Some(folder) = folder else { return false };
     if super::may_read(folder).is_err() || super::may_write(folder).is_err() {
@@ -359,7 +338,6 @@ fn dataset_output_exists(folder: Option<&str>, stem: &str, outputs: &[DatasetOut
     })
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn dataset_output_paths(folder: Option<&str>, stem: &str, outputs: &[DatasetOutput], doc: &localvector_doc::Document) -> Vec<std::path::PathBuf> {
     let Some(folder) = folder else { return Vec::new() };
     let boards: Vec<_> = (0..doc.artboards.len()).collect();
@@ -383,13 +361,11 @@ fn dataset_output_paths(folder: Option<&str>, stem: &str, outputs: &[DatasetOutp
 }
 
 /// Returns whether an extension is safe to use in an output file name.
-#[cfg(not(target_arch = "wasm32"))]
 fn safe_extension(ext: &str) -> bool {
     !ext.is_empty() && !ext.contains(['/', '\\', ':']) && !ext.contains("..")
 }
 
 /// Returns a path inside the destination folder for a safe stem and extension.
-#[cfg(not(target_arch = "wasm32"))]
 fn output_path(folder: &str, stem: &str, ext: &str) -> Option<std::path::PathBuf> {
     use std::path::Path;
     if stem.is_empty() || matches!(stem, "." | "..") || stem.contains(std::path::is_separator) || !safe_extension(ext) {
@@ -405,7 +381,6 @@ fn output_path(folder: &str, stem: &str, ext: &str) -> Option<std::path::PathBuf
 
 /// Save when the extension is a Save format; otherwise export (PNG, JPEG…).
 /// `as_copy`: `file.saveCopy` so the open document keeps its path (data-set batches).
-#[cfg(not(target_arch = "wasm32"))]
 fn write_result(s: &mut Session, path: &str, ext: &str, as_copy: bool) -> Result<()> {
     use super::SAVE_FORMATS;
     let id = if ext == "drawcraft" { "vectorcraft" } else { ext };
@@ -420,7 +395,6 @@ fn write_result(s: &mut Session, path: &str, ext: &str, as_copy: bool) -> Result
 
 /// Point Save / Export steps at `dest_folder/{stem}.{ext}` when overrides are on: `ext` is the
 /// extension of the step's `format` ([`format_extension`]), else `default_ext`.
-#[cfg(not(target_arch = "wasm32"))]
 fn rewrite_paths(
     steps: &[Value],
     override_save: bool,
@@ -466,7 +440,6 @@ fn rewrite_paths(
 /// the dot, when it is one of the format's (`SVG` → `svg`, `.JPEG` → `jpeg`), else the format's
 /// first (`png8` → `png`, `template` → `vctemplate`). An unknown format (`xyz`) keeps its spelling,
 /// and the step fails with its command's error.
-#[cfg(not(target_arch = "wasm32"))]
 fn format_extension(format: &str) -> String {
     let written = format.trim_start_matches('.').to_ascii_lowercase();
     match super::format(format) {
@@ -477,7 +450,6 @@ fn format_extension(format: &str) -> String {
 }
 
 /// Readable files under `folder` (and optionally its subfolders), capped.
-#[cfg(not(target_arch = "wasm32"))]
 fn collect_files(folder: &str, include_subdirs: bool, depth: usize) -> Result<Vec<String>> {
     use std::path::PathBuf;
 
@@ -514,7 +486,6 @@ fn collect_files(folder: &str, include_subdirs: bool, depth: usize) -> Result<Ve
     Ok(files)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn is_openable(path: &str) -> bool {
     use super::{FORMATS, OPEN_EXTS, extension};
     let ext = extension(path);
@@ -525,7 +496,6 @@ fn is_openable(path: &str) -> bool {
 }
 
 #[cfg(test)]
-#[cfg(not(target_arch = "wasm32"))]
 mod tests {
     use super::*;
     use serde_json::json;

@@ -7,9 +7,8 @@ use std::sync::Arc;
 use crate::ImageBlob;
 
 /// The most memory the decoded RGBA pixels of one image may take: the allowance the importers
-/// and the renderer decode within (a 60 in sheet at 300 ppi is ~475 MB). The web app has 4 GB to
-/// address and aborts when an allocation fails, so it keeps the decoder's own 512 MB.
-pub const MAX_RASTER_ALLOC: u64 = if cfg!(target_arch = "wasm32") { 512 << 20 } else { 2 << 30 };
+/// and the renderer decode within (a 60 in sheet at 300 ppi is ~475 MB).
+pub const MAX_RASTER_ALLOC: u64 = 2 << 30;
 
 /// The pixels of encoded image `bytes` as RGBA; `None` when they can't be decoded, would take
 /// more than `max` bytes as RGBA, or need more than `max` bytes to decode. The size is read from

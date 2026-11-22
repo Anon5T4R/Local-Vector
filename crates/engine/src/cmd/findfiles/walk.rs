@@ -254,9 +254,6 @@ pub(crate) fn start_in(
     items: usize,
     visitor: Arc<dyn Visitor>,
 ) -> Result<Search, String> {
-    if cfg!(target_arch = "wasm32") {
-        return Err("searching a folder isn't available on the web".into());
-    }
     // The walkers follow no links, so a folder automation may read holds all they read.
     crate::file_access::check_read(&folder.to_string_lossy())?;
     // The check above reads a lossy string: under roots, a path it would alter names another folder.

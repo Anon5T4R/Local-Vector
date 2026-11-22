@@ -1136,7 +1136,6 @@ fn area_type_drag_measure_labels_honor_preference() {
 #[test]
 fn layout_cache_follows_fonts_added_later() {
     // Other tests can load system fonts; this assertion needs its own process-wide database.
-    #[cfg(not(target_arch = "wasm32"))]
     if std::env::var("LOCALVECTOR_FONT_CACHE_TEST_CHILD").as_deref() != Ok("1") {
         let output = std::process::Command::new(std::env::current_exe().unwrap())
             .args(["--exact", "text::tests::layout_cache_follows_fonts_added_later", "--nocapture", "--test-threads=1"])

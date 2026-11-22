@@ -29,8 +29,7 @@ impl LocalvectorApp {
             // The UI gone meanwhile has nothing to refresh.
             let _ = tx.send(localvector_text::FontDb::global().installed_fonts_changed());
         };
-        let spawned =
-            if cfg!(target_arch = "wasm32") { None } else { std::thread::Builder::new().name("font-check".into()).spawn(look.clone()).ok() };
+        let spawned = std::thread::Builder::new().name("font-check".into()).spawn(look.clone()).ok();
         if spawned.is_none() {
             look();
         }

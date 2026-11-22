@@ -28,12 +28,9 @@ pub(crate) struct Probe {
 }
 
 impl Probe {
-    /// Start the worker. `None` on wasm, or when the thread can't be spawned: the caller then falls
-    /// back to the in-line check.
+    /// Start the worker. `None` when the thread can't be spawned: the caller then falls back to
+    /// the in-line check.
     pub(crate) fn start(make: ClipboardProbeFactory, ctx: egui::Context) -> Option<Self> {
-        if cfg!(target_arch = "wasm32") {
-            return None;
-        }
         let (wants, wanted_rx) = std::sync::mpsc::channel();
         let (tx, verdicts) = std::sync::mpsc::channel();
         std::thread::Builder::new()

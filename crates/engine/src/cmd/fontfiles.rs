@@ -43,21 +43,15 @@ const MAX_ADD_FILES: usize = 1_000;
 /// The largest font file a search reads and `text.addFontFiles` copies, and the most bytes one
 /// `text.addFontFiles` copies.
 pub(crate) const MAX_FONT_FILE: u64 = 256 << 20;
-#[cfg(not(target_arch = "wasm32"))]
 const MAX_ADD_BYTES: u64 = 1 << 30;
 /// The extensions of the font files `text.addFontFiles` copies (in any case), besides suitcase
 /// fonts.
-#[cfg(not(target_arch = "wasm32"))]
 const FONT_EXTENSIONS: &[&str] = &["ttf", "otf", "ttc", "otc", "woff", "woff2"];
 /// Why a file wasn't copied.
 const NOT_A_FILE: &str = "not a file";
-#[cfg(not(target_arch = "wasm32"))]
 const NOT_A_FONT: &str = "not a font file";
-#[cfg(not(target_arch = "wasm32"))]
 const TOO_LARGE: &str = "larger than 256 MB";
-#[cfg(not(target_arch = "wasm32"))]
 const TOO_MUCH: &str = "the files come to more than 1 GB: add fewer at a time";
-#[cfg(not(target_arch = "wasm32"))]
 const NO_NAME: &str = "every numbered name for it is taken in the Fonts folder";
 
 pub fn specs() -> Vec<CommandSpec> {
@@ -368,7 +362,6 @@ fn add(s: &mut Session, p: &Value) -> Result<Value> {
 /// `Name.otf`, `Name 2.otf` up to `Name 99.otf` are tried in turn until one is free, which gets
 /// the copy, or is a file with the same contents, which is kept. At most [`MAX_FONT_FILE`] bytes a
 /// file and 1 GB in all.
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn copy_into(files: &[PathBuf], dir: &Path) -> CopyReport {
     use super::fileio::Placed;
     let mut report = CopyReport::default();
@@ -383,13 +376,6 @@ pub(crate) fn copy_into(files: &[PathBuf], dir: &Path) -> CopyReport {
     report
 }
 
-/// The web has no file system: nothing is copied.
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn copy_into(files: &[PathBuf], _: &Path) -> CopyReport {
-    CopyReport { skipped: files.iter().map(|f| (f.clone(), NOT_A_FILE.to_string())).collect(), ..CopyReport::default() }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
 fn copy_one(from: &Path, dir: &Path, total: &mut u64) -> std::result::Result<super::fileio::Placed, String> {
     use super::fileio::Placed;
     let meta = std::fs::symlink_metadata(from).map_err(|e| e.to_string())?;
@@ -424,7 +410,6 @@ fn copy_one(from: &Path, dir: &Path, total: &mut u64) -> std::result::Result<sup
 
 /// Create `to` as a copy of the font file `from`, or for a suitcase font, as an empty file whose
 /// resource fork is `fork`; never in place of a file.
-#[cfg(not(target_arch = "wasm32"))]
 fn create_copy(from: &Path, to: &Path, fork: Option<&[u8]>) -> std::io::Result<()> {
     let Some(fork) = fork else { return localvector_format::write_new_with(to, |f| copy_capped(from, f)) };
     localvector_format::write_new_with(to, |_| Ok(()))?;
@@ -436,7 +421,6 @@ fn create_copy(from: &Path, to: &Path, fork: Option<&[u8]>) -> std::io::Result<(
 
 /// Whether the file `to` (`to_len` bytes) holds what the copy of `from` (`len` bytes, or the
 /// resource fork `fork` of a suitcase font) would.
-#[cfg(not(target_arch = "wasm32"))]
 fn same_file(from: &Path, to: &Path, to_len: u64, len: u64, fork: Option<&[u8]>) -> bool {
     match fork {
         None => to_len == len && same_contents(from, to),
@@ -446,7 +430,6 @@ fn same_file(from: &Path, to: &Path, to_len: u64, len: u64, fork: Option<&[u8]>)
 
 /// The resource fork of the file at `path` (where macOS keeps a suitcase font's fonts), at most
 /// [`MAX_FONT_FILE`] bytes.
-#[cfg(not(target_arch = "wasm32"))]
 fn read_fork(path: &Path) -> std::result::Result<Vec<u8>, String> {
     use std::io::Read;
     let mut fork = vec![];
@@ -458,14 +441,12 @@ fn read_fork(path: &Path) -> std::result::Result<Vec<u8>, String> {
 }
 
 /// Where macOS shows the resource fork of the file at `path`.
-#[cfg(not(target_arch = "wasm32"))]
 fn fork_path(path: &Path) -> PathBuf {
     path.join("..namedfork/rsrc")
 }
 
 /// Copy the file `from` into `to`, failing past [`MAX_FONT_FILE`] bytes (a file that grew since
 /// it was measured).
-#[cfg(not(target_arch = "wasm32"))]
 fn copy_capped(from: &Path, to: &mut std::fs::File) -> std::io::Result<()> {
     use std::io::Read;
     let copied = std::io::copy(&mut std::fs::File::open(from)?.take(MAX_FONT_FILE + 1), to)?;
@@ -476,7 +457,6 @@ fn copy_capped(from: &Path, to: &mut std::fs::File) -> std::io::Result<()> {
 }
 
 /// Whether the files `a` and `b` hold the same bytes (read 64 KB at a time).
-#[cfg(not(target_arch = "wasm32"))]
 fn same_contents(a: &Path, b: &Path) -> bool {
     let (Ok(mut a), Ok(mut b)) = (std::fs::File::open(a), std::fs::File::open(b)) else { return false };
     let (mut x, mut y) = (vec![0; 1 << 16], vec![0; 1 << 16]);
@@ -490,7 +470,6 @@ fn same_contents(a: &Path, b: &Path) -> bool {
 }
 
 /// Read from `f` until `buf` is full or the file ends: the bytes read.
-#[cfg(not(target_arch = "wasm32"))]
 fn fill(f: &mut std::fs::File, buf: &mut [u8]) -> std::io::Result<usize> {
     use std::io::Read;
     let mut n = 0;

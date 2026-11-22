@@ -117,7 +117,6 @@ fn a_bitmap_past_the_caps_or_without_a_header_is_no_image() {
 
 /// A colour bitmap font without outline tables (Noto Color Emoji has `CBDT` but no `glyf`) is an
 /// installed font like any other.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_bitmap_only_font_file_is_cataloged() {
     use crate::fontdb::file_face_names_within;
@@ -139,7 +138,6 @@ fn a_bitmap_only_font_file_is_cataloged() {
 
 /// The system's colour emoji font, when installed: an emoji draws as an image, and a ZWJ sequence
 /// as one glyph.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn an_installed_colour_emoji_font_draws_emoji_as_images() {
     let db = FontDb::with_font_dirs(system_font_dirs());

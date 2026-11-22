@@ -1015,7 +1015,6 @@ fn a_preset_with_empty_folders_exports_into_the_folder() {
 /// The Asset Export panel menu's Export Preset… writes a preset to a file and its Import Preset… adds
 /// the presets of a file, which the open dialog's dropdown then lists, as it does after opening
 /// the file (the web's Import).
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn export_preset_and_import_preset_go_through_files() {
     let dir = temp_folder("preset-files");
@@ -1127,7 +1126,6 @@ fn setting_the_export_preset_field_applies_the_preset() {
 
 /// The Asset Export panel menu's Import Preset… and Export Preset… show their file dialogs off the UI
 /// thread (as sheets on macOS) and read or write the file when the dialog answers.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn preset_files_ask_off_the_ui_thread() {
     use crate::panels::asset_export;

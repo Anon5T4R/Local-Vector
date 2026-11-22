@@ -87,7 +87,6 @@ const LIST_HEIGHT: f32 = 600.0;
 /// Samples rendered (or asked for) per frame, across every menu, so a long list doesn't stall the UI.
 const SAMPLES_PER_FRAME: usize = 4;
 /// Samples rendering at once (native).
-#[cfg(not(target_arch = "wasm32"))]
 const MAX_PENDING: usize = 8;
 /// What a sample shows when the font lacks the selected text's characters (or there is none).
 const FALLBACK_SAMPLE: &str = "Sample";
@@ -639,7 +638,6 @@ const MAX_SAMPLES: usize = 256;
 #[derive(Default)]
 struct Samples {
     ready: HashMap<Key, Option<egui::TextureHandle>>,
-    #[cfg(not(target_arch = "wasm32"))]
     pending: HashMap<Key, std::sync::mpsc::Receiver<Option<egui::ColorImage>>>,
     /// The pass the budget is for, and the samples started in it.
     pass: u64,
@@ -684,7 +682,6 @@ fn sample_texture(ctx: &egui::Context, family: &str, style: Option<&str>, sample
         if s.ready.len() > MAX_SAMPLES {
             s.ready.clear();
         }
-        #[cfg(not(target_arch = "wasm32"))]
         {
             if let Some(rx) = s.pending.get(&key) {
                 let img = match rx.try_recv() {
@@ -716,15 +713,6 @@ fn sample_texture(ctx: &egui::Context, family: &str, style: Option<&str>, sample
             None
         }
         // The web has no threads: a few samples per frame, on this one.
-        #[cfg(target_arch = "wasm32")]
-        {
-            if !s.take_budget(ctx) {
-                return None;
-            }
-            let tex = render_sample(&key.0, &key.1, &key.2, px).map(texture);
-            s.ready.insert(key, tex.clone());
-            tex
-        }
     })
 }
 

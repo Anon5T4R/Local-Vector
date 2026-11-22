@@ -15,7 +15,6 @@ mod pngsuite;
 mod sha256;
 mod stats;
 mod version;
-mod web_fonts;
 
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
@@ -32,9 +31,8 @@ commands:
                   broken scan; ci runs it too)
   pdf-deps        verify immutable shared PDF writer and patched Krilla sources
   layers          enforce the crate dependency layering (plan/architecture.md §3)
-  wasm            cargo check --target wasm32-unknown-unknown for the wasm-safe crates and the web app
   test            the workspace tests (cargo nextest when installed, else cargo test), then the doctests
-  ci              fmt --check, clippy -D warnings, test, doctests, no-bundled-fonts, pdf-deps, assets, brands, cursors (warnings only), layers, cargo-deny, local-libs mirrors, wasm (stops at first failure)
+  ci              fmt --check, clippy -D warnings, test, doctests, no-bundled-fonts, pdf-deps, assets, brands, cursors (warnings only), layers, cargo-deny, local-libs mirrors (stops at first failure)
   corpus [--download] [--affinity]
                   show where test corpora live; --download fetches PngSuite into corpus/pngsuite,
                   --affinity the pinned public Affinity documents into corpus/affinity
@@ -42,8 +40,6 @@ commands:
   ico <out.ico> <png>...
                   pack PNGs into a Windows .ico (used by packaging/icons.sh)
   stats [--exact] count tests and lines per crate (--exact: ask the test harness via `-- --list`)
-  web-fonts       copy the craft-fonts faces in crates/text/web-fonts.txt into the web site (the Trunk
-                  post_build hook; a no-op without CRAFT_FONTS_DIR)
 ";
 
 fn main() -> ExitCode {
@@ -57,7 +53,6 @@ fn main() -> ExitCode {
         Some("layers") => cmd_layers(),
         Some("fmt") => cmd_fmt(),
         Some("pdf-deps") => pdf_deps::run(&root()),
-        Some("wasm") => cmd_wasm(),
         Some("test") => cmd_test().and_then(|()| cmd_doctests()),
         Some("ci") => cmd_ci(),
         Some("corpus") if rest.contains(&"--affinity") => affinity_corpus::fetch(),
@@ -66,7 +61,6 @@ fn main() -> ExitCode {
         Some("ico") => ico::run(&rest),
         Some("version") => version::run(&root(), &rest),
         Some("stats") => stats::run(&root(), rest.contains(&"--exact")),
-        Some("web-fonts") => web_fonts::run(&root()),
         Some("-h" | "--help" | "help") | None => {
             print!("{USAGE}");
             Ok(())
@@ -195,33 +189,6 @@ fn cmd_layers() -> Result<(), String> {
     }
 }
 
-/// Workspace packages that must build for wasm32: all L0–L5 crates, the egui
-/// shell, and the web app (its wasm-only code is compiled by nothing else).
-fn wasm_set() -> Result<Vec<String>, String> {
-    let crates = layers::from_metadata(&metadata()?)?;
-    Ok(crates
-        .into_iter()
-        .filter(|c| match layers::classify(&c.name) {
-            Some(layers::Class::Layer(l)) => l <= 5 || layers::short_name(&c.name) == "ui-egui",
-            Some(layers::Class::Standalone) => true,
-            _ => layers::short_name(&c.name) == "web",
-        })
-        .map(|c| c.name)
-        .collect())
-}
-
-/// One `cargo check` over the whole wasm set: the crates share one build, and `--keep-going`
-/// reports every crate that fails rather than only the first.
-fn cmd_wasm() -> Result<(), String> {
-    let set = wasm_set()?;
-    let mut c = cargo();
-    c.args(["check", "--target", "wasm32-unknown-unknown", "--keep-going"]);
-    for pkg in &set {
-        c.args(["-p", pkg]);
-    }
-    run(c, &format!("cargo check --target wasm32-unknown-unknown --keep-going ({} crates: {})", set.len(), set.join(", ")))
-}
-
 /// Whether `cargo nextest` is installed.
 fn has_nextest() -> bool {
     cargo().args(["nextest", "--version"]).output().is_ok_and(|o| o.status.success())
@@ -315,7 +282,6 @@ fn cmd_ci() -> Result<(), String> {
         ("layers", Box::new(cmd_layers)),
         ("deny", Box::new(cmd_deny)),
         ("mirror", Box::new(cmd_mirror)),
-        ("wasm", Box::new(cmd_wasm)),
     ];
     let mut done = Vec::new();
     for (name, f) in &steps {

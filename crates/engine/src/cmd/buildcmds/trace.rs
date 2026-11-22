@@ -283,12 +283,7 @@ fn trace_library(c: &str, s: &Session, params: &mut tr::TraceParams) -> Result<V
 /// 0.7 GB, with a peak of about 1 GB while tracing: a 4000 × 3000 photo at High Fidelity Photo
 /// makes about 1.9 million, and even at Paths 100, Noise 1 and every tone about 7.9 million. On the
 /// web, where a page has at most 4 GB of memory, the limit stays at 2,000,000.
-#[cfg(not(target_arch = "wasm32"))]
 pub const MAX_TRACE_ANCHORS: usize = 8_000_000;
-
-/// The most anchor points an Image Trace may make on the web (see the native limit).
-#[cfg(target_arch = "wasm32")]
-pub const MAX_TRACE_ANCHORS: usize = 2_000_000;
 
 /// The live shape for a shape the tracer found (in the image's pixels), placed in the document by `xf`.
 fn traced_shape(shape: tr::TracedShape, xf: localvector_geom::Affine) -> LiveShape {

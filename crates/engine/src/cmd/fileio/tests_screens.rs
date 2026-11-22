@@ -207,7 +207,6 @@ fn the_first_file_is_the_file_the_export_writes_first() {
 
 /// A saved document's `<filename>`, Full Document file and ZIP are named after its file without the
 /// extension, as Save names it, whatever its File Info title says.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_saved_document_exports_under_its_file_name() {
     let mut s = session(1);
@@ -238,7 +237,6 @@ fn an_unsaved_document_exports_under_its_title() {
     assert_eq!(super::screens::first_file(&s, &p).unwrap(), "Spring-poster.png");
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn sub_folders_are_made_in_the_export_folder() {
     let mut s = session(1);
@@ -253,7 +251,6 @@ fn sub_folders_are_made_in_the_export_folder() {
 
 /// #1713: whatever a suffix or prefix says (`..`, an absolute path, a drive, a share), every file
 /// lands directly in the export folder.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_hostile_suffix_or_prefix_stays_in_the_export_folder() {
     let mut s = session(1);
@@ -280,7 +277,6 @@ fn a_hostile_suffix_or_prefix_stays_in_the_export_folder() {
     let _ = std::fs::remove_dir_all(top);
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_zip_is_written_into_the_folder() {
     let mut s = session(1);
@@ -318,7 +314,6 @@ fn on_disk(r: &Value) -> BTreeMap<String, Vec<u8>> {
 /// writes, with the same names (`-2` included), sub-folders, bytes and reply, into a folder, as a
 /// zip in it and without a folder, through the writer it is given. Export for Screens remembers
 /// its settings when it is prepared.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_prepared_export_writes_what_the_command_writes() {
     let mut s = session(2);
@@ -410,7 +405,6 @@ fn rich_black_reaches_the_files() {
 }
 
 /// A cancel stops a prepared export before its next file; the file written before it stays.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_canceled_export_stops_before_its_next_file() {
     let mut s = session(3);
@@ -433,7 +427,6 @@ fn a_canceled_export_stops_before_its_next_file() {
 
 /// A prepared export reports one progress step per file, and the raster encoders' artboard steps
 /// are not reported.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_prepared_export_counts_its_files() {
     let mut s = session(3);
@@ -460,7 +453,6 @@ fn warned<'a>(r: &'a Value, text: &str) -> Vec<&'a str> {
     r["warnings"].as_array().unwrap().iter().filter_map(Value::as_str).filter(|w| w.contains(text)).collect()
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn every_reply_says_once_when_an_image_could_not_be_decoded() {
     let mut s = session(1);
@@ -604,10 +596,8 @@ fn dotless_and_dotted_i_are_not_plain_i() {
 
 /// A fresh folder for one test, emptied first and removed when dropped (also when an assertion
 /// fails).
-#[cfg(not(target_arch = "wasm32"))]
 struct Folder(std::path::PathBuf);
 
-#[cfg(not(target_arch = "wasm32"))]
 impl Folder {
     fn new(name: &str) -> Self {
         let dir = std::env::temp_dir().join(format!("vc-screens-{name}-{}", std::process::id()));
@@ -616,7 +606,6 @@ impl Folder {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 impl Drop for Folder {
     fn drop(&mut self) {
         let _ = std::fs::remove_dir_all(&self.0);
@@ -624,7 +613,6 @@ impl Drop for Folder {
 }
 
 /// The numbered file is written beside the first one, and the reply lists both paths.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_numbered_file_is_written_into_the_first_rows_folder() {
     let mut s = session(1);
@@ -798,7 +786,6 @@ fn zip_deflating_stops_between_chunks() {
 /// A cancel that comes after the last file was encoded (here: during the last step, a row that
 /// repeats the one before it and writes nothing) returns no files and no archive, as it writes no
 /// archive into a folder.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_cancel_after_the_last_file_returns_nothing() {
     let mut s = session(1);
@@ -830,7 +817,6 @@ fn a_cancel_after_the_last_file_returns_nothing() {
 /// A folder export without a ZIP writes each file as it goes: a cancel during the last step, a
 /// row that repeats the one before it and writes nothing, comes after every file was written, so
 /// the export returns the written files instead of the cancelled error.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_cancel_after_the_last_file_keeps_a_finished_folder_export() {
     let mut s = session(1);

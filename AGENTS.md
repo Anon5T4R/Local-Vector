@@ -2,7 +2,7 @@
 
 Fork independente do vectorcraft (ArtCraft), rebrandado para a suíte Local do João.
 Rust puro + egui. Sem conta, sem telemetria, sem dependência de servidores de terceiros.
-App de ilustração vetorial: roda nativo em macOS, Windows, Linux e FreeBSD, e no navegador via WASM.
+App de ilustração vetorial: roda nativo em macOS, Windows, Linux e FreeBSD.
 
 ## Regras
 - **Dependências:** toda dep que entra/sai/atualiza exige `Cargo.lock` commitado +
@@ -17,21 +17,20 @@ App de ilustração vetorial: roda nativo em macOS, Windows, Linux e FreeBSD, e 
 
 ## Estrutura
 - `crates/` — motor e módulos (`localvector-*`), em camadas L0–L6 (`cargo xtask layers`)
-- `apps/localvector` — app desktop + control channel; `apps/localvector-cli` — CLI/MCP;
-  `apps/localvector-web` — wasm
+- `apps/localvector` — app desktop + control channel; `apps/localvector-cli` — CLI/MCP
 - `libs/` — forks vendored: `craft-libs`, `egui`, `winit`, `winprint.rs`
 - `assets/` — ícones, fontes (`craft-fonts` vendored), ícones Lucide; cada arquivo tem
   linha em `ASSETS.md`
-- `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar FHS com `install.sh`), Arch (PKGBUILD), macOS, FreeBSD, web
+- `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar FHS com `install.sh`), Arch (PKGBUILD), macOS, FreeBSD
 - `docs/` - arquitetura, formatos, notas de design por área, release
 - `scripts/check-mirror.sh` — confere as crates e os assets (`craft-fonts`) espelhados do `local-libs` contra a fonte (CI e `xtask ci`)
-- `xtask/` — tarefas de build/CI (`cargo xtask ci`, `fmt`, `layers`, `wasm`, `assets`)
+- `xtask/` — tarefas de build/CI (`cargo xtask ci`, `fmt`, `layers`, `assets`)
 
 ## Build
 ```
 cargo build --locked          # debug
 cargo test --locked           # testes (as fontes vendored entram sempre: .cargo/config.toml, igual ao CI)
-cargo xtask ci                # o gate local: fmt, clippy, testes, fontes embutidas, assets, camadas, cargo-deny, espelhos do local-libs, wasm
+cargo xtask ci                # o gate local: fmt, clippy, testes, fontes embutidas, assets, camadas, cargo-deny, espelhos do local-libs
 packaging/windows/package.ps1 # MSI + portable (Windows)
 packaging/linux/package.sh    # AppImage/deb/rpm/tar (Linux)
 ```
@@ -95,8 +94,7 @@ channel, e parâmetros de comando são entrada não confiável.
 - Testes podem dar unwrap e panic (`#[test]`, `#[cfg(test)]`, `tests/`, `testkit`).
 - `localvector_engine::guard` é a última linha de defesa: todo ponto de entrada (comandos, eventos
   de tool, pedidos MCP, o frame da UI, pedidos do control channel) captura panic, reverte o
-  documento e reporta erro interno. Foi feito para bugs e não substitui `Result`: wasm aborta no
-  panic, então o app web não tem rede de segurança.
+  documento e reporta erro interno. Foi feito para bugs e não substitui `Result`.
 - Entrada não confiável é fuzzed (`engine/tests/import_fuzz.rs`, `engine/tests/command_sweep.rs`,
   `format/tests/prop_format.rs`, `mcp/tests/protocol_props.rs`). Estenda esses testes ao adicionar
   importador, parser ou método de protocolo.
@@ -130,8 +128,8 @@ visual de outro app).
 - A UI é fina: painéis leem estado do engine e agem por `app.run(id, params)`; cores vêm de
   `theme::Tokens`.
 
-### Rust only, wasm e tempo
-- **Rust only** (sem JS/TS escrito à mão). **Nunca quebre o wasm** (`cargo xtask wasm`).
+### Rust only e tempo
+- **Rust only** (sem JS/TS escrito à mão).
 - **Tempo passa pelo `chrono`** (dep do workspace). Nunca escrever conversão UTC/calendário na mão;
   cada crate tem só sua string de formato. A exceção é extensão de faixa: além dos anos que o
   chrono representa, desloque a data em ciclos gregorianos inteiros de 400 anos (146.097 dias),
@@ -145,7 +143,7 @@ fixtures binárias grandes aqui; busque pinadas por commit e sha256, como o Phot
 
 ### Gates de qualidade
 Antes de cada commit: `cargo xtask ci` (fmt, clippy `-D warnings` incluindo os lints de no-panic,
-testes, doctests, layers, wasm, e os gates `assets`, `brands` e `cursors`). Um id de tarefa por commit (`M2.1: pen tool`).
+testes, doctests, layers, e os gates `assets`, `brands` e `cursors`). Um id de tarefa por commit (`M2.1: pen tool`).
 
 ## Rodar e olhar o app
 - `cargo run --release -p localvector -- --control 7979 [arquivo.vectorcraft]`. Se o log disser que

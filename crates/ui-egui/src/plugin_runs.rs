@@ -57,7 +57,7 @@ pub struct PluginRuns {
 
 /// Do heavy filters run off the UI thread here? Not on wasm (no threads).
 pub fn available() -> bool {
-    !cfg!(target_arch = "wasm32")
+    true
 }
 
 /// Runs filter `p` (`plugin.run`'s params) on a thread of its own → `{background: true, status}`;

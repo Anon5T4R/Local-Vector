@@ -33,17 +33,11 @@ pub type LinkScan = Arc<Mutex<Option<(u64, Vec<(String, Vec<u64>, Option<Stamp>)
 /// The stamp of the linked file stored as `path` in the document saved at `doc_path`; `None` when
 /// there is no file, its path isn't followed ([`crate::cmd::fileio::document_path`]) or
 /// automation may not read it.
-#[cfg(not(target_arch = "wasm32"))]
 fn stamp(path: &str, doc_path: Option<&str>) -> Option<Stamp> {
     let path = crate::cmd::fileio::document_path(path, doc_path).ok()?;
     let meta = crate::cmd::fileio::file_metadata(&path)?;
     let modified = meta.modified().ok()?.duration_since(std::time::UNIX_EPOCH).ok()?;
     Some((meta.len(), modified.as_nanos()))
-}
-
-#[cfg(target_arch = "wasm32")]
-fn stamp(_: &str, _: Option<&str>) -> Option<Stamp> {
-    None
 }
 
 /// The linked files of `d` with the ids of the objects showing them.
@@ -64,7 +58,7 @@ impl Session {
     /// Start stamping the active document's linked files on a worker thread, unless a look is
     /// still running (or the build has no files to look at: the web app).
     pub fn start_link_scan(&mut self) {
-        if self.link_scan.is_some() || cfg!(target_arch = "wasm32") {
+        if self.link_scan.is_some() {
             return;
         }
         let Some(st) = self.active() else { return };

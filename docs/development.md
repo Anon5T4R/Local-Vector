@@ -11,49 +11,6 @@
 > **Last updated:** 2026-10-14 · **Change:** leaving out the bundled fonts (`bundled-fonts` feature).
 > **Last updated:** 2026-10-14 · **Change:** document-font registration for all explicitly supplied faces.
 
-## Web build
-
-`apps/localvector-web` runs the same `LocalVectorApp` in the browser through eframe's web runner. The renderer is wgpu: WebGPU where the browser has it, WebGL2 otherwise. It is Rust only; the only JavaScript is the glue wasm-bindgen generates.
-
-```sh
-brew install trunk                 # or: cargo install trunk --locked
-rustup target add wasm32-unknown-unknown
-cd apps/localvector-web
-trunk build --release              # writes ../../dist/web (index.html, .js glue, .wasm)
-trunk serve --release              # dev server on http://127.0.0.1:8766
-```
-
-What the web build needs: `trunk`, the `wasm32-unknown-unknown` target and `cargo`, nothing else (no
-POSIX shell, so it works the same on Windows). Optionally, `CRAFT_FONTS_DIR` set to the absolute path of the
-vendored checkout (`$PWD/assets/craft-fonts`) adds the fonts the site serves beside the wasm: Trunk's `post_build` hook runs
-`cargo xtask web-fonts`, which copies them into `dist/web/fonts/` (it does nothing without
-`CRAFT_FONTS_DIR`, and skips with a warning any listed face an older checkout lacks). See
-[Arabic fonts and the web build](#arabic-fonts-and-the-web-build).
-
-Any static file server works for `dist/web`, for example `python3 -m http.server 8766` inside that directory. The release `.wasm` is about 17.5 MB, or 7.1 MB gzipped, so serve it with compression.
-
-URL flag: `?webgl` forces the WebGL2 backend.
-
-How the web shell (`apps/localvector-web/src/web.rs`) differs from desktop:
-
-- **Open** sets `Services::open_async`, which shows `rfd::AsyncFileDialog`. The bytes arrive in `Services::inbox`, which the app drains every frame.
-- **Save / Save As / Export** go through `Services::download`: a Blob, an object URL and a temporary `<a download>`, all created from Rust. There is no save dialog, so the suggested name becomes the download name.
-- **Drag-and-drop:** `WebShell` takes the frame's `dropped_files` before the app sees them, reads each with `DroppedFile::bytes_async` and pushes the bytes into the inbox (files to be placed on a canvas go to `Services::place_inbox` with their `place::DropAt`: the document they were dropped on, by uid, and the point; `LocalVectorApp::drop_target` decides from the position the page's drag events give). Desktop drags carry no position (winit 0.30 reports none, and the pointer position egui last had is stale), so the desktop app decides by kind: documents open, pictures and text are placed in the middle of the view. On the web and the desktop, swatch and graphic style libraries, Libraries panel files, presets, plug-ins and shortcut sets open wherever they are dropped, as File › Open opens them (`io::opens_as`). A file that arrives after another document became active still lands in its own document, which becomes active again; if that document closed meanwhile, the file is not placed and the status bar says so. (The app's synchronous drop path is compiled out on wasm32.)
-- **Pen and touch input** (`apps/localvector-web/src/pencil.rs`): the shell reads pen and finger Pointer Events itself, in the capture phase on the window, before eframe's touch and pointer handlers (which can't tell a pen from a finger and see each touch twice, as a pointer and as a touch event). Mouse and trackpad events stay eframe's, as do finger events until the first pen contact, preserving eframe's touch-only keyboard path. Pen buttons and event modifiers follow eframe's mappings. A pen drives egui's pointer and is a touch contact whose force is the pen's pressure; its coalesced events (an Apple Pencil reports up to 240 a second) reach the tool one by one with their pressure (`canvas::frame_moves`); holding it still opens the context menu (egui's long touch) and drops the tool's press. Fingers are touch contacts (pinch, two-finger pan, the undo and redo taps); the first one also drives the pointer, so it taps panels and menus. Once a pen has been seen in this page session (reset by reloading; no persistent storage), a finger never presses a tool on the canvas (`touch::finger_navigates_only`), and a pen landing cancels the fingers already down (palm rejection). The page itself doesn't scroll, zoom or select under touch (`touch-action: none`, `overscroll-behavior`), and the canvas stays inside the safe areas.
-- **Shortcuts the browser also has** (`apps/localvector-web/src/keys.rs`): many of the app's Cmd and Ctrl chords are the browser's too (`Cmd+=`, `Cmd+-` and `Cmd+0` zoom the page, `Cmd+Z` undoes in the browser, in Safari Undo Close Tab, `Cmd+[` goes back, `Cmd+F` finds), and eframe lets most of them through. A capture listener on the window cancels the browser's action for a press the keymap in effect binds, the user's own shortcuts included (`shortcuts::runs_a_shortcut`, matched as the dispatcher matches it); egui still gets the key and runs the command. It acts only while the canvas or eframe's text input has the keyboard, and never on a plain or Shift press, an AltGr press (Windows reports it as Ctrl and Alt) or an IME's keys, which type; Cut, Copy and Paste stay the browser's, whose clipboard events carry the text, and so does Reload. Browsers keep a few chords from every page, which never reach it (Safari's `Cmd+L`, so New Layer's shortcut does nothing there; Chrome's `Cmd+T`, `Cmd+W`, `Cmd+N`): those still go to the browser. While the app has the keyboard, the page-zoom keys zoom the canvas instead; Settings › User Interface › UI Scaling and the browser's View menu still scale the interface.
-- **Data Recovery** keeps its copies in `localStorage` (`localvector-recovery/<area>/<name>`, shared by the site's tabs), so tabs can't lock their areas the way desktop apps lock a folder (`RecoveryStore::lock`). Each tab holds its area with a heartbeat it refreshes every minute and, where the browser has Web Locks (secure pages: `https://` or localhost), with a Web Lock named after the area (`apps/localvector-web/src/locks.rs`, through `js_sys::Reflect` since web-sys has them only as an unstable API). The browser releases the lock only when the tab is gone, not while its timers are paused in the background, which a heartbeat can't tell apart (#367). `navigator.locks.query()` is asynchronous, so the shell keeps a snapshot refreshed every 10 seconds (taken once before the first frame); a snapshot older than a minute counts every area as held. An area is offered as a crash's leftovers only when no tab holds its lock and its heartbeat is older than three intervals. Without Web Locks a paused tab can still be taken for gone; it repairs that when it resumes: its next heartbeat (or recovery save) writes again the copies missing from its area, and a heartbeat newer than the one the other tab wrote taking the area over makes the area running again for that tab.
-- **Losing the graphics (#369):** the browser can drop the page's WebGPU device or WebGL context (a GPU reset, a driver update, too many tabs on the GPU; or a script calling `device.destroy()` / `WEBGL_lose_context.loseContext()`). The app goes on without it, so the shell watches for it: wgpu's device-lost callback for WebGPU, the canvas's `webglcontextlost` event for WebGL2. Both report to a `graphics::GraphicsLoss`, and the next frame of `WebShell::logic` handles it:
-  1. `LocalVectorApp::graphics_lost` writes Data Recovery copies of the modified documents at once (to browser storage, also when Data Recovery is turned off).
-  2. The shell puts a fresh `<canvas>` in place of the dead one (a canvas whose WebGL context is lost can't get another) and starts the same `WebRunner` again on it, with new graphics and a new egui context, handing over the same `LocalVectorApp`: documents, undo history, selection and panels stay as they were. Its `Services` are made again for the new context, and the status bar says the graphics were restarted.
-  3. Textures belong to the egui context they were uploaded to. The app notices the new context (`LocalVectorApp::adopt_context`) and uploads everything again: fonts and theme, the canvas, the place cursor's thumbnails, and every per-thread texture cache (thumbnails, previews, font samples), which are `graphics::TexCache`s for that reason. A new texture cache must be a `TexCache` (or live in the context's `ctx.data`), or it shows stale or wrong pictures after a restart.
-  4. If no new graphics can be had (no adapter, WebGL blocked after repeated losses) or the graphics were lost more than three times, the shell gives up: the dead canvas is removed, the app lets go of its recovery area but not its copies (`recovery::leave`: its heartbeat and Web Lock go, so the reloaded page offers the copies at once). The Web Locks are started once, before the first frame, and kept across graphics restarts, so a restarted tab stays the owner of its area and the page says to reload.
-
-  To try it, in the browser console: for WebGL2 (`?webgl`), `document.querySelector('canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext()`. For WebGPU, keep the device the page creates (wrap `GPUAdapter.prototype.requestDevice` before the page loads) and call its `destroy()`.
-
-  The desktop app can't make a new device for its window (eframe can't), so on a lost device (a driver reset) it logs the reason, writes the recovery copies, and says in the status bar to save and restart. Once the copies are written, closing the window skips the Save Changes question, which it can't show: the next launch offers the changes back.
-- **No control server:** browsers can't listen on TCP. To automate the web build, drive headless Chrome with `--remote-debugging-port`.
-- Quick smoke test: `"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --enable-unsafe-webgpu --screenshot=web.png --window-size=1440,900 --virtual-time-budget=15000 http://127.0.0.1:8766/` (headless Chrome on macOS gets a real WebGPU adapter).
-
 ## Desktop graphics processor
 
 The canvas is rasterized on the CPU (`localvector-render`, vello_cpu); the GPU (wgpu, through eframe) only composites the canvas texture and draws the UI, so any GPU that can show the window will do. The desktop app picks the window's adapter itself (`apps/localvector/src/gpu.rs`, eframe's `native_adapter_selector`) and logs every adapter it found and the one it uses.
@@ -152,17 +109,13 @@ CRAFT_FONTS_DIR="$PWD/assets/craft-fonts" cargo xtask ci   # also runs the Japan
   as a convenience, but CI and the docs always use absolute paths). Nothing is downloaded, and
   craft-fonts is never a `Cargo.toml` dependency. A bad path is a build warning, or an error with
   `CRAFT_FONTS_REQUIRED=1` (release builds).
-- Web (wasm32) builds embed only BIZ UDPGothic Regular (+4.7 MB of `.wasm`), to stay well under
-  static hosts' per-file limits (Cloudflare Pages: 25 MiB). Shippori Mincho, which this repo used to
-  embed everywhere, was 8.7 MB, so the web build is still smaller than before.
 - Document text: the Japanese faces join the font database after the bundled fonts (Mincho first),
   so they are the fallback for Japanese after the requested font; installed system fonts come after.
   Noto Sans Thai (when the checkout has it) is the fallback for Thai where no Thai font is
-  installed, and the web build fetches it before the app starts (`crates/text/web-fonts.txt`).
-  Noto Sans Georgian (when the checkout has it) is the same for Georgian.
+  installed. Noto Sans Georgian (when the checkout has it) is the same for Georgian.
   All other supplied faces follow those existing document fallbacks in manifest order, so they
-  can also be selected by family name. This does not change which faces the web build embeds
-  or fetches, and no craft-fonts faces are registered when the optional input is absent.
+  can also be selected by family name. No craft-fonts faces are registered when the optional
+  input is absent.
 - UI: `theme::install_fonts` adds them at the end of every egui family (BIZ UDPGothic first, then
   Noto Sans Georgian for the Georgian interface), after the UI fonts and before the installed fonts
   `ui_fonts.rs` discovers for other scripts. On the web, Noto Sans Georgian is fetched at startup
@@ -212,25 +165,6 @@ context's font definitions, so the embedder's own fonts are added after it.
   step lints `localvector-ui-egui` without its default features. Of the crate's other tests, those
   about the interface faces need them.
 
-### Arabic fonts and the web build
-
-Desktop builds load craft-fonts' Arabic families into the document font database (Noto Sans
-Arabic first, the fallback for Arabic text; the others are picked by name).
-
-The web build doesn't embed them (wasm size). Instead `crates/text/web-fonts.txt` lists the faces
-it fetches from beside the wasm, `startup` (before the app starts) or `background` (after):
-
-- `crates/text/build.rs` turns the list into `localvector_text::WEB_FONTS` (URL
-  `fonts/<sha16>/<file>` and the SRI hash, from the craft-fonts manifest).
-- `cargo xtask web-fonts` (`xtask/src/web_fonts.rs`), the Trunk `post_build` hook, copies the files
-  there, checking each one's SHA-256. A listed face the checkout lacks is skipped with a warning, as
-  in `build.rs`, so an older craft-fonts just means fewer fonts.
-- `apps/localvector-web/src/fonts.rs` fetches and registers them, logging `web font …` for any
-  that fail.
-
-Try it: `cd apps/localvector-web && CRAFT_FONTS_DIR=$PWD/../../../assets/craft-fonts trunk serve`. To serve
-another craft-fonts face on the web, add a line to `web-fonts.txt`.
-
 ## Localisation
 
 Strings in code stay English and are the default lookup keys. `crates/ui-egui/src/i18n` maps them to display
@@ -264,8 +198,8 @@ other `sv-*` locale resolve to it), Georgian (`ka`, complete; `ka-GE` and `ka_GE
 - The language is Edit › Settings › User Interface › Language or, on macOS, Local Vector › Language (the
   `app.language` UI command, `{lang: auto|<code>}`); both set the `interfaceLanguage` preference (`auto` or a language
   code; `auto` follows the system locale: `LOCALVECTOR_LOCALE`, then `LC_ALL`/`LC_MESSAGES`/`LANG`/`LANGUAGE`,
-  the macOS preferred languages, the Windows user locale; on the web, `?lang=<code>` in the address, then
-  the browser's `navigator.languages`). The Settings dialog previews the chosen language before OK.
+  the macOS preferred languages, the Windows user locale). The Settings dialog previews the chosen
+  language before OK.
 - To add a language: add `<code>.tsv` and one row in `i18n::LANGUAGES` (code, native name, catalog, plural
   rule). The Language menu, the dropdown, locale matching and the catalog tests (well-formed, no duplicates,
   placeholders and ellipses agree, command ids exist, every row of a partial catalog is a string the UI
@@ -300,7 +234,7 @@ other `sv-*` locale resolve to it), Georgian (`ka`, complete; `ka-GE` and `ka_GE
   and date formats, right-to-left layout. Chinese and Japanese UI text
   is drawn with craft-fonts' BIZ UDPGothic when the build embeds it (see Fonts above), else with an installed
   system font; the glyph test checks Latin and Cyrillic catalogs always and the CJK ones only with craft-fonts.
-  A Traditional Chinese UI font is still to be added to craft-fonts for the web build.
+  A Traditional Chinese UI font is still to be added to craft-fonts.
 
 ## Cursors
 
@@ -387,8 +321,7 @@ don't matter, with a comment saying why.
 - `LocalVectorApp::logic` and `ui` lose one frame and show the error in the status bar; each
   control-channel request is guarded on its own.
 
-The net exists for bugs, not as a substitute for `Result`. On wasm a panic aborts the app, so the
-web build has no net at all.
+The net exists for bugs, not as a substitute for `Result`.
 
 ### Fuzzing
 
@@ -425,7 +358,7 @@ import pins the direction SVG implies (left to right unless `direction: rtl`).
 Vertical type keeps its logical order down the column. SVG export outlines text with right-to-left
 lines (with a warning) until it is written with `direction`/`unicode-bidi`; PDF and raster exports
 use the laid-out glyphs. No font is bundled for these scripts: the installed fonts' fallback
-covers them (the web build needs a font with that coverage).
+covers them.
 
 ## Verified PngSuite corpus
 

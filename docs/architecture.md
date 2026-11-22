@@ -9,7 +9,7 @@ this file describes what is committed. Day-to-day rules (clean-room, never crash
 ## Shape
 
 A Cargo workspace of 23 library crates under `crates/`, three apps under `apps/` and `xtask`, ~354k lines of Rust,
-pure Rust (no handwritten JS/TS). The same engine runs the desktop app, the browser build (WASM), the headless
+pure Rust (no handwritten JS/TS). The same engine runs the desktop app, the headless
 CLI and the MCP server.
 
 ## Layers
@@ -26,7 +26,7 @@ nothing below L6 depends on a UI toolkit (egui, eframe, winit, rfd). Table: `xta
 | L4 | `tools` | tool state machines: pointer events in, commands and overlays out (Pen, Direct Selection, smart guides…) |
 | L5 | `engine` | sessions, history (unlimited undo by structural sharing), selection, the command registry (~710 commands), file I/O, the panic guard |
 | L6 | `ui-egui`, `mcp` | the egui front end (menus, panels, dialogs, canvas, i18n); the MCP server (JSON-RPC over stdio) |
-| L7 | `apps/localvector`, `apps/localvector-cli`, `apps/localvector-web`, `xtask` | desktop app (eframe, wgpu), CLI (`run`, `convert`, `info`, `bench`, `perf`, `mcp`), browser runner (WebGPU, WebGL2 fallback), build tooling |
+| L7 | `apps/localvector`, `apps/localvector-cli`, `xtask` | desktop app (eframe, wgpu), CLI (`run`, `convert`, `info`, `bench`, `perf`, `mcp`), build tooling |
 
 `testkit` holds test helpers (fixtures, generators, render comparison) and is only a dev-dependency.
 

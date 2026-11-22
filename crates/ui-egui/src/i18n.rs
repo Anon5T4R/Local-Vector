@@ -445,7 +445,6 @@ pub fn lang_from_tag(tag: &str) -> Option<Lang> {
 
 /// True when `tag` names the generic `C` / `POSIX` locale (or a variant like `C.UTF-8`), which on
 /// macOS means "no particular language" rather than English: the system language list decides.
-#[cfg(not(target_arch = "wasm32"))]
 fn is_c_locale(tag: &str) -> bool {
     let base = tag.split(['.', '@']).next().unwrap_or("").to_ascii_lowercase();
     matches!(base.as_str(), "c" | "posix")
@@ -455,7 +454,6 @@ fn is_c_locale(tag: &str) -> bool {
 /// locale probe (which runs `reg.exe` on Windows and `defaults` on macOS). Call it at startup; a
 /// frame that needs the language before the probe finishes waits for it. A no-op on wasm.
 pub fn detect_system_lang_in_background() {
-    #[cfg(not(target_arch = "wasm32"))]
     {
         // A failed spawn leaves the probe to the first frame that needs it.
         let _ = std::thread::Builder::new().name("locale-probe".into()).spawn(|| {
@@ -486,7 +484,6 @@ pub fn set_system_locales<S: AsRef<str>>(tags: &[S]) {
     let _ = SYSTEM.set(lang);
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn detect_system_lang() -> Lang {
     // `LOCALVECTOR_LOCALE` overrides everything (also handy for screenshots); then the POSIX
     // variables. `LANGUAGE` is a colon-separated priority list.
@@ -544,12 +541,6 @@ fn windows_locale() -> Option<String> {
 #[cfg_attr(not(target_os = "windows"), allow(dead_code))]
 fn registry_locale(text: &str) -> Option<String> {
     text.lines().find(|l| l.contains("LocaleName")).and_then(|l| l.split_whitespace().last()).map(str::to_string)
-}
-
-/// The browser's languages arrive through [`set_system_locales`]; without them, English.
-#[cfg(target_arch = "wasm32")]
-fn detect_system_lang() -> Lang {
-    Lang::EN
 }
 
 /// Index into [`LANGUAGES`] of the language the UI is drawn in this frame. The app keeps one

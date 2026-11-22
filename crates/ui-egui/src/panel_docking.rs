@@ -1121,7 +1121,6 @@ pub(crate) fn show(app: &mut LocalvectorApp, ui: &mut egui::Ui) {
         .blocked_rects(&blocked)
         .input_blocked(modal)
         .auto_collapse_iconic(app.session.prefs.auto_collapse_icon_panels);
-    #[cfg(not(target_arch = "wasm32"))]
     if let Some(hook) = app.services.native_input_hook.clone() {
         dock = dock.native_input_hook(move |_, raw| hook(raw));
     }
@@ -1153,7 +1152,6 @@ pub(crate) fn show(app: &mut LocalvectorApp, ui: &mut egui::Ui) {
             app.ui.status = error;
         }
     }
-    #[cfg(not(target_arch = "wasm32"))]
     for window in output.window_files {
         // The keyboard's Shift as the main window last saw it: the window system sends a file
         // drag no key events.
@@ -1339,5 +1337,5 @@ impl craft_ui::docking::DockContent<String> for PanelContent<'_> {
 #[cfg(test)]
 mod tests;
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
+#[cfg(test)]
 mod native_tests;

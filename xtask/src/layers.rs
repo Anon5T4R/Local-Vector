@@ -54,7 +54,6 @@ pub const TABLE: &[(&str, Class)] = &[
     // L7 apps and tooling
     ("localvector", Class::Exempt),
     ("cli", Class::Exempt),
-    ("web", Class::Exempt),
     ("xtask", Class::Exempt),
     // Crates added later (append-only).
     ("cad", Class::Layer(3)),
@@ -336,7 +335,7 @@ mod tests {
 
     #[test]
     fn apps_and_xtask_exempt() {
-        for app in ["localvector", "localvector-cli", "localvector-web", "xtask"] {
+        for app in ["localvector", "localvector-cli", "xtask"] {
             assert!(check(&[c(app, &[("egui", Normal, false), ("localvector-ui-egui", Normal, true)])]).is_empty());
         }
     }

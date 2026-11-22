@@ -1,5 +1,4 @@
 use super::build::{style_italic, style_weight};
-#[cfg(not(target_arch = "wasm32"))]
 use super::dirs::sfnt_of;
 use super::face::{MAX_AXES, MAX_INSTANCES};
 use super::names::{all_names, name, norm};
@@ -111,7 +110,6 @@ pub(super) fn enumerate_faces(data: &[u8]) -> Vec<(u32, FaceStyle)> {
 
 /// The font files held by the file at `path`: its contents, or for a suitcase font the fonts in
 /// its resource fork ([`crate::suitcase`]). None when it can't be read.
-#[cfg(not(target_arch = "wasm32"))]
 pub(super) fn font_files(path: &Path) -> Vec<Vec<u8>> {
     if crate::suitcase::is_suitcase(path) {
         return crate::suitcase::read_fonts(path);
@@ -122,14 +120,12 @@ pub(super) fn font_files(path: &Path) -> Vec<Vec<u8>> {
 /// The tables holding glyphs the font engine draws: TrueType, CFF, CFF2 and VARC outlines, and
 /// `sbix` and `CBDT` colour bitmaps. A face with none of them (outlines in Apple's `hvgl` table,
 /// monochrome bitmaps only) draws nothing.
-#[cfg(not(target_arch = "wasm32"))]
 const OUTLINE_TABLES: [&[u8; 4]; 6] = [b"glyf", b"CFF ", b"CFF2", b"VARC", b"sbix", b"CBDT"];
 
 /// The styles of every face in the font file at `path` ([`face_styles`]), reading only its table
 /// directories and `name`, `fvar` and `OS/2` tables: a scan opens hundreds of font files, many of
 /// them megabytes long. Faces without outlines the font engine draws (no [`OUTLINE_TABLES`] table)
 /// are left out.
-#[cfg(not(target_arch = "wasm32"))]
 pub(super) fn file_face_names(path: &Path) -> Vec<FaceStyle> {
     file_face_names_within(path, MAX_FACES, u64::MAX)
 }
@@ -137,7 +133,6 @@ pub(super) fn file_face_names(path: &Path) -> Vec<FaceStyle> {
 /// [`file_face_names`], reading at most `max_faces` faces and `max_read` bytes of the file in all.
 /// A suitcase font's resource fork is read whole when it is at most `max_read` bytes long, and the
 /// limits then apply to each of its fonts; a longer fork gives none.
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn file_face_names_within(path: &Path, max_faces: u32, max_read: u64) -> Vec<FaceStyle> {
     if crate::suitcase::is_suitcase(path) {
         if crate::suitcase::fork_len(path) > max_read {
@@ -155,7 +150,6 @@ pub(crate) fn file_face_names_within(path: &Path, max_faces: u32, max_read: u64)
 }
 
 /// [`file_face_names_within`] for the font file `file` reads.
-#[cfg(not(target_arch = "wasm32"))]
 fn reader_face_names_within(mut file: impl std::io::Read + std::io::Seek, max_faces: u32, max_read: u64) -> Vec<FaceStyle> {
     use std::io::SeekFrom;
     /// The largest table read from a (possibly damaged) file.
@@ -221,15 +215,7 @@ pub fn is_font_file(path: &Path) -> bool {
 }
 
 /// Whether the file at `path` is a suitcase font ([`crate::suitcase`]): on macOS, a file with
-/// nothing in its data and its fonts in its resource fork. Never on the web.
+/// nothing in its data and its fonts in its resource fork.
 pub fn is_suitcase(path: &Path) -> bool {
-    #[cfg(not(target_arch = "wasm32"))]
-    {
-        crate::suitcase::is_suitcase(path)
-    }
-    #[cfg(target_arch = "wasm32")]
-    {
-        let _ = path;
-        false
-    }
+    crate::suitcase::is_suitcase(path)
 }

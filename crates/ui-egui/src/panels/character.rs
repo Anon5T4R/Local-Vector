@@ -1239,7 +1239,6 @@ pub fn menu(app: &mut LocalvectorApp, ui: &mut Ui) {
     }
     ui.separator();
     // The installed fonts are always listed; this picks up fonts installed since the app started.
-    #[cfg(not(target_arch = "wasm32"))]
     if menu_item(ui, tl!("Refresh Font List"), true, false)
         && let Ok(r) = app.run("text.rescanFonts", json!({}))
     {

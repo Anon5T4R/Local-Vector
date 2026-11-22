@@ -247,11 +247,11 @@ mod kind_de {
 
     /// Most JSON values (each number, string, array, object…) the fields read before an object's
     /// `type` may hold together while [`with_buffered_value_budget`] runs: 32M (about 1 GB as
-    /// `serde_json::Value`s, some 32 bytes each), 4M in the web build. Local Vector writes `type`
+    /// `serde_json::Value`s, some 32 bytes each). Local Vector writes `type`
     /// first, so its files buffer nothing; a reordered file buffers what comes before it, and
     /// a crafted one could fill memory with values two bytes each in the file before any object in
     /// them is counted (#3587).
-    pub const MAX_BUFFERED_VALUES: usize = if cfg!(target_arch = "wasm32") { 4 << 20 } else { 32 << 20 };
+    pub const MAX_BUFFERED_VALUES: usize = 32 << 20;
 
     std::thread_local! {
         /// Values the fields buffered on this thread may still hold, and the budget they come from.

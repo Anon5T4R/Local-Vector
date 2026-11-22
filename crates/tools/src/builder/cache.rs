@@ -55,7 +55,6 @@ fn build_map(shapes: Vec<po::Shape>, live: bool, gap: f64) -> BuilderMap {
 }
 
 /// Builds the map of `shapes` ([`build_map`]) on a new thread; None when no thread starts.
-#[cfg(not(target_arch = "wasm32"))]
 fn spawn_build(shapes: Vec<po::Shape>, live: bool, gap: f64) -> Option<Receiver<BuilderMap>> {
     let (tx, done) = std::sync::mpsc::channel();
     let spawned = std::thread::Builder::new().name("localvector-region-map".into()).spawn(move || {
@@ -63,12 +62,6 @@ fn spawn_build(shapes: Vec<po::Shape>, live: bool, gap: f64) -> Option<Receiver<
         let _ = tx.send(build_map(shapes, live, gap));
     });
     spawned.is_ok().then_some(done)
-}
-
-/// The web build has no threads.
-#[cfg(target_arch = "wasm32")]
-fn spawn_build(_shapes: Vec<po::Shape>, _live: bool, _gap: f64) -> Option<Receiver<BuilderMap>> {
-    None
 }
 
 impl RegionCache {
@@ -176,7 +169,7 @@ impl RegionCache {
         }
         let (shapes, outlines) = self.inputs(cx, open_filled_as_closed);
         let segments: usize = shapes.iter().map(|s| s.path.subpaths.iter().map(|sp| sp.segment_count()).sum::<usize>()).sum();
-        if segments > BACKGROUND_SEGMENTS && cfg!(not(target_arch = "wasm32")) {
+        if segments > BACKGROUND_SEGMENTS {
             if let Some(done) = spawn_build(shapes, self.live, self.gap) {
                 self.pending = Some(Pending { key, outlines, done });
                 return None;

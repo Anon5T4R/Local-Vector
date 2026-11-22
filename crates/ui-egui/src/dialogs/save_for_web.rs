@@ -199,19 +199,16 @@ pub(crate) fn browser_preview(app: &mut LocalvectorApp, p: &Value) -> Result<Val
 }
 
 /// The age at which a later browser preview removes an earlier preview's folder.
-#[cfg(not(target_arch = "wasm32"))]
 const PREVIEW_KEEP: std::time::Duration = std::time::Duration::from_secs(3600);
 
 /// The folder a browser preview goes to: a new one for each preview, in the system's temporary
 /// folder ([`preview_folder_in`]).
-#[cfg(not(target_arch = "wasm32"))]
 fn temp_folder() -> Result<String, String> {
     preview_folder_in(&std::env::temp_dir(), PREVIEW_KEEP)
 }
 
 /// The name of a folder that a preview made in the temporary folder, beside a `Local Vector Save
 /// for Web` it couldn't use, before the process id and the count.
-#[cfg(not(target_arch = "wasm32"))]
 const BESIDE: &str = "Local Vector Save for Web ";
 
 /// A new folder for a browser preview in the temporary folder `tmp`: inside `Local Vector Save for
@@ -219,7 +216,6 @@ const BESIDE: &str = "Local Vector Save for Web ";
 /// [`BESIDE`] followed by the process id and a count. The log says why the shared folder wasn't
 /// used. Each preview first removes the folders of that name in `tmp` last changed `keep` or longer
 /// ago ([`remove_old`]).
-#[cfg(not(target_arch = "wasm32"))]
 pub(super) fn preview_folder_in(tmp: &std::path::Path, keep: std::time::Duration) -> Result<String, String> {
     remove_old(tmp, BESIDE, keep);
     preview_folder(&tmp.join("Local Vector Save for Web"), keep).or_else(|e| {
@@ -232,7 +228,6 @@ pub(super) fn preview_folder_in(tmp: &std::path::Path, keep: std::time::Duration
 /// is refused when it is a link or not a folder, or, on unix, when it belongs to another user or
 /// users other than its owner can write to it. Before the new folder is made, the preview folders
 /// in `root` last changed `keep` or longer ago are removed ([`remove_old`]).
-#[cfg(not(target_arch = "wasm32"))]
 pub(super) fn preview_folder(root: &std::path::Path, keep: std::time::Duration) -> Result<String, String> {
     match private_folder().recursive(true).create(root) {
         Ok(()) => {}
@@ -250,7 +245,6 @@ pub(super) fn preview_folder(root: &std::path::Path, keep: std::time::Duration) 
 /// Removes the preview folders in `dir` last changed `keep` or longer ago: folders (not links)
 /// named `prefix` followed by `<digits>-<digits>`, on unix only those the current user owns. Other
 /// entries are left alone.
-#[cfg(not(target_arch = "wasm32"))]
 fn remove_old(dir: &std::path::Path, prefix: &str, keep: std::time::Duration) {
     for e in std::fs::read_dir(dir).into_iter().flatten().flatten() {
         if !is_preview_name(&e.file_name(), prefix) {
@@ -269,7 +263,6 @@ fn remove_old(dir: &std::path::Path, prefix: &str, keep: std::time::Duration) {
 /// A new folder in `parent` named `prefix` followed by the process id, `-` and a count of the
 /// process's previews; on unix only its owner can open it. A name that is already taken, by an
 /// earlier process with the same id or by anyone else, is skipped for the next count.
-#[cfg(not(target_arch = "wasm32"))]
 fn new_folder(parent: &std::path::Path, prefix: &str) -> Result<String, String> {
     static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
     loop {
@@ -291,14 +284,13 @@ fn private_folder() -> std::fs::DirBuilder {
 }
 
 /// A builder for folders: a plain one outside unix.
-#[cfg(all(not(unix), not(target_arch = "wasm32")))]
+#[cfg(not(unix))]
 fn private_folder() -> std::fs::DirBuilder {
     std::fs::DirBuilder::new()
 }
 
 /// Why a preview root whose metadata (of the root itself, not what a link points to) is `m` can't
 /// be used, or `None` when it can.
-#[cfg(not(target_arch = "wasm32"))]
 fn refused(m: &std::fs::Metadata) -> Option<&'static str> {
     if m.file_type().is_symlink() {
         Some("it is a link")
@@ -320,7 +312,7 @@ fn mine(m: &std::fs::Metadata) -> bool {
 }
 
 /// Whether the current user owns the file with metadata `m`: always true outside unix.
-#[cfg(all(not(unix), not(target_arch = "wasm32")))]
+#[cfg(not(unix))]
 fn mine(_: &std::fs::Metadata) -> bool {
     true
 }
@@ -333,21 +325,15 @@ fn others_can_write(m: &std::fs::Metadata) -> bool {
 
 /// Whether users other than the owner of the file with metadata `m` can write to it: always false
 /// outside unix.
-#[cfg(all(not(unix), not(target_arch = "wasm32")))]
+#[cfg(not(unix))]
 fn others_can_write(_: &std::fs::Metadata) -> bool {
     false
 }
 
 /// Whether `name` is a preview folder's name: `prefix`, then digits, `-` and digits.
-#[cfg(not(target_arch = "wasm32"))]
 fn is_preview_name(name: &std::ffi::OsStr, prefix: &str) -> bool {
     let digits = |s: &str| !s.is_empty() && s.bytes().all(|b| b.is_ascii_digit());
     name.to_str().and_then(|n| n.strip_prefix(prefix)).and_then(|n| n.split_once('-')).is_some_and(|(a, b)| digits(a) && digits(b))
-}
-
-#[cfg(target_arch = "wasm32")]
-fn temp_folder() -> Result<String, String> {
-    Err("no file system here".into())
 }
 
 // ---------- previews ----------

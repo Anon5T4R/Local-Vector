@@ -324,8 +324,8 @@ mod tests {
     /// its size.
     #[test]
     fn a_documents_json_is_capped() {
-        // The cap itself: a quarter of the address space on wasm32, 1 GiB elsewhere.
-        assert_eq!(MAX_JSON, if cfg!(target_arch = "wasm32") { 256 << 20 } else { 1 << 30 });
+        // The cap itself.
+        assert_eq!(MAX_JSON, 1 << 30);
         let mut json = br#"{"format":"vectorcraft","pad":""#.to_vec();
         json.extend(std::iter::repeat_n(b'x', 4096));
         json.extend(br#""}"#);

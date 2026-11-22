@@ -96,15 +96,8 @@ fn put(dir: &Path, file: &str, bytes: &[u8]) -> bool {
     written.is_ok()
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
     localvector_format::write_atomic(path, bytes)
-}
-
-/// The browser has no folders to keep anything in (the apps there never attach a store).
-#[cfg(target_arch = "wasm32")]
-fn write_atomic(_: &Path, _: &[u8]) -> std::io::Result<()> {
-    Err(std::io::Error::new(std::io::ErrorKind::Unsupported, "no file system"))
 }
 
 /// Remove `dir/file`; a file that isn't there is what was wanted.
@@ -204,7 +197,6 @@ impl Session {
     }
 
     /// Write the profile `name` (its file's `bytes`) to the store; `false` when it didn't go there.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn store_profile(&self, name: &str, bytes: &[u8]) -> bool {
         self.profile_dir.as_deref().is_some_and(|dir| put(dir, &format!("{}.{PROFILE_EXT}", file_stem(name)), bytes))
     }

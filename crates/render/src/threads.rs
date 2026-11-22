@@ -29,11 +29,6 @@ pub fn set_usable_cores(n: Option<usize>) {
 /// (9 are slower again); the pixels don't depend on the count
 /// (`pixels_do_not_depend_on_the_thread_count`).
 pub fn default_threads() -> u16 {
-    #[cfg(target_arch = "wasm32")]
-    {
-        0
-    }
-    #[cfg(not(target_arch = "wasm32"))]
     {
         let o = THREADS_OVERRIDE.load(std::sync::atomic::Ordering::Relaxed);
         if o >= 0 {

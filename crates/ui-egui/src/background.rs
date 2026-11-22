@@ -82,11 +82,8 @@ pub struct Background {
 }
 
 impl Background {
-    /// The worker's channels, started on first use (`None` on wasm, which has no threads).
+    /// The worker's channels, started on first use.
     fn worker(&mut self) -> Option<&Sender<Task>> {
-        if cfg!(target_arch = "wasm32") {
-            return None;
-        }
         if self.worker.is_none() {
             let (tx, tasks) = channel::<Task>();
             let (done_tx, done) = channel();

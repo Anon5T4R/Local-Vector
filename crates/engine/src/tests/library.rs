@@ -512,7 +512,6 @@ fn a_library_style_named_with_spaces_comes_in_trimmed() {
     assert_eq!((text.runs[0].style.size, text.runs[0].style.style_name.as_deref()), (31.0, Some("Body")));
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn libraries_are_kept_in_files_across_sessions() {
     let dir = std::env::temp_dir().join(format!("vc-libraries-{}", std::process::id()));
@@ -726,7 +725,6 @@ fn a_new_item_is_added_where_it_is_dropped() {
 
 /// With no library yet, an add that can't be placed makes no "My Library", in the session or in
 /// the library folder; one that can makes it.
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn an_add_that_cannot_be_placed_makes_no_library() {
     let folder = localvector_testkit::temp_dir("library-add-unplaced").to_string_lossy().to_string();
@@ -821,7 +819,6 @@ fn imported_libraries_are_made_consistent() {
     );
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_library_is_exported_to_a_file_and_imported_from_it() {
     let dir = localvector_testkit::temp_dir("library-export");

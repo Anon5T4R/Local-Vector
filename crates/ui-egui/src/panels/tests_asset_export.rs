@@ -511,7 +511,6 @@ fn the_preset_menu_saves_changes_and_opens_import_and_export() {
     assert_eq!(*opened.borrow(), 1);
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn export_writes_into_the_picked_folder() {
     let dir = std::env::temp_dir().join(format!("vc-asset-panel-{}", std::process::id()));
@@ -690,7 +689,6 @@ fn tiff_panel_preserves_shared_antialias_and_explicit_overrides() {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn tiff_saved_aliases_use_document_defaults_and_explicit_rgb() {
     let dir = std::env::temp_dir().join(format!("vc-asset-tiff-aliases-{}", std::process::id()));

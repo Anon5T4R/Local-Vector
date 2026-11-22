@@ -7,7 +7,7 @@
 //! outside it are Local Vector's too (`Cmd+Shift+]`, `Comma`, `Period`, `~` for the backtick key,
 //! `=` for Plus with modifiers). Inside an [`Overrides`] keys and texts are the crate's.
 
-use std::sync::{OnceLock, RwLock};
+use std::sync::OnceLock;
 
 use craft_keymap::{Bindable, Binding, Chord, CommandRef, Key, Keymap, Kind, Lookup, Mods, Overrides, Platform, Scope, Scopes};
 use serde_json::{Value, json};
@@ -178,27 +178,14 @@ fn default_aliases(key: &str) -> &'static [&'static str] {
     }
 }
 
-/// On the web, the browser's operating system once egui reports it ([`note_os`]).
-static WEB_PLATFORM: RwLock<Option<Platform>> = RwLock::new(None);
-
-/// The platform shortcuts follow: the build's, and on the web the browser's operating system, so
-/// Cmd shortcuts work in a browser on a Mac and Windows' reserved chords stay free on Windows.
+/// The platform shortcuts follow the build's operating system, so Cmd shortcuts work on a Mac
+/// and Windows' reserved chords stay free on Windows.
 pub fn platform() -> Platform {
-    let web = if cfg!(target_arch = "wasm32") { WEB_PLATFORM.read().ok().and_then(|p| *p) } else { None };
-    web.unwrap_or_else(Platform::current)
+    Platform::current()
 }
 
-/// Records the operating system egui reports, which the web build reads from the browser.
-pub fn note_os(ctx: &egui::Context) {
-    if cfg!(target_arch = "wasm32") {
-        let p = craft_keymap::egui::platform(ctx);
-        if let Ok(mut web) = WEB_PLATFORM.write()
-            && *web != Some(p)
-        {
-            *web = Some(p);
-        }
-    }
-}
+/// Records the operating system egui reports.
+pub fn note_os(_ctx: &egui::Context) {}
 
 /// The value for `p` in `cells`, made on first use. Each platform has its own cell, because the
 /// web build learns the browser's platform only after the first frame.

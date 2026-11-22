@@ -300,7 +300,6 @@ fn run(r: &mut Renderer, mut job: Job) {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 mod workers {
     use std::sync::mpsc::{Sender, channel};
     use std::sync::{Arc, LazyLock, Mutex};
@@ -352,7 +351,6 @@ fn schedule(job: Job) {
     {
         *lock(&SCHEDULED).entry(job.key.0.clone()).or_default() += 1;
     }
-    #[cfg(not(target_arch = "wasm32"))]
     let job = match workers::submit(Box::new(job)) {
         Ok(()) => return,
         Err(job) => *job,

@@ -1026,7 +1026,6 @@ fn relink(s: &mut Session, p: &Value) -> Result<Value> {
 /// `links.relink {copy}`: put the file at `from` (`bytes`, as just read) into the folder `dir`,
 /// never replacing a file there ([`fileio::copy_new`]) → where it is now, and whether it was
 /// copied (`false`: a file there with the same contents, of its name or a numbered one, is used).
-#[cfg(not(target_arch = "wasm32"))]
 fn copy_into_folder(from: &str, bytes: &[u8], dir: &Path) -> Result<(String, bool)> {
     use std::io::Write as _;
     let source = Path::new(from);
@@ -1046,12 +1045,6 @@ fn copy_into_folder(from: &str, bytes: &[u8], dir: &Path) -> Result<(String, boo
         Ok(None) => Err(EngineError::Other(format!("every numbered name for {name} is taken in the document's folder"))),
         Err(e) => Err(EngineError::Other(format!("{}: {e}", dir.display()))),
     }
-}
-
-/// The web has no file system: nothing is copied.
-#[cfg(target_arch = "wasm32")]
-fn copy_into_folder(_: &str, _: &[u8], _: &Path) -> Result<(String, bool)> {
-    Err(bad("links.relink", "copying a file isn't available on the web"))
 }
 
 // ---------- the Links panel ----------

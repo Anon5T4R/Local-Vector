@@ -1,13 +1,10 @@
-#[cfg(not(target_arch = "wasm32"))]
 use super::PathBuf;
 use super::build::{instanced, style_distance, style_italic, style_weight};
 use super::cache::Catalog;
 use super::face::{FALLBACK_FAMILY, FontFace, MAX_LIVE_INSTANCES, Variation, VariationAxis};
 use super::glyph_pen::{FlipPen, svg_drawn};
-#[cfg(not(target_arch = "wasm32"))]
 use super::names::SYSTEM_FALLBACKS;
 use super::names::{norm, norm_chars, script_families};
-#[cfg(not(target_arch = "wasm32"))]
 use super::scan::{enumerate_faces, font_files};
 use super::traits::{Alias, FontMatch, FontTraits};
 use super::{
@@ -146,7 +143,6 @@ impl FontDb {
     /// Load the files of the installed `family`, adding all their faces at once
     /// ([`Self::add_fonts`]). Returns whether the family is loaded now: by this call, or by another
     /// thread meanwhile.
-    #[cfg(not(target_arch = "wasm32"))]
     fn load_cataloged(&self, family: &str) -> bool {
         let mut paths: Vec<PathBuf> =
             self.read_catalog().get(&family.to_ascii_lowercase()).map(|c| c.faces.iter().map(|cf| cf.path.clone()).collect()).unwrap_or_default();
@@ -170,7 +166,6 @@ impl FontDb {
         // The family, or this style of it, is installed but not loaded yet. Looked for again
         // whether or not this call loaded it: another thread may have just done so (then this
         // load adds nothing, but the face is there).
-        #[cfg(not(target_arch = "wasm32"))]
         if found.is_none() || self.is_cataloged(family, style) {
             self.load_cataloged(family);
             if let Some(f) = self.find(family, style) {
@@ -215,19 +210,15 @@ impl FontDb {
     /// Load the installed files of `family` once (other versions of faces already loaded from
     /// elsewhere); a no-op on wasm, where no fonts are installed.
     fn load_family_files(&self, family: &str) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let key = family.to_ascii_lowercase();
             if self.version_scanned.write().unwrap_or_else(|e| e.into_inner()).insert(key) {
                 self.load_cataloged(family);
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        let _ = family;
     }
 
     /// Is `style` of `family` among the installed fonts?
-    #[cfg(not(target_arch = "wasm32"))]
     fn is_cataloged(&self, family: &str, style: &str) -> bool {
         let ns = norm(style);
         self.read_catalog().get(&family.to_ascii_lowercase()).is_some_and(|c| c.faces.iter().any(|cf| norm(&cf.style) == ns))
@@ -396,7 +387,6 @@ impl FontDb {
         if let Some(f) = self.family_fallback(c, exclude, prefer, weight, italic) {
             return Some(f);
         }
-        #[cfg(not(target_arch = "wasm32"))]
         if self.load_families(c, prefer)
             && let Some(f) = self.family_fallback(c, exclude, prefer, weight, italic)
         {
@@ -405,7 +395,6 @@ impl FontDb {
         if let Some(f) = self.loaded_fallback(c, exclude, weight, italic) {
             return Some(f);
         }
-        #[cfg(not(target_arch = "wasm32"))]
         self.system_fallback(c);
         // Another lookup may have loaded the face while this one searched. Loading no new
         // faces does not mean no face covers the character (as with `face`'s catalog lookup).
@@ -433,7 +422,6 @@ impl FontDb {
 
     /// Load the first of the installed `families` not loaded yet that covers `c` (with system
     /// fallback on). Returns whether one was loaded.
-    #[cfg(not(target_arch = "wasm32"))]
     fn load_families(&self, c: char, families: &[&str]) -> bool {
         if families.is_empty() || !self.sys.lock().unwrap_or_else(|e| e.into_inner()).enabled {
             return false;
@@ -463,7 +451,6 @@ impl FontDb {
 
     /// Load a system font covering `c` (preferred fallback families first, then any cataloged
     /// file under 40 MB). Returns true if one was loaded. Misses are remembered.
-    #[cfg(not(target_arch = "wasm32"))]
     fn system_fallback(&self, c: char) -> bool {
         if c.is_control() || c.is_whitespace() {
             return false;

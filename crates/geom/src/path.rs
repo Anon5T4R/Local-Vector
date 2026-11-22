@@ -180,9 +180,8 @@ fn is_collinear(p: Point, a: Point, b: Point) -> bool {
     cross.abs() <= 1e-6 * va.hypot().max(1.0) * vb.hypot().max(1.0) && va.dot(vb) < 0.0
 }
 
-/// Most anchors [`with_anchor_budget`] lets paths read together: 32M (about 1.5 GB), 4M in the web
-/// build.
-pub const MAX_READ_ANCHORS: usize = if cfg!(target_arch = "wasm32") { 4 << 20 } else { 32 << 20 };
+/// Most anchors [`with_anchor_budget`] lets paths read together: 32M (about 1.5 GB).
+pub const MAX_READ_ANCHORS: usize = 32 << 20;
 
 std::thread_local! {
     /// Anchors the paths being read on this thread may still have ([`with_anchor_budget`]).

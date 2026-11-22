@@ -218,14 +218,11 @@ impl RecoveryStore for MemoryStore {
 
 /// A folder of files (desktop): an area is a sub-folder whose `.lock` file its app keeps locked
 /// while it runs. Created when the first copy is written.
-#[cfg(not(target_arch = "wasm32"))]
 pub struct FolderStore(std::path::PathBuf);
 
 /// The lock file of a [`FolderStore`] area.
-#[cfg(not(target_arch = "wasm32"))]
 const LOCK_FILE: &str = ".lock";
 
-#[cfg(not(target_arch = "wasm32"))]
 impl FolderStore {
     pub fn new(folder: impl Into<std::path::PathBuf>) -> Self {
         Self(folder.into())
@@ -297,7 +294,6 @@ impl FolderStore {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 impl RecoveryStore for FolderStore {
     fn list(&self) -> std::result::Result<Vec<String>, String> {
         let mut out = vec![];
@@ -408,13 +404,10 @@ pub fn store(s: &Session) -> Option<Arc<dyn RecoveryStore>> {
     if let Some(st) = &s.recovery.store {
         return Some(st.clone());
     }
-    #[cfg(not(target_arch = "wasm32"))]
     {
         let folder = Some(s.prefs.recovery_folder.trim()).filter(|f| !f.is_empty()).map(str::to_string).or_else(|| s.recovery.default_folder.clone());
         folder.map(|f| Arc::new(FolderStore::new(f)) as Arc<dyn RecoveryStore>)
     }
-    #[cfg(target_arch = "wasm32")]
-    None
 }
 
 fn has_store(s: &Session) -> std::result::Result<(), String> {

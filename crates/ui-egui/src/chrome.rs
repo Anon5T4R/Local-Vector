@@ -138,7 +138,7 @@ pub fn app_bar(app: &mut LocalvectorApp, ui: &mut Ui) {
 /// does the web build (the browser tab has no document title), nor an embedder that never
 /// turned the preference on.
 pub fn system_title_bar(app: &LocalvectorApp) -> bool {
-    !app.custom_titlebar && app.session.prefs.system_title_bar && !cfg!(any(target_os = "macos", target_arch = "wasm32"))
+    !app.custom_titlebar && app.session.prefs.system_title_bar && !cfg!(target_os = "macos")
 }
 
 /// The OS window title: the active document's name suffixed with the app name (a `*` prefix

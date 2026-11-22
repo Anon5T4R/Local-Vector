@@ -2,7 +2,6 @@ use super::caches::{CanvasCache, Perf};
 use super::clock::now_ms;
 use super::clock::now_secs;
 use super::services::{Services, browsable_url};
-#[cfg(not(target_arch = "wasm32"))]
 use super::state::FONT_INSTALL_POLL;
 use super::state::{
     CaptureEpoch, GeometryStamp, InputGeneration, MAX_PENDING_SCREENSHOTS, MAX_SCREENSHOT_BYTES, MAX_SCREENSHOT_TOTAL_BYTES, PendingScreenshot,
@@ -67,7 +66,7 @@ impl LocalvectorApp {
                 last_ms: 0.0,
                 moved: false,
                 from_worker: false,
-                waits_for_still: cfg!(target_arch = "wasm32"),
+                waits_for_still: false,
                 still: None,
                 fill: None,
                 fill_worker: None,
@@ -127,7 +126,6 @@ impl LocalvectorApp {
             picks: picks::Picks::default(),
             screen_sampler: None,
             font_check: None,
-            #[cfg(not(target_arch = "wasm32"))]
             font_install_check_at: f64::NEG_INFINITY,
             paste_chord: Default::default(),
             // Held keys repeat their command (Cmd+= keeps zooming in).
@@ -291,7 +289,6 @@ impl LocalvectorApp {
             self.system_paste_at = now;
             self.system_paste = wanted && self.system_clipboard_pasteable();
         }
-        #[cfg(not(target_arch = "wasm32"))]
         if !(0.0..FONT_INSTALL_POLL).contains(&(now - self.font_install_check_at)) {
             self.font_install_check_at = now;
             // Read on the next frame the app draws anyway: an idle app isn't woken for it.
@@ -308,7 +305,6 @@ impl LocalvectorApp {
         plugin_runs::poll(self);
         trace_runs::poll(self);
         placing::poll(self);
-        #[cfg(not(target_arch = "wasm32"))]
         self.tick_link_updates(ctx, now);
         if !self.background.jobs.is_empty()
             || !self.opening.pending.is_empty()

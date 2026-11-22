@@ -24,7 +24,6 @@ mod justify;
 mod kashida;
 mod layout;
 mod shape;
-#[cfg(not(target_arch = "wasm32"))]
 mod suitcase;
 mod svg_glyph;
 #[cfg(any(test, feature = "test-fonts"))]

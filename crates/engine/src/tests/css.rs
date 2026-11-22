@@ -98,7 +98,6 @@ fn export_writes_the_sheet_and_rasterized_art() {
     assert!(s.execute("css.export", &json!({})).is_err(), "nothing selected: nothing to export");
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn export_to_a_path_puts_the_pictures_next_to_the_sheet() {
     let mut s = session();
@@ -116,7 +115,6 @@ fn export_to_a_path_puts_the_pictures_next_to_the_sheet() {
     std::fs::remove_dir_all(&dir).ok();
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn export_says_once_when_a_rasterized_image_could_not_be_decoded() {
     const NOTE: &str = "an image couldn't be decoded and is missing from the picture";
