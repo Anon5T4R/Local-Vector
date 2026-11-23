@@ -3313,7 +3313,7 @@ checksum = "4744e383959f0db86ede514b809b1c53251889093803c05267acc7d4e7030d70"
 
 [[package]]
 name = "localvector"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "arboard",
  "block2 0.6.2",
@@ -3359,7 +3359,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-affinity"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "crc32fast",
  "flate2",
@@ -3370,7 +3370,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-brush"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "kurbo 0.13.1",
  "localvector-color",
@@ -3382,7 +3382,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-cad"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "image",
  "kurbo 0.13.1",
@@ -3398,7 +3398,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-cli"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "craft-mcp",
  "localvector-color",
@@ -3421,7 +3421,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-color"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "kurbo 0.13.1",
  "moxcms",
@@ -3433,7 +3433,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-doc"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "chrono",
  "hayro-ccitt",
@@ -3452,7 +3452,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-effects"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "image",
  "kurbo 0.13.1",
@@ -3468,7 +3468,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-engine"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "cfb",
  "chrono",
@@ -3511,7 +3511,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-eps"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "fax",
  "flate2",
@@ -3535,7 +3535,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-format"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "craft-vectorcraft-format",
  "flate2",
@@ -3551,7 +3551,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-geom"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "kurbo 0.13.1",
  "localvector-testkit",
@@ -3562,7 +3562,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-mcp"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "image",
  "localvector-doc",
@@ -3581,7 +3581,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-metafile"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "image",
  "kurbo 0.13.1",
@@ -3595,7 +3595,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-pathops"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "kurbo 0.13.1",
  "linesweeper",
@@ -3607,7 +3607,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-pdf"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "aes",
  "chrono",
@@ -3639,7 +3639,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-plugins"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "localvector-color",
  "localvector-doc",
@@ -3653,7 +3653,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-render"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "flate2",
  "gif 0.14.2",
@@ -3683,14 +3683,14 @@ dependencies = [
 
 [[package]]
 name = "localvector-scriptcheck"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "proptest",
 ]
 
 [[package]]
 name = "localvector-svg"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "craft-docpath",
  "flate2",
@@ -3715,7 +3715,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-testkit"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "fax",
  "image",
@@ -3733,7 +3733,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-text"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "harfrust 0.13.3",
  "icu_segmenter",
@@ -3754,7 +3754,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-three-d"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "localvector-geom",
  "localvector-pathops",
@@ -3762,7 +3762,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-tools"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "image",
  "kurbo 0.13.1",
@@ -3779,7 +3779,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-trace"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "image",
  "kurbo 0.13.1",
@@ -3791,7 +3791,7 @@ dependencies = [
 
 [[package]]
 name = "localvector-ui-egui"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "bytemuck",
  "craft-icons",
@@ -8273,7 +8273,7 @@ checksum = "9440ea3e5aeabb0ac63af70daf835274065238cdd0cec83418f417eae38bacee"
 
 [[package]]
 name = "xtask"
-version = "0.22.8"
+version = "0.22.9"
 dependencies = [
  "serde_json",
 ]
