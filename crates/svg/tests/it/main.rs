@@ -36,3 +36,4 @@ mod text_layout;
 mod text_paint_order;
 mod text_stroke;
 mod title_control_chars;
+mod xml_attributes;
