@@ -1,56 +1,54 @@
 # Local Vector Roadmap
 
-**Stage: alpha** · os seis fluxos centrais do Illustrator (desenho e edição de path, pintura e
-estilo, tipo, camadas/artboards/export, impressão, troca de arquivos) funcionam ponta a ponta com
-salvamento e reabertura; só a troca de arquivos é parcial.
+**Stage: alpha** · the six central Illustrator flows (drawing and path editing, painting and style,
+type, layers/artboards/export, printing, file exchange) work end to end with save and reopen; only
+file exchange is partial.
 
-Fork independente do vectorcraft (ArtCraft) na suíte Local do João — clean-room: comportamento
-vem só de documentação pública, nunca de rodar ou medir o Illustrator. Esta é a página de estado;
-a arquitetura está em `docs/architecture.md` e o histórico mora no git e nas release notes.
+Independent fork of vectorcraft (ArtCraft) in João's Local suite — clean-room: behavior comes only
+from public documentation, never from running or measuring Illustrator. This is the state page;
+the architecture is in `docs/architecture.md` and the history lives in git and the release notes.
 
-## Números (medição de 2026-10-10)
+## Numbers (measured 2026-10-10)
 
-| | Valor |
+| | Value |
 |---|---|
-| Pronto para trabalho real | ~62% |
-| Profundidade de features | ~75% |
-| Praticante essencial | ~75% |
+| Ready for real work | ~62% |
+| Feature depth | ~75% |
+| Essential practitioner | ~75% |
 
-Beta pede ~75% pronto e a troca `.ai` confiável nos dois sentidos.
+Beta asks for ~75% ready and reliable two-way `.ai` exchange.
 
-## Por que ainda alpha
+## Why still alpha
 
-Os fluxos existem, mas um profissional ainda não troca: arquivos `.ai` reais abrem com estrutura
-de camadas errada em casos reais e não salvam de volta com os dados de edição do Illustrator; os
-detalhes de interação nunca foram conferidos lado a lado; e algumas máquinas não conseguem
-iniciar o app.
+The flows exist, but a professional still cannot switch: real `.ai` files open with the wrong layer
+structure in real cases and do not save back with Illustrator's editing data; the interaction
+details have never been checked side by side; and some machines cannot start the app.
 
-## Fila (o que falta, em ordem)
+## Queue (what is missing, in order)
 
-1. **Passada de fidelidade de interação**, ferramenta por ferramenta: 60–90 h.
-2. **`.ai` de usuários reais** (estrutura de camadas, guias, velocidade): 10–20 h.
-3. **Inicialização e estabilidade em máquinas reais**: 20–35 h.
-4. **Correção das ferramentas centrais** (regiões do Shape Builder, bordas do Asset Export): 8–15 h.
-5. **Efeitos de raster**: miniaturas dos filtros da Effect Gallery e área de prévia no diálogo.
-6. **Type:** tab leaders, verificação ortográfica e tipo vertical pendentes; Hebrew/Arabic
-   bidirecional, direção de parágrafo e compositores por linha/objeto feitos.
-7. **3D:** Revolve/Extrude/Inflate/Rotate com luzes feitos; materiais e sombras 3D, SVG Filters e
-   os efeitos de raster restantes pendentes.
-8. **Brushes e symbols** em progresso (bibliotecas feitas); **graphs:** designs de coluna pendentes.
-9. **Automação:** Actions gravam/tocam e persistem; variables, scripting e batch restam.
-10. **Embalagem/QA amplo** (acessibilidade, RPM em distro real, corpus de arquivos grandes,
-    dirty-region rendering e o pico do backend GPU).
-11. **Formatos:** DWG (via DXF), placement de PSD como camadas, leitura de overprint de PDF e
-    export Affinity.
+1. **Interaction fidelity pass**, tool by tool: 60–90 h.
+2. **`.ai` from real users** (layer structure, guides, speed): 10–20 h.
+3. **Startup and stability on real machines**: 20–35 h.
+4. **Fixes of the central tools** (Shape Builder regions, Asset Export borders): 8–15 h.
+5. **Raster effects**: thumbnails of the Effect Gallery filters and a preview area in the dialog.
+6. **Type:** tab leaders, spell-checking and vertical type pending; Hebrew/Arabic bidirectional,
+   paragraph direction and per-line/per-object compositors done.
+7. **3D:** Revolve/Extrude/Inflate/Rotate with lights done; 3D materials and shadows, SVG Filters
+   and the remaining raster effects pending.
+8. **Brushes and symbols** in progress (libraries done); **graphs:** column designs pending.
+9. **Automation:** Actions record/play and persist; variables, scripting and batch remain.
+10. **Packaging/broad QA** (accessibility, RPM on a real distro, a corpus of large files,
+    dirty-region rendering and the GPU backend's peak).
+11. **Formats:** DWG (via DXF), PSD placement as layers, reading PDF overprint and Affinity export.
 
-## Idiomas
+## Languages
 
-Interface: catálogos em `crates/ui-egui/src/i18n/` — completos: en, es, fr, pt-br, ja, ko, vi e
-mais (de, 98%); parciais: zh-hans (85%), zh-hant (80%); nenhum: hi, ar (sem interface RTL), id.
-Mensagens da engine em inglês. Somente o georgiano teve revisão nativa.
+Interface: catalogs in `crates/ui-egui/src/i18n/` — complete: en, es, fr, pt-br, ja, ko, vi and
+more (de, 98%); partial: zh-hans (85%), zh-hant (80%); none: hi, ar (no RTL interface), id.
+Engine messages in English. Only Georgian has had native review.
 
-## Suíte
+## Suite
 
-Desde 2026-11 o app segue o padrão craft (guardas do kittest, diálogos na largura mínima,
-contraste AA no accent, craft-palette/update/icons); o que muda na casca vem do
-`C:\Dev\docs\planos\padrao-craft.md` (repo dev-notes).
+Since 2026-11 the app follows the craft standard (kittest guards, dialogs at the minimum width, AA
+contrast on the accent, craft-palette/update/icons); what changes in the shell comes from
+`C:\Dev\docs\planos\padrao-craft.md` (dev-notes repo).
