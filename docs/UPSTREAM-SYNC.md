@@ -13,6 +13,13 @@ Porta/rebrand da suíte Local: o main é nosso, o upstream é fonte de mudanças
 - Nada é lido de `C:\Dev\storytold` em build, teste ou release; a pasta é só referência local para a
   skill `sync-upstream`.
 
+## winprint.rs vendored
+
+`libs/winprint.rs` vem de `storytold/winprint.rs`. O `6758393` (build-dependencies do download do PDFium
+opcionais atrás da feature `pdfium`, com o código do `build.rs` num módulo sob a mesma feature) foi trazido à
+parte. O app usa o `winprint` com `default-features = false`; `reqwest`, `sigstore-*` e `aws-lc-sys` deixaram de
+ser compilados.
+
 ## craft-update vendored: fork permanente da suíte (fora do sync)
 
 `libs/craft-libs/crates/update` está **fora do escopo** deste sync com o upstream. É um crate nosso, hospedado no `craft-libs` da suíte Local, e um **fork permanente consciente** do `craft-update` upstream — unificado nos 10 apps em 2026-11-13, com um diff de milhares de linhas contra `storytold/craft-libs/crates/update` (MSI context/migrate, pins do launcher, `offers_update`, `desktop_register`, catálogo único de apps). Nenhum diff de sync encaixa nele.
