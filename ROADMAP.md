@@ -31,7 +31,7 @@ details have never been checked side by side; and some machines cannot start the
 3. **Startup and stability on real machines**: 20–35 h.
 4. **Fixes of the central tools** (Shape Builder regions, Asset Export borders): 8–15 h.
 5. **Raster effects**: thumbnails of the Effect Gallery filters and a preview area in the dialog.
-6. **Type:** tab leaders, spell-checking and vertical type pending; Hebrew/Arabic bidirectional,
+6. **Type:** tab leaders and spell-checking pending; vertical type, Hebrew/Arabic bidirectional,
    paragraph direction and per-line/per-object compositors done.
 7. **3D:** Revolve/Extrude/Inflate/Rotate with lights done; 3D materials and shadows, SVG Filters
    and the remaining raster effects pending.
@@ -43,9 +43,10 @@ details have never been checked side by side; and some machines cannot start the
 
 ## Languages
 
-Interface: catalogs in `crates/ui-egui/src/i18n/` — complete: en, es, fr, pt-br, ja, ko, vi and
-more (de, 98%); partial: zh-hans (85%), zh-hant (80%); none: hi, ar (no RTL interface), id.
-Engine messages in English. Only Georgian has had native review.
+Interface: catalogs in `crates/ui-egui/src/i18n/` - every registered catalog (en, es, fr, pt-br, ja,
+ko, vi, id, de, zh-hans, zh-hant and the rest) is marked complete in the registry; coverage is not
+measured (`cargo xtask i18n-report` measures it). Missing: hi, ar (no RTL interface). Engine messages
+in English. Only Georgian has had native review.
 
 ## Suite
 

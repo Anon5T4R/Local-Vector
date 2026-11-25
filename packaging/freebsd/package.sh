@@ -11,7 +11,7 @@
 # Usage: packaging/freebsd/package.sh [--skip-build]
 #
 # Needs: bash, cargo and the FreeBSD build dependencies (libxkbcommon, wayland, X11, Vulkan loader,
-# gtk3, fontconfig, freetype2, as docs/releasing.md lists). FreeBSD's
+# gtk3, fontconfig, freetype2; install them with `pkg install`). FreeBSD's
 # install(1) has no -D, so directories are created first.
 set -euo pipefail
 # shellcheck source=../env.sh
