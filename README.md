@@ -26,8 +26,9 @@
 - Set type: point, area and on-path text, character and paragraph styles, fonts with shaping and
   bidirectional layout, and variable-font axes.
 - Lay out with layers, groups, artboards, ruler and smart guides, saved views and slices.
-- Place files as linked or embedded art, relink them, and package a document with its links and the
-  fonts its type uses.
+- Place files as linked or embedded art, relink them, and place `.txt`, `.rtf`, `.docx` and `.doc`
+  files as area text.
+- Package a document with its links and the fonts its type uses.
 - Trace a bitmap into paths with Image Trace, build charts from data with the graph tools, and run a
   data merge from a CSV with variables and data sets.
 - Make 3D art from paths: revolve, extrude, inflate and rotate surfaces, with lights.
@@ -47,13 +48,16 @@ What works well, what is weak and what is planned is in the [roadmap](ROADMAP.md
 |---|---|
 | Native | `.vectorcraft` (versioned, compressed JSON with the images inside; older `.drawcraft` files still open) and `.vctemplate` templates |
 | Opens | SVG, SVGZ, PDF, `.ai` and `.ait`, EPS and PostScript, DXF, EMF, WMF, PNG, JPEG, GIF, WebP, TIFF, BMP, Targa, PSD and PSB (the merged image), PCX, JPEG 2000, and Affinity `.af`/`.afdesign`/`.afpub` (recognized by its content) |
-| Saves and exports | `.vectorcraft`, `.vctemplate`, SVG, SVGZ, PDF, PDF-compatible `.ai` and `.ait`, EPS, DXF, EMF, WMF, PNG, PNG-8, JPEG, GIF, WebP (lossless), TIFF, BMP, Targa, PSD (each layer a pixel layer, or one flat image) and plain text |
+| Saves and exports | `.vectorcraft`, `.vctemplate`, SVG, SVGZ, PDF, PDF-compatible `.ai`, EPS, DXF, EMF, WMF, PNG, PNG-8, JPEG, GIF, WebP (lossless), TIFF, BMP, Targa, PSD (each layer a pixel layer, or one flat image) and `.txt` |
 
 - A PDF opens as editable art, not as a picture.
 - The `.ai` we write is a PDF by default: any PDF reader opens it, and Local Vector reopens it
   exactly because the native document travels inside. A `.ai` or PDF written by another editor opens
   as art, and the editing data it carries (layers, groups, names, artboards) is read as far as this
   app supports it; the warnings name what could not be read.
+- `.ait` templates are written only by Save as Template, never by an export.
+- File ▸ Open also accepts the other file names of PostScript, PNG, BMP and PSD files (`.epsf`,
+  `.pns`, `.dib`, `.rle`, `.pdd`).
 - An export can take one artboard, a layer, an asset or the selection, one or more scales or PPIs,
   and a preset.
 
@@ -98,8 +102,8 @@ Windows 10/11 (x64): `.msi` installer or portable `.zip`. Linux (x86_64): `.AppI
 [`packaging/`](packaging) also build Windows x86 and ARM64, macOS and FreeBSD packages, which the
 release workflow does not publish.
 
-Every release publishes `SHA256SUMS.txt`, and the updater refuses a file that no checksum vouches
-for. The release workflow also signs each file with
+Releases carry a `SHA256SUMS.txt`, and the updater refuses a file that neither GitHub's per-file
+digest nor that list vouches for. The release workflow also signs each file with
 [minisign](https://jedisct1.github.io/minisign/), the same key as every Local app; when the signing
 secret is missing the release ships unsigned and the run says so. The updater checks the signature
 and, for now, only logs a failure. To check a file yourself:
@@ -114,7 +118,8 @@ The public key is also in [packaging/minisign.pub](packaging/minisign.pub).
 
 - Your documents never leave the computer.
 - At launch, in the background, the app asks GitHub whether a newer release exists; Help ▸ Check for
-  Updates runs one by hand. There is no periodic check, and no setting to turn the check off yet.
+  Updates runs one by hand. There is no periodic check, and no setting to turn the check off yet
+  (short of a launcher-managed install).
 - No account, analytics or crash reporting.
 
 Security notes, all checkable in this repository:
