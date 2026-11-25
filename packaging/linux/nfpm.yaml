@@ -14,7 +14,7 @@ section: graphics
 priority: optional
 maintainer: ${LOCALVECTOR_MAINTAINER}
 vendor: Anon5T4R
-homepage: https://github.com/Anon5T4R/Local-Vector
+homepage: https://github.com/Styx-Studios/Local-Vector
 license: MIT OR Apache-2.0
 description: |-
   Open-source, native vector illustration app.

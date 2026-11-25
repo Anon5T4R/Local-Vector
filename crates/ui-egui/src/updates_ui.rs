@@ -122,7 +122,7 @@ mod tests {
             tag: "v99.0.0".into(),
             version: craft_update::parse_version("99.0.0"),
             name: "Local Vector 99.0.0".into(),
-            html_url: "https://github.com/Anon5T4R/Local-Vector/releases/tag/v99.0.0".into(),
+            html_url: "https://github.com/Styx-Studios/Local-Vector/releases/tag/v99.0.0".into(),
             ..Default::default()
         };
         app.updates_rt.updater.offer(release);

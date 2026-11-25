@@ -20,10 +20,10 @@
   <launchable type="desktop-id">com.localvector.app.desktop</launchable>
   <icon type="stock">com.localvector.app</icon>
   <!-- Only url types known to appstream 0.15 (Ubuntu 22.04, where CI validates): no vcs-browser. -->
-  <url type="homepage">https://github.com/Anon5T4R/Local-Vector</url>
-  <url type="bugtracker">https://github.com/Anon5T4R/Local-Vector/issues</url>
-  <url type="help">https://github.com/Anon5T4R/Local-Vector</url>
-  <url type="contact">https://github.com/Anon5T4R/Local-Vector/discussions</url>
+  <url type="homepage">https://github.com/Styx-Studios/Local-Vector</url>
+  <url type="bugtracker">https://github.com/Styx-Studios/Local-Vector/issues</url>
+  <url type="help">https://github.com/Styx-Studios/Local-Vector</url>
+  <url type="contact">https://github.com/Styx-Studios/Local-Vector/discussions</url>
   <categories>
     <category>Graphics</category>
     <category>2DGraphics</category>
@@ -40,7 +40,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>Editing the Neon Drive poster with a live glow effect in the Appearance panel</caption>
-      <image>https://raw.githubusercontent.com/Anon5T4R/Local-Vector/main/docs/images/shot-1-neon.png</image>
+      <image>https://raw.githubusercontent.com/Styx-Studios/Local-Vector/main/docs/images/shot-1-neon.png</image>
     </screenshot>
   </screenshots>
   <branding>

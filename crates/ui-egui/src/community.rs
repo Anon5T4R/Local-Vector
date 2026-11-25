@@ -45,14 +45,14 @@ mod tests {
         assert_eq!(
             *opened.lock().unwrap(),
             [
-                "https://github.com/Anon5T4R/Local-Vector",
-                "https://github.com/Anon5T4R/Local-Vector",
-                "https://github.com/Anon5T4R/Local-Vector/issues"
+                "https://github.com/Styx-Studios/Local-Vector",
+                "https://github.com/Styx-Studios/Local-Vector",
+                "https://github.com/Styx-Studios/Local-Vector/issues"
             ]
         );
         // The control channel / MCP path returns the URL without opening a browser.
         let v = app.run("help.website", serde_json::json!({})).unwrap();
-        assert_eq!(v["url"], "https://github.com/Anon5T4R/Local-Vector");
+        assert_eq!(v["url"], "https://github.com/Styx-Studios/Local-Vector");
         assert_eq!(opened.lock().unwrap().len(), 3);
         let ctx = egui::Context::default();
         theme::install_fonts(&ctx);

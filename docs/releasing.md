@@ -15,7 +15,7 @@ User-facing names say **Local Vector**. Files, binaries and ids stay lowercase
 ## In-app update checks
 
 The native desktop app reads the public GitHub latest-release endpoint of
-`Anon5T4R/Local-Vector` in a background thread once, at launch, with no periodic checks or automatic
+`Styx-Studios/Local-Vector` in a background thread once, at launch, with no periodic checks or automatic
 retries; Help ▸ Check for Updates runs one by hand. A check needs no GitHub token and sends no
 document or personal data, and a network failure is quiet. Downloads are verified against the
 SHA-256 the release asset carries. Package-manager installs update through their package manager.
@@ -218,7 +218,7 @@ against riscv64 libraries from ports.ubuntu.com (so the floor there is glibc 2.3
 `EMULATOR=qemu-riscv64` set: a `.tar.gz` only, with `localvector-cli --version` run under QEMU.
 
 **AppImage updates.** Each AppImage embeds the update information
-`gh-releases-zsync|Anon5T4R|Local-Vector|latest|localvector-*-linux-<arch>.AppImage.zsync`
+`gh-releases-zsync|Styx-Studios|Local-Vector|latest|localvector-*-linux-<arch>.AppImage.zsync`
 (appimagetool `-u`), and `package.sh` writes the matching `.zsync` beside it when `zsyncmake` (the
 `zsync` package) is installed. A build of a fork points at its own releases through
 `GITHUB_REPOSITORY`. [AppImageUpdate](https://github.com/AppImageCommunity/AppImageUpdate) and

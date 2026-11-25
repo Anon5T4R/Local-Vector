@@ -41,9 +41,9 @@
          and the taskbar cache) even when the source is an ICO. -->
     <Icon Id="LocalVectorIcon.exe" SourceFile="$(var.IconPath)" />
     <Property Id="ARPPRODUCTICON" Value="LocalVectorIcon.exe" />
-    <Property Id="ARPURLINFOABOUT" Value="https://github.com/Anon5T4R/Local-Vector" />
-    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/Anon5T4R/Local-Vector" />
-    <Property Id="ARPHELPLINK" Value="https://github.com/Anon5T4R/Local-Vector/discussions" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/Styx-Studios/Local-Vector" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/Styx-Studios/Local-Vector" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/Styx-Studios/Local-Vector/discussions" />
 
     <!-- The setup wizard: WixUI_Minimal is welcome + licence, progress, then a finish page with
          "Launch Local Vector" (ticked by default). Its art is ours, drawn from the app icon by

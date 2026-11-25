@@ -24,7 +24,7 @@ copyright line of [`LICENSE-MIT`](LICENSE-MIT).
 
 `libs/` holds forks of the crates the desktop app builds against. Each checkout keeps its upstream
 licence files and its patch ledger; all of them are MIT OR Apache-2.0, and the exact revisions are
-pinned in `Cargo.toml` and recorded in the `Anon5T4R/local-deps` inventory.
+pinned in `Cargo.toml` and recorded in the `Styx-Studios/local-deps` inventory.
 
 | Path | Upstream | License |
 |---|---|---|

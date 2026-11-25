@@ -7,11 +7,11 @@ use serde_json::{Value, json};
 use super::{CommandSpec, Result, always, cmd};
 
 /// This app's website: its repository page.
-pub const WEBSITE_URL: &str = "https://github.com/Anon5T4R/Local-Vector";
+pub const WEBSITE_URL: &str = "https://github.com/Styx-Studios/Local-Vector";
 /// This app's source repository.
-pub const GITHUB_URL: &str = "https://github.com/Anon5T4R/Local-Vector";
+pub const GITHUB_URL: &str = "https://github.com/Styx-Studios/Local-Vector";
 /// Where bugs and feature requests are reported.
-pub const ISSUES_URL: &str = "https://github.com/Anon5T4R/Local-Vector/issues";
+pub const ISSUES_URL: &str = "https://github.com/Styx-Studios/Local-Vector/issues";
 
 pub fn specs() -> Vec<CommandSpec> {
     vec![
@@ -52,9 +52,9 @@ mod tests {
     #[test]
     fn links() {
         let mut s = Session::new();
-        assert_eq!(s.execute("help.website", &json!({})).unwrap()["url"], "https://github.com/Anon5T4R/Local-Vector");
-        assert_eq!(s.execute("help.github", &json!({})).unwrap()["url"], "https://github.com/Anon5T4R/Local-Vector");
-        assert_eq!(s.execute("help.reportIssue", &json!({})).unwrap()["url"], "https://github.com/Anon5T4R/Local-Vector/issues");
-        assert_eq!(s.execute("help.links", &json!({})).unwrap()["website"], "https://github.com/Anon5T4R/Local-Vector");
+        assert_eq!(s.execute("help.website", &json!({})).unwrap()["url"], "https://github.com/Styx-Studios/Local-Vector");
+        assert_eq!(s.execute("help.github", &json!({})).unwrap()["url"], "https://github.com/Styx-Studios/Local-Vector");
+        assert_eq!(s.execute("help.reportIssue", &json!({})).unwrap()["url"], "https://github.com/Styx-Studios/Local-Vector/issues");
+        assert_eq!(s.execute("help.links", &json!({})).unwrap()["website"], "https://github.com/Styx-Studios/Local-Vector");
     }
 }
